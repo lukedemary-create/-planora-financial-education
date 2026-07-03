@@ -7,6 +7,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import React, { useState, useCallback, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { TAX_2026 } from '../config/taxConstants2026'
 import {
   Building2, Scale, Target, Heart, Shield, Lock,
@@ -722,85 +723,460 @@ function evaluate(data) {
 
 /* ─── Hub view ───────────────────────────────────────────────────────────── */
 function HubView({ setView, wizardDone, avgScore }) {
-  const pathways = [
-    { id: 'learn', icon: BookOpen, label: 'Education Library', desc: 'Eight comprehensive modules covering every area of business owner financial planning — entity structures, taxation, retirement, benefits, insurance, trusts, estate planning, and your professional team.', color: C.gold, tag: '8 modules' },
-    { id: 'assess', icon: ClipboardList, label: 'Business Assessment', desc: 'A guided diagnostic built around the questions a CPA, CFP, and business attorney would ask in a first meeting. Takes 5–8 minutes. Feeds your personalized recommendations.', color: C.brown, tag: '5 sections' },
-    { id: 'results', icon: Award, label: 'My Business Plan', desc: wizardDone ? 'Your personalized recommendations are ready — organized by category, prioritized, and flagged for the professionals who need to be involved.' : 'Complete the assessment to unlock your personalized business planning recommendations.', color: wizardDone ? C.success : C.t3, tag: wizardDone ? 'Ready' : 'Complete assessment first' },
+  const moduleGrid = [
+    { icon: Building2, label: 'Entity Structures', accent: '#c9a96e' },
+    { icon: Scale,     label: 'Taxation Deep Dive', accent: '#8b6340' },
+    { icon: Target,    label: 'Retirement Plans',   accent: '#c9a96e' },
+    { icon: Heart,     label: 'Benefits Strategy',  accent: '#8b6340' },
+    { icon: Shield,    label: 'Business Insurance', accent: '#c9a96e' },
+    { icon: Lock,      label: 'Trusts & Structure', accent: '#8b6340' },
+    { icon: FileText,  label: 'Estate Planning',    accent: '#c9a96e' },
+    { icon: Users,     label: 'Professional Team',  accent: '#8b6340' },
   ]
 
+  const assessSteps = ['Entity & Ownership', 'Financials', 'Team', 'Personal Goals', 'Protection']
+
   return (
-    <div>
+    <div style={{ maxWidth: 900 }}>
       {/* Header */}
-      <div style={{ marginBottom: 36 }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: C.brownDim, border: `1px solid ${C.brownBdr}`, borderRadius: 6, padding: '4px 12px', marginBottom: 16 }}>
+      <div style={{ marginBottom: 40 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: C.brownDim, border: `1px solid ${C.brownBdr}`, borderRadius: 6, padding: '4px 12px', marginBottom: 18 }}>
           <div style={{ width: 5, height: 5, borderRadius: '50%', background: C.brown }} />
           <span style={{ fontSize: 10, fontFamily: UI, fontWeight: 700, color: C.brown, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Business Owner</span>
         </div>
-        <h1 style={{ fontFamily: DISPLAY, fontSize: 'clamp(24px, 3vw, 36px)', fontWeight: 700, color: C.t1, margin: '0 0 12px', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+        <h1 style={{ fontFamily: DISPLAY, fontSize: 'clamp(26px, 3.5vw, 42px)', fontWeight: 700, color: C.t1, margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
           The Financial Layer<br />Beneath Your Business
         </h1>
-        <p style={{ fontFamily: UI, fontSize: 14, color: C.t2, lineHeight: 1.75, margin: 0, maxWidth: 560 }}>
-          This section takes the body of knowledge a great CPA, CFP, and business attorney carry in their heads and turns it into something you can learn from, apply to your own situation, and act on. Education that ends in action — not a pile of articles.
+        <p style={{ fontFamily: UI, fontSize: 14, color: C.t2, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 580 }}>
+          The knowledge a great CPA, CFP, and business attorney carry in their heads — structured so you can learn it, apply it to your situation, and act on it. This is not a pile of articles. It ends in a personalized plan.
         </p>
-      </div>
-
-      {/* Arc indicator */}
-      <div style={{ display: 'flex', gap: 0, marginBottom: 32, background: C.raise, borderRadius: 12, padding: '14px 20px', border: `1px solid ${C.b1}` }}>
-        {['Educate', 'Diagnose', 'Recommend'].map((step, i) => (
-          <React.Fragment key={step}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 22, height: 22, borderRadius: '50%', background: i === 0 ? C.brown : C.b2, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span style={{ fontFamily: MONO, fontSize: 10, fontWeight: 700, color: i === 0 ? C.bg : C.t3 }}>{i + 1}</span>
-              </div>
-              <span style={{ fontFamily: UI, fontSize: 12, fontWeight: 600, color: i === 0 ? C.t1 : C.t3 }}>{step}</span>
+        {/* Stats row */}
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          {[
+            { val: '8', label: 'Education Modules' },
+            { val: '5', label: 'Assessment Sections' },
+            { val: '10+', label: 'Personalized Recs' },
+            { val: '2026', label: 'Tax Year Data' },
+          ].map(s => (
+            <div key={s.label} style={{ display: 'flex', alignItems: 'baseline', gap: 7 }}>
+              <span style={{ fontFamily: MONO, fontSize: 20, fontWeight: 800, color: C.gold }}>{s.val}</span>
+              <span style={{ fontFamily: UI, fontSize: 11, color: C.t3, fontWeight: 500 }}>{s.label}</span>
             </div>
-            {i < 2 && <div style={{ flex: 1, height: 1, background: C.b2, alignSelf: 'center', margin: '0 12px' }} />}
-          </React.Fragment>
-        ))}
+          ))}
+        </div>
       </div>
 
-      {/* Pathway cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
-        {pathways.map(p => {
-          const Icon = p.icon
-          const disabled = p.id === 'results' && !wizardDone
-          return (
-            <button
-              key={p.id}
-              onClick={() => !disabled && setView(p.id)}
-              disabled={disabled}
-              style={{
-                display: 'flex', alignItems: 'flex-start', gap: 18, padding: '20px 22px',
-                background: C.raise, border: `1px solid ${C.b2}`, borderRadius: 14,
-                textAlign: 'left', cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.6 : 1,
-                transition: 'border-color 0.15s',
-              }}
-              onMouseEnter={e => { if (!disabled) e.currentTarget.style.borderColor = p.color + '60' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = C.b2 }}
-            >
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: p.color + '18', border: `1px solid ${p.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Icon size={18} color={p.color} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 5 }}>
-                  <span style={{ fontFamily: UI, fontSize: 14, fontWeight: 700, color: C.t1 }}>{p.label}</span>
-                  <span style={{ fontSize: 10, fontFamily: UI, fontWeight: 600, color: p.color, background: p.color + '18', borderRadius: 4, padding: '2px 7px' }}>{p.tag}</span>
+      {/* Bento grid */}
+      <div className="bp-bento" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: 'auto auto', gap: 14, marginBottom: 20 }}>
+
+        {/* Card 1 — Education Library (full width top) */}
+        <div
+          onClick={() => setView('learn')}
+          style={{ gridColumn: '1 / -1', background: C.surf, border: `1px solid ${C.b2}`, borderRadius: 18, padding: '28px 30px', cursor: 'pointer', transition: 'border-color 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = C.gold + '55' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = C.b2 }}
+        >
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22, gap: 16 }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 9, background: C.goldDim, border: `1px solid ${C.goldBdr}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <BookOpen size={17} color={C.gold} />
                 </div>
-                <p style={{ fontFamily: UI, fontSize: 12, color: C.t2, lineHeight: 1.65, margin: 0 }}>{p.desc}</p>
+                <span style={{ fontSize: 10, fontFamily: UI, fontWeight: 700, color: C.gold, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Education Library</span>
+                <span style={{ fontSize: 10, fontFamily: UI, fontWeight: 600, color: C.gold, background: C.goldDim, border: `1px solid ${C.goldBdr}`, borderRadius: 4, padding: '2px 7px' }}>8 Modules</span>
               </div>
-              <ChevronRight size={16} color={C.t3} style={{ marginTop: 12, flexShrink: 0 }} />
-            </button>
-          )
-        })}
+              <h2 style={{ fontFamily: DISPLAY, fontSize: 18, fontWeight: 700, color: C.t1, margin: '0 0 6px', letterSpacing: '-0.01em' }}>Eight Dimensions of Business Finance</h2>
+              <p style={{ fontFamily: UI, fontSize: 12, color: C.t2, lineHeight: 1.65, margin: 0, maxWidth: 480 }}>
+                Every critical area from entity structure to estate planning — explained with real numbers and clear mechanisms, not textbook definitions.
+              </p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: C.goldDim, border: `1px solid ${C.goldBdr}`, borderRadius: 8, padding: '8px 14px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <span style={{ fontFamily: UI, fontSize: 12, fontWeight: 700, color: C.gold }}>Enter Library</span>
+              <ArrowRight size={13} color={C.gold} />
+            </div>
+          </div>
+          {/* Module grid preview */}
+          <div className="bp-module-preview" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+            {moduleGrid.map((m, i) => {
+              const Icon = m.icon
+              return (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, background: C.raise, border: `1px solid ${C.b1}`, borderRadius: 10, padding: '10px 12px' }}>
+                  <div style={{ width: 26, height: 26, borderRadius: 7, background: m.accent + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Icon size={12} color={m.accent} />
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: MONO, fontSize: 9, color: C.t3, marginBottom: 2 }}>0{i + 1}</div>
+                    <div style={{ fontFamily: UI, fontSize: 10, fontWeight: 600, color: C.t2, lineHeight: 1.2 }}>{m.label}</div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Card 2 — Business Assessment */}
+        <div
+          onClick={() => setView('assess')}
+          style={{ background: C.surf, border: `1px solid ${C.b2}`, borderRadius: 18, padding: '26px 28px', cursor: 'pointer', transition: 'border-color 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = C.brown + '55' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = C.b2 }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 9, background: C.brownDim, border: `1px solid ${C.brownBdr}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <ClipboardList size={17} color={C.brown} />
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontFamily: UI, fontWeight: 700, color: C.brown, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 2 }}>Business Assessment</div>
+              <div style={{ fontFamily: UI, fontSize: 10, color: C.t3 }}>5 sections · 5–8 min</div>
+            </div>
+          </div>
+          <h3 style={{ fontFamily: DISPLAY, fontSize: 16, fontWeight: 700, color: C.t1, margin: '0 0 8px', letterSpacing: '-0.01em' }}>Diagnose Where You Stand</h3>
+          <p style={{ fontFamily: UI, fontSize: 12, color: C.t2, lineHeight: 1.65, margin: '0 0 20px' }}>
+            The questions a CPA, CFP, and business attorney ask in a first meeting — structured into a 5-section diagnostic that feeds your personalized recommendations.
+          </p>
+          {/* Step preview */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            {assessSteps.map((step, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 20, height: 20, borderRadius: '50%', background: C.raise, border: `1px solid ${C.b2}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ fontFamily: MONO, fontSize: 9, fontWeight: 700, color: C.t3 }}>{i + 1}</span>
+                </div>
+                <span style={{ fontFamily: UI, fontSize: 11, color: C.t2 }}>{step}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontFamily: UI, fontSize: 12, fontWeight: 700, color: C.brown }}>Start Assessment</span>
+            <ArrowRight size={13} color={C.brown} />
+          </div>
+        </div>
+
+        {/* Card 3 — My Business Plan */}
+        <div
+          onClick={() => wizardDone && setView('results')}
+          style={{ background: C.surf, border: `1px solid ${wizardDone ? C.success + '44' : C.b2}`, borderRadius: 18, padding: '26px 28px', cursor: wizardDone ? 'pointer' : 'default', transition: 'border-color 0.15s', position: 'relative', overflow: 'hidden' }}
+          onMouseEnter={e => { if (wizardDone) e.currentTarget.style.borderColor = C.success + '88' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = wizardDone ? C.success + '44' : C.b2 }}
+        >
+          {!wizardDone && (
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.55)', backdropFilter: 'blur(2px)', borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+              <div style={{ textAlign: 'center' }}>
+                <Lock size={22} color={C.t3} style={{ marginBottom: 10 }} />
+                <div style={{ fontFamily: UI, fontSize: 12, color: C.t3, fontWeight: 600 }}>Complete the assessment</div>
+                <div style={{ fontFamily: UI, fontSize: 11, color: C.t3, marginTop: 4 }}>to unlock your plan</div>
+              </div>
+            </div>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 9, background: wizardDone ? C.success + '18' : C.b1, border: `1px solid ${wizardDone ? C.success + '44' : C.b2}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Award size={17} color={wizardDone ? C.success : C.t3} />
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontFamily: UI, fontWeight: 700, color: wizardDone ? C.success : C.t3, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 2 }}>My Business Plan</div>
+              {wizardDone && avgScore != null && (
+                <div style={{ fontFamily: MONO, fontSize: 10, color: C.t2 }}>Score: {avgScore}/100</div>
+              )}
+            </div>
+          </div>
+          <h3 style={{ fontFamily: DISPLAY, fontSize: 16, fontWeight: 700, color: C.t1, margin: '0 0 8px', letterSpacing: '-0.01em' }}>Your Personalized Recommendations</h3>
+          <p style={{ fontFamily: UI, fontSize: 12, color: C.t2, lineHeight: 1.65, margin: '0 0 20px' }}>
+            After the assessment, this section delivers a prioritized roadmap — tax moves, protection gaps, retirement strategy — with the professionals to involve for each item.
+          </p>
+          {/* Score preview bars */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {['Tax Efficiency', 'Retirement Readiness', 'Risk Protection', 'Succession', 'Operations'].map((label, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ fontFamily: UI, fontSize: 10, color: C.t3, width: 110, flexShrink: 0 }}>{label}</div>
+                <div style={{ flex: 1, height: 4, background: C.raise, borderRadius: 99 }}>
+                  <div style={{ height: '100%', borderRadius: 99, width: wizardDone ? '65%' : '0%', background: `linear-gradient(90deg, ${C.brown}, ${C.gold})`, transition: 'width 0.5s ease' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          {wizardDone && (
+            <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontFamily: UI, fontSize: 12, fontWeight: 700, color: C.success }}>View My Plan</span>
+              <ArrowRight size={13} color={C.success} />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Disclaimer */}
-      <div style={{ background: C.goldDim, border: `1px solid ${C.goldBdr}`, borderRadius: 10, padding: '14px 18px' }}>
-        <p style={{ fontFamily: UI, fontSize: 11, color: C.t2, lineHeight: 1.65, margin: 0 }}>
+      <div style={{ background: C.goldDim, border: `1px solid ${C.goldBdr}`, borderRadius: 10, padding: '13px 18px' }}>
+        <p style={{ fontFamily: UI, fontSize: 11, color: C.t2, lineHeight: 1.6, margin: 0 }}>
           <span style={{ fontWeight: 700, color: C.gold }}>For educational purposes.</span>{' '}
-          This section explains financial concepts and generates illustrative estimates based on 2026 tax figures. It is not tax, legal, or financial advice. Every recommendation flags the appropriate professional for execution.
+          Explains financial concepts and generates illustrative estimates based on 2026 tax figures. Not tax, legal, or financial advice. Every recommendation flags the appropriate professional for execution.
         </p>
       </div>
+
+    </div>
+  )
+}
+
+/* ─── Why Planning Matters section ──────────────────────────────────────── */
+function WhyPlanSection({ onEnter }) {
+  const SURVIVAL = [
+    { gen: 'Founder', pct: 100, label: 'Generation 1' },
+    { gen: '2nd Gen', pct: 30,  label: 'Generation 2' },
+    { gen: '3rd Gen', pct: 12,  label: 'Generation 3' },
+    { gen: '4th Gen', pct: 3,   label: 'Generation 4+' },
+  ]
+
+  const FAILURE_MODES = [
+    {
+      icon: DollarSign,
+      title: 'Tax Exposure at Transfer',
+      body: 'Without a properly structured estate and business succession plan, the transfer of a business — whether by death, disability, or sale — can trigger federal estate taxes up to 40%, capital gains taxes on appreciated value, and state-level death taxes depending on domicile. For a business worth $2 million, that can mean $600,000 or more leaving the family before the transition even completes. The cruel irony: the tax liability is created by the owner\'s death, but must be paid in cash within nine months of it — often forcing a rushed or discounted sale of the very business it was created from.',
+    },
+    {
+      icon: AlertTriangle,
+      title: 'Forced Liquidation',
+      body: 'When a business owner dies or becomes permanently disabled with no succession plan in place, the practical consequences compound quickly. Creditors may call loans. Banks may freeze lines of credit. Partners who never signed a buy-sell agreement can become co-owners with the deceased\'s heirs — people who may have no relationship with, no knowledge of, and no interest in the business. Courts and probate can freeze business assets for 12 to 24 months while disputes resolve. In many cases, businesses that were entirely viable and profitable are liquidated at cents on the dollar simply because no one had legal authority to run them.',
+    },
+    {
+      icon: TrendingUp,
+      title: 'Value Destruction from Unpreparedness',
+      body: 'The third failure mode is slower and quieter: businesses that survive the transition but hemorrhage value in the years following. A 2023 study by the Exit Planning Institute found that 76% of business owners who planned to exit within ten years had no written transition plan. Of those businesses that did transfer, the owners left an average of 20-30% of enterprise value on the table compared to businesses with formal exit plans — a gap created by poor timing, wrong structure, untransferred customer relationships, key-person dependency, and missed tax optimization windows that close permanently once the transfer is complete.',
+    },
+  ]
+
+  const COMPARISON = [
+    { topic: 'Federal estate tax on $3M business', without: 'Up to $1.05M+ due within 9 months', with: 'Potentially $0 with proper trust and gifting structures' },
+    { topic: 'Retirement income from the business', without: 'Uncertain — depends entirely on sale proceeds', with: 'Structured: defined retirement plan + sale timing optimization' },
+    { topic: 'Business survival after owner exit', without: '70% fail within 5 years of transition', with: '4x more likely to succeed with documented succession plan' },
+    { topic: 'Self-employment tax on $250K profit', without: 'Full $35,300+ annually as sole prop or default LLC', with: 'Potentially $15,000–18,000 with S-Corp election and proper salary' },
+    { topic: 'Retirement contributions', without: 'IRA limit: $7,000/yr ($8,000 if 50+)', with: 'Solo 401(k) or SEP-IRA: up to $70,000/yr tax-deferred' },
+    { topic: 'Outcome if owner becomes disabled', without: 'Business operations stall; personal finances collapse', with: 'Disability insurance + POA + operating agreement = continuity' },
+    { topic: 'Value realized on exit', without: '20-30% below market from rushed/unplanned sale', with: 'Market rate or premium with advance positioning and structure' },
+  ]
+
+  const PILLARS = [
+    { icon: Building2, color: C.gold, title: 'Entity & Tax Structure', stat: 'Up to 60% reduction in SE tax', body: 'The entity you operate under determines your entire tax profile. Most business owners never revisit the decision after formation. An S-Corp election alone can save $10,000–$30,000 per year in self-employment taxes at typical income levels.' },
+    { icon: Target, color: C.brown, title: 'Retirement Architecture', stat: 'Up to $70,000/yr tax-deferred', body: 'Business owners have access to retirement plans that employees never see: Solo 401(k)s, SEP-IRAs, defined benefit plans. Used correctly, these simultaneously reduce current-year taxes and build wealth outside the business.' },
+    { icon: Shield, color: C.gold, title: 'Protection Layer', stat: '65% of exits involve a crisis', body: 'Key-person insurance, buy-sell agreements, and disability coverage are not optional risk management — they are the mechanisms that determine whether a business survives the unexpected. Most businesses carry none of them.' },
+    { icon: FileText, color: C.brown, title: 'Succession & Estate', stat: '70% fail at generation 2', body: 'A will is not a succession plan. Transferring a business requires a structured combination of legal documents, funding mechanisms, tax planning, and timeline — none of which happen automatically after death.' },
+    { icon: Users, color: C.gold, title: 'Professional Advisory Team', stat: 'Most owners work with zero', body: 'The businesses that survive generational transitions and maximize owner wealth consistently share one thing: a coordinated team of a CPA, CFP, and business attorney working together — not in silos.' },
+  ]
+
+  return (
+    <div style={{ marginTop: 64 }}>
+
+      {/* Section divider */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48 }}>
+        <div style={{ flex: 1, height: 1, background: C.b2 }} />
+        <span style={{ fontSize: 10, fontFamily: UI, fontWeight: 700, color: C.t3, letterSpacing: '0.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Why This Matters</span>
+        <div style={{ flex: 1, height: 1, background: C.b2 }} />
+      </div>
+
+      {/* Opening statement */}
+      <div style={{ marginBottom: 52 }}>
+        <h2 style={{ fontFamily: DISPLAY, fontSize: 'clamp(22px, 3vw, 34px)', fontWeight: 700, color: C.t1, margin: '0 0 16px', letterSpacing: '-0.02em', lineHeight: 1.2, maxWidth: 680 }}>
+          Most Business Owners Will Never Realize the Full Value of What They Built
+        </h2>
+        <p style={{ fontFamily: UI, fontSize: 14, color: C.t2, lineHeight: 1.85, margin: 0, maxWidth: 680 }}>
+          Not because their business wasn't valuable. Not because the market wasn't there. But because the financial, legal, and structural decisions that determine how much of that value you actually keep — and what happens to it when you're gone — were never made deliberately. They were made by default. And defaults, in business finance, almost always favor someone other than you.
+        </p>
+      </div>
+
+      {/* Big stats strip */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2, marginBottom: 52, background: C.b1, borderRadius: 16, overflow: 'hidden', border: `1px solid ${C.b2}` }}>
+        {[
+          { val: '70%', label: 'of family businesses fail to survive the transition to the second generation', src: 'Family Business Alliance' },
+          { val: '$10T', label: 'in business assets expected to transfer to the next generation over the next decade', src: 'Brookings Institution' },
+          { val: '55%', label: 'of small business owners have no written succession or exit plan in place today', src: 'Exit Planning Institute' },
+          { val: '23%', label: 'of business owners have a documented, formal exit strategy — despite 76% planning to exit within 10 years', src: 'SCORE, 2023' },
+        ].map((s, i) => (
+          <div key={i} style={{ background: C.surf, padding: '28px 24px', borderRight: i < 3 ? `1px solid ${C.b2}` : 'none' }}>
+            <div style={{ fontFamily: MONO, fontSize: 'clamp(24px, 3vw, 36px)', fontWeight: 900, color: C.gold, marginBottom: 10, lineHeight: 1 }}>{s.val}</div>
+            <div style={{ fontFamily: UI, fontSize: 12, color: C.t2, lineHeight: 1.6, marginBottom: 10 }}>{s.label}</div>
+            <div style={{ fontFamily: UI, fontSize: 10, color: C.t3 }}>Source: {s.src}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Business survival by generation */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 52, alignItems: 'start' }} className="bp-bento">
+        <div>
+          <SLabel>Succession Reality</SLabel>
+          <h3 style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 700, color: C.t1, margin: '0 0 14px', letterSpacing: '-0.01em', lineHeight: 1.25 }}>
+            Business Survival Rates Across Generations
+          </h3>
+          <p style={{ fontFamily: UI, fontSize: 13, color: C.t2, lineHeight: 1.8, margin: '0 0 24px' }}>
+            Of every 100 businesses that operate successfully under a founder, roughly 30 will still be operating as the same business entity under the second generation. Of those 30, fewer than 4 will reach the third. By the fourth generation, fewer than 1 in 100 of the original businesses remain.
+          </p>
+          <p style={{ fontFamily: UI, fontSize: 13, color: C.t2, lineHeight: 1.8, margin: 0 }}>
+            This is not a talent problem. Research consistently shows the primary causes are: no formal succession plan, inadequate estate planning, family conflict over roles and ownership, failure to develop next-generation leadership, and tax inefficiencies that erode the capital base during transfer. Every one of these is a planning problem — not a business performance problem.
+          </p>
+        </div>
+        <div style={{ background: C.surf, border: `1px solid ${C.b2}`, borderRadius: 16, padding: '28px 24px' }}>
+          <div style={{ fontSize: 10, fontFamily: UI, fontWeight: 700, color: C.t3, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 24 }}>Business survival rate per generation</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {SURVIVAL.map((s, i) => (
+              <div key={i}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+                  <span style={{ fontFamily: UI, fontSize: 12, fontWeight: 600, color: s.pct === 100 ? C.t1 : C.t2 }}>{s.label}</span>
+                  <span style={{ fontFamily: MONO, fontSize: 14, fontWeight: 800, color: s.pct > 50 ? C.gold : s.pct > 15 ? C.t2 : C.danger }}>{s.pct}%</span>
+                </div>
+                <div style={{ height: 8, background: C.raise, borderRadius: 99, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${s.pct}%`, background: s.pct > 50 ? `linear-gradient(90deg, ${C.gold}, ${C.brown})` : s.pct > 15 ? `linear-gradient(90deg, ${C.brown}, ${C.danger}88)` : C.danger, borderRadius: 99, transition: 'width 0.6s ease' }} />
+                </div>
+                {i > 0 && (
+                  <div style={{ fontFamily: UI, fontSize: 10, color: C.t3, marginTop: 5 }}>
+                    {i === 1 ? '70 of every 100 founder-led businesses are gone by this point' : i === 2 ? '88 of every 100 are gone — only 12 remain from the original 100' : 'Fewer than 3 of the original 100 businesses still operating'}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 20, paddingTop: 16, borderTop: `1px solid ${C.b1}`, fontFamily: UI, fontSize: 10, color: C.t3, lineHeight: 1.6 }}>
+            Source: Family Business Alliance, MIT Sloan Family Business Research
+          </div>
+        </div>
+      </div>
+
+      {/* Three failure modes */}
+      <div style={{ marginBottom: 52 }}>
+        <div style={{ marginBottom: 28 }}>
+          <SLabel>The Three Failure Modes</SLabel>
+          <h3 style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 700, color: C.t1, margin: '0 0 10px', letterSpacing: '-0.01em' }}>
+            How Unplanned Businesses Lose Value
+          </h3>
+          <p style={{ fontFamily: UI, fontSize: 13, color: C.t2, lineHeight: 1.8, maxWidth: 620 }}>
+            Business value doesn't disappear all at once. It erodes through three distinct and largely avoidable failure modes — each of which operates on a different timeline and is triggered by a different event.
+          </p>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {FAILURE_MODES.map((m, i) => {
+            const Icon = m.icon
+            return (
+              <div key={i} style={{ background: C.surf, border: `1px solid ${C.b2}`, borderRadius: i === 0 ? '14px 14px 2px 2px' : i === 2 ? '2px 2px 14px 14px' : '2px', padding: '28px 30px', display: 'flex', gap: 22 }}>
+                <div style={{ flexShrink: 0, paddingTop: 2 }}>
+                  <div style={{ width: 38, height: 38, borderRadius: 10, background: C.goldDim, border: `1px solid ${C.goldBdr}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon size={17} color={C.gold} />
+                  </div>
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                    <span style={{ fontFamily: MONO, fontSize: 10, color: C.t3 }}>0{i + 1}</span>
+                    <h4 style={{ fontFamily: DISPLAY, fontSize: 16, fontWeight: 700, color: C.t1, margin: 0, letterSpacing: '-0.01em' }}>{m.title}</h4>
+                  </div>
+                  <p style={{ fontFamily: UI, fontSize: 13, color: C.t2, lineHeight: 1.85, margin: 0 }}>{m.body}</p>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Pull quote */}
+      <div style={{ background: C.raise, border: `1px solid ${C.b2}`, borderLeft: `4px solid ${C.gold}`, borderRadius: '0 14px 14px 0', padding: '28px 32px', marginBottom: 52 }}>
+        <p style={{ fontFamily: DISPLAY, fontSize: 'clamp(16px, 2vw, 20px)', fontWeight: 700, color: C.t1, lineHeight: 1.5, margin: '0 0 14px', fontStyle: 'italic' }}>
+          "The average business owner spends more time planning their annual vacation than they spend planning the transition of their life's work. The result is that $10 trillion in business value is expected to change hands over the next decade — and most of it will transfer at a significant discount to what it should have been worth."
+        </p>
+        <div style={{ fontFamily: UI, fontSize: 11, color: C.t3, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Exit Planning Institute · 2024 State of Owner Readiness Report</div>
+      </div>
+
+      {/* Without vs. With comparison */}
+      <div style={{ marginBottom: 52 }}>
+        <div style={{ marginBottom: 28 }}>
+          <SLabel>Planning Impact</SLabel>
+          <h3 style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 700, color: C.t1, margin: '0 0 10px', letterSpacing: '-0.01em' }}>
+            The Same Business. Two Completely Different Outcomes.
+          </h3>
+          <p style={{ fontFamily: UI, fontSize: 13, color: C.t2, lineHeight: 1.8, maxWidth: 620 }}>
+            Business planning is not about pessimism or complexity. It's about the difference between an outcome that happens to you and an outcome you designed.
+          </p>
+        </div>
+        {/* Table */}
+        <div style={{ border: `1px solid ${C.b2}`, borderRadius: 14, overflow: 'hidden' }}>
+          {/* Header row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', background: C.raise }}>
+            <div style={{ padding: '14px 20px', fontFamily: UI, fontSize: 11, fontWeight: 700, color: C.t3, textTransform: 'uppercase', letterSpacing: '0.1em', borderRight: `1px solid ${C.b2}` }}>Situation</div>
+            <div style={{ padding: '14px 20px', fontFamily: UI, fontSize: 11, fontWeight: 700, color: C.danger, textTransform: 'uppercase', letterSpacing: '0.1em', borderRight: `1px solid ${C.b2}`, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: C.danger, flexShrink: 0 }} />Without Planning
+            </div>
+            <div style={{ padding: '14px 20px', fontFamily: UI, fontSize: 11, fontWeight: 700, color: C.success, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: C.success, flexShrink: 0 }} />With Planning
+            </div>
+          </div>
+          {COMPARISON.map((row, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderTop: `1px solid ${C.b1}`, background: i % 2 === 0 ? C.surf : C.bg }}>
+              <div style={{ padding: '16px 20px', fontFamily: UI, fontSize: 12, color: C.t2, fontWeight: 500, borderRight: `1px solid ${C.b1}`, lineHeight: 1.5 }}>{row.topic}</div>
+              <div style={{ padding: '16px 20px', fontFamily: UI, fontSize: 12, color: '#c0392b', lineHeight: 1.5, borderRight: `1px solid ${C.b1}` }}>{row.without}</div>
+              <div style={{ padding: '16px 20px', fontFamily: UI, fontSize: 12, color: C.success, lineHeight: 1.5 }}>{row.with}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Five pillars */}
+      <div style={{ marginBottom: 52 }}>
+        <div style={{ marginBottom: 28 }}>
+          <SLabel>The Five Pillars</SLabel>
+          <h3 style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 700, color: C.t1, margin: '0 0 10px', letterSpacing: '-0.01em' }}>
+            What Comprehensive Business Planning Actually Covers
+          </h3>
+          <p style={{ fontFamily: UI, fontSize: 13, color: C.t2, lineHeight: 1.8, maxWidth: 620 }}>
+            Real business planning is not a single document or a one-time conversation. It is a coordinated architecture of five interlocking disciplines — each one building on the last.
+          </p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }} className="bp-pillar-grid">
+          <style>{`.bp-pillar-grid { @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr) !important; } }`}</style>
+          {PILLARS.map((p, i) => {
+            const Icon = p.icon
+            return (
+              <div key={i} style={{ background: C.surf, border: `1px solid ${C.b2}`, borderRadius: 14, padding: '22px 20px' }}>
+                <div style={{ width: 36, height: 36, borderRadius: 9, background: p.color + '18', border: `1px solid ${p.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
+                  <Icon size={16} color={p.color} />
+                </div>
+                <div style={{ fontFamily: MONO, fontSize: 10, color: p.color, fontWeight: 700, marginBottom: 6 }}>{p.stat}</div>
+                <div style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 700, color: C.t1, marginBottom: 8, lineHeight: 1.3 }}>{p.title}</div>
+                <div style={{ fontFamily: UI, fontSize: 11, color: C.t2, lineHeight: 1.65 }}>{p.body}</div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Enter CTA */}
+      <div style={{ background: C.surf, border: `1px solid ${C.b2}`, borderRadius: 16, padding: '48px 36px', textAlign: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+          <div style={{ width: 52, height: 52, borderRadius: 14, background: C.goldDim, border: `1px solid ${C.goldBdr}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Briefcase size={22} color={C.gold} />
+          </div>
+        </div>
+        <h3 style={{ fontFamily: DISPLAY, fontSize: 'clamp(20px,2.5vw,28px)', fontWeight: 700, color: C.t1, margin: '0 0 12px', letterSpacing: '-0.01em' }}>
+          The Best Time to Start Was the Day You Opened.
+        </h3>
+        <p style={{ fontFamily: UI, fontSize: 14, color: C.t2, lineHeight: 1.8, margin: '0 auto 32px', maxWidth: 560 }}>
+          The Second Best Time Is Now. Build your plan — education, assessment, and personalized recommendations — all in one place.
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap', marginBottom: 28 }}>
+          {['No financial background required', 'Real 2026 tax figures', 'Every rec flags the right professional', 'Saves automatically'].map(s => (
+            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Check size={12} color={C.gold} />
+              <span style={{ fontFamily: UI, fontSize: 12, color: C.t3 }}>{s}</span>
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={onEnter}
+          style={{
+            fontFamily: UI, fontSize: 14, fontWeight: 700, color: C.bg,
+            background: C.gold, border: 'none', borderRadius: 10,
+            padding: '13px 36px', cursor: 'pointer', display: 'inline-flex',
+            alignItems: 'center', gap: 8,
+            boxShadow: '0 4px 20px rgba(201,169,110,0.30)',
+            transition: 'filter 0.15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.1)'}
+          onMouseLeave={e => e.currentTarget.style.filter = 'none'}
+        >
+          Enter Business Planning <ArrowRight size={16} />
+        </button>
+      </div>
+
     </div>
   )
 }
@@ -808,18 +1184,35 @@ function HubView({ setView, wizardDone, avgScore }) {
 /* ─── Module list view ───────────────────────────────────────────────────── */
 function LearnView({ setView, onSelectModule }) {
   return (
-    <div>
+    <div style={{ maxWidth: 900 }}>
       <BackBtn onClick={() => setView('hub')} label="Back to Overview" />
-      <div style={{ marginBottom: 28 }}>
-        <SLabel>Education Library</SLabel>
-        <h2 style={{ fontFamily: DISPLAY, fontSize: 'clamp(20px, 2.5vw, 28px)', fontWeight: 700, color: C.t1, margin: '0 0 10px', letterSpacing: '-0.02em' }}>
-          Eight Modules. Every Dimension of Business Planning.
-        </h2>
-        <p style={{ fontFamily: UI, fontSize: 13, color: C.t2, lineHeight: 1.7, margin: 0 }}>
-          Each module explains the mechanism behind the concept, not just the definition. Real examples, real numbers, connected to your assessment.
-        </p>
+
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, marginBottom: 32, flexWrap: 'wrap' }}>
+        <div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: C.goldDim, border: `1px solid ${C.goldBdr}`, borderRadius: 5, padding: '3px 10px', marginBottom: 12 }}>
+            <BookOpen size={11} color={C.gold} />
+            <span style={{ fontSize: 10, fontFamily: UI, fontWeight: 700, color: C.gold, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Education Library</span>
+          </div>
+          <h2 style={{ fontFamily: DISPLAY, fontSize: 'clamp(20px, 2.5vw, 30px)', fontWeight: 700, color: C.t1, margin: '0 0 8px', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+            Eight Modules. Every Dimension.
+          </h2>
+          <p style={{ fontFamily: UI, fontSize: 13, color: C.t2, lineHeight: 1.7, margin: 0, maxWidth: 480 }}>
+            Each module explains the mechanism behind the concept — not just the definition. Real numbers, real decisions, connected directly to your assessment.
+          </p>
+        </div>
+        <button
+          onClick={() => setView('assess')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: C.brownDim, border: `1px solid ${C.brownBdr}`, borderRadius: 9, padding: '10px 18px', cursor: 'pointer', flexShrink: 0 }}
+        >
+          <ClipboardList size={14} color={C.brown} />
+          <span style={{ fontFamily: UI, fontSize: 12, fontWeight: 700, color: C.brown }}>Go to Assessment</span>
+          <ArrowRight size={12} color={C.brown} />
+        </button>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+      {/* 2-column module grid */}
+      <div className="bp-module-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
         {MODULES.map((mod, i) => {
           const Icon = mod.icon
           return (
@@ -827,24 +1220,34 @@ function LearnView({ setView, onSelectModule }) {
               key={mod.id}
               onClick={() => onSelectModule(mod.id)}
               style={{
-                display: 'flex', alignItems: 'center', gap: 16, padding: '16px 18px',
-                background: C.raise, border: `1px solid ${C.b2}`, borderRadius: 12,
-                textAlign: 'left', cursor: 'pointer', transition: 'border-color 0.15s',
+                display: 'flex', flexDirection: 'column', gap: 0,
+                background: C.surf, border: `1px solid ${C.b2}`, borderRadius: 16,
+                textAlign: 'left', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s',
+                overflow: 'hidden', padding: 0,
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = mod.accent + '50' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = C.b2 }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = mod.accent + '55'; e.currentTarget.style.background = C.raise }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = C.b2; e.currentTarget.style.background = C.surf }}
             >
-              <div style={{ width: 36, height: 36, borderRadius: 9, background: mod.accent + '18', border: `1px solid ${mod.accent}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Icon size={16} color={mod.accent} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: UI, fontSize: 13, fontWeight: 700, color: C.t1, marginBottom: 3 }}>
-                  <span style={{ color: C.t3, fontFamily: MONO, fontSize: 10, marginRight: 8 }}>0{i + 1}</span>
-                  {mod.title}
+              {/* Card top accent bar */}
+              <div style={{ height: 3, background: `linear-gradient(90deg, ${mod.accent}80, ${mod.accent}20)`, width: '100%' }} />
+              <div style={{ padding: '20px 22px 22px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                {/* Number + Icon row */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                  <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 800, color: C.t3, letterSpacing: '0.06em' }}>0{i + 1}</span>
+                  <div style={{ width: 38, height: 38, borderRadius: 10, background: mod.accent + '18', border: `1px solid ${mod.accent}30`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon size={17} color={mod.accent} />
+                  </div>
                 </div>
-                <div style={{ fontFamily: UI, fontSize: 11, color: C.t3, lineHeight: 1.5, maxWidth: 500 }}>{mod.tagline}</div>
+                {/* Title */}
+                <div style={{ fontFamily: DISPLAY, fontSize: 15, fontWeight: 700, color: C.t1, marginBottom: 8, lineHeight: 1.25, letterSpacing: '-0.01em' }}>{mod.title}</div>
+                {/* Tagline */}
+                <div style={{ fontFamily: UI, fontSize: 11, color: C.t2, lineHeight: 1.6, flex: 1 }}>{mod.tagline}</div>
+                {/* Read link */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 16 }}>
+                  <span style={{ fontFamily: UI, fontSize: 11, fontWeight: 700, color: mod.accent }}>Read module</span>
+                  <ArrowRight size={11} color={mod.accent} />
+                </div>
               </div>
-              <ChevronRight size={15} color={C.t3} style={{ flexShrink: 0 }} />
             </button>
           )
         })}
@@ -1281,7 +1684,8 @@ function ResultsView({ data, onBack, onReset }) {
 
 /* ─── Main export ────────────────────────────────────────────────────────── */
 export default function BusinessPlanning() {
-  const [view, setView]           = useLS('bplan_view', 'hub')
+  const navigate = useNavigate()
+  const [view, setView]           = useState('landing')
   const [assessData, setAssessData] = useLS('bplan_assess', {})
   const [activeModule, setActiveModule] = useState(null)
   const [wizardDone, setWizardDone]   = useLS('bplan_done', false)
@@ -1315,8 +1719,61 @@ export default function BusinessPlanning() {
   }, [wizardDone, assessData])
 
   return (
-    <div style={{ minHeight: '100vh', background: C.bg, padding: '36px 0' }}>
-      <div style={{ maxWidth: 820, margin: '0 auto', padding: '0 24px' }}>
+    <div style={{ minHeight: '100vh', background: C.bg }}>
+      <style>{`
+        @media (max-width: 700px) {
+          .bp-bento { grid-template-columns: 1fr !important; }
+          .bp-module-grid { grid-template-columns: 1fr !important; }
+          .bp-module-preview { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+      `}</style>
+
+      {/* Top nav bar */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 50, background: C.bg, borderBottom: `1px solid ${C.b1}`, padding: '0 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 52 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {/* P logo */}
+          <button onClick={() => navigate('/')} style={{ width: 30, height: 30, background: C.gold, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span style={{ fontSize: '0.875rem', fontWeight: 900, color: C.bg, lineHeight: 1, fontFamily: DISPLAY }}>P</span>
+          </button>
+          <div style={{ width: 1, height: 18, background: C.b2 }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Briefcase size={13} color={C.brown} />
+            <span style={{ fontFamily: UI, fontSize: 13, fontWeight: 600, color: C.t2 }}>Business Planning</span>
+          </div>
+        </div>
+        {view !== 'landing' && (
+          <div style={{ display: 'flex', gap: 6 }}>
+            {[
+              { label: 'Overview', id: 'hub' },
+              { label: 'Learn', id: 'learn' },
+              { label: 'Assess', id: 'assess' },
+              { label: 'My Plan', id: 'results', locked: !wizardDone },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => !tab.locked && setView(tab.id)}
+                style={{
+                  fontFamily: UI, fontSize: 12, fontWeight: 600, padding: '5px 12px', borderRadius: 7, border: 'none', cursor: tab.locked ? 'not-allowed' : 'pointer',
+                  background: view === tab.id ? C.brownDim : 'transparent',
+                  color: tab.locked ? C.t3 : view === tab.id ? C.brown : C.t2,
+                  opacity: tab.locked ? 0.5 : 1,
+                }}
+              >{tab.label}</button>
+            ))}
+          </div>
+        )}
+        {view === 'landing' && (
+          <button
+            onClick={() => setView('hub')}
+            style={{ fontFamily: UI, fontSize: 12, fontWeight: 600, color: C.t3, background: 'transparent', border: 'none', cursor: 'pointer', padding: '5px 10px' }}
+          >Skip intro →</button>
+        )}
+      </div>
+
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '36px 24px' }}>
+        {view === 'landing' && (
+          <WhyPlanSection onEnter={() => setView('hub')} />
+        )}
         {view === 'hub' && (
           <HubView setView={setView} wizardDone={wizardDone} avgScore={avgScore} />
         )}

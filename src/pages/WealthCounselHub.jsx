@@ -89,7 +89,7 @@ function TopBar() {
       padding: '0 2.5rem', height: 52,
     }}>
       <button
-        onClick={() => navigate('/hub')}
+        onClick={() => navigate('/')}
         style={{
           width: 30, height: 30, borderRadius: 8,
           background: C.teal, border: 'none',
@@ -124,7 +124,7 @@ function TopBar() {
       </div>
 
       <button
-        onClick={() => navigate('/WealthCounsel')}
+        onClick={() => navigate('/wealth-counsel')}
         style={{
           display: 'flex', alignItems: 'center', gap: 6,
           background: C.teal, border: 'none',
@@ -194,7 +194,7 @@ function Hero() {
 
               <motion.div variants={FADE} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <button
-                  onClick={() => navigate('/WealthCounsel')}
+                  onClick={() => navigate('/wealth-counsel')}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     background: C.teal, border: 'none', borderRadius: 10,
@@ -491,7 +491,7 @@ function BrowseCTA() {
             Filter by specialization, fee structure, and credentials. Every advisor is verified before they appear on the platform.
           </p>
           <button
-            onClick={() => navigate('/WealthCounsel')}
+            onClick={() => navigate('/wealth-counsel')}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 10,
               background: C.teal, border: 'none', borderRadius: 12,

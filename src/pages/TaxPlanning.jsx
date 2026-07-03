@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { TAX_2026 } from "../config/taxConstants2026.js";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell, LineChart, Line, Legend,
@@ -19,54 +20,26 @@ const BG = "var(--bg)";
 const UP = "var(--up)";
 const DOWN = "var(--down)";
 
-/* ── 2025 Tax Brackets ─────────────────────────────────── */
+/* ── 2026 CFP Tax Brackets (sourced from taxConstants2026.js) ──── */
+function _buildBrackets(slabs) {
+  return slabs.map((b, i) => ({ rate: b.rate, min: i === 0 ? 0 : slabs[i-1].upTo, max: b.upTo }));
+}
+
 const BRACKETS = {
-  single: [
-    { rate: 0.10, min: 0, max: 11925 },
-    { rate: 0.12, min: 11925, max: 48475 },
-    { rate: 0.22, min: 48475, max: 103350 },
-    { rate: 0.24, min: 103350, max: 197300 },
-    { rate: 0.32, min: 197300, max: 250525 },
-    { rate: 0.35, min: 250525, max: 626350 },
-    { rate: 0.37, min: 626350, max: Infinity },
-  ],
-  mfj: [
-    { rate: 0.10, min: 0, max: 23850 },
-    { rate: 0.12, min: 23850, max: 96950 },
-    { rate: 0.22, min: 96950, max: 206700 },
-    { rate: 0.24, min: 206700, max: 394600 },
-    { rate: 0.32, min: 394600, max: 501050 },
-    { rate: 0.35, min: 501050, max: 751600 },
-    { rate: 0.37, min: 751600, max: Infinity },
-  ],
-  mfs: [
-    { rate: 0.10, min: 0, max: 11925 },
-    { rate: 0.12, min: 11925, max: 48475 },
-    { rate: 0.22, min: 48475, max: 103350 },
-    { rate: 0.24, min: 103350, max: 197300 },
-    { rate: 0.32, min: 197300, max: 250525 },
-    { rate: 0.35, min: 250525, max: 375800 },
-    { rate: 0.37, min: 375800, max: Infinity },
-  ],
-  hoh: [
-    { rate: 0.10, min: 0, max: 17000 },
-    { rate: 0.12, min: 17000, max: 64850 },
-    { rate: 0.22, min: 64850, max: 103350 },
-    { rate: 0.24, min: 103350, max: 197300 },
-    { rate: 0.32, min: 197300, max: 250500 },
-    { rate: 0.35, min: 250500, max: 626350 },
-    { rate: 0.37, min: 626350, max: Infinity },
-  ],
+  single: _buildBrackets(TAX_2026.ordinaryBrackets.single),
+  mfj:    _buildBrackets(TAX_2026.ordinaryBrackets.mfj),
+  mfs:    _buildBrackets(TAX_2026.ordinaryBrackets.mfs),
+  hoh:    _buildBrackets(TAX_2026.ordinaryBrackets.hoh),
 };
 
 const LTCG_BRACKETS = {
-  single: [{ rate: 0, max: 48350 }, { rate: 0.15, max: 533400 }, { rate: 0.20, max: Infinity }],
-  mfj:    [{ rate: 0, max: 96700 }, { rate: 0.15, max: 600050 }, { rate: 0.20, max: Infinity }],
-  mfs:    [{ rate: 0, max: 48350 }, { rate: 0.15, max: 300000 }, { rate: 0.20, max: Infinity }],
-  hoh:    [{ rate: 0, max: 64750 }, { rate: 0.15, max: 566700 }, { rate: 0.20, max: Infinity }],
+  single: TAX_2026.ltcgBreakpoints.single.map(b => ({ rate: b.rate, max: b.upTo })),
+  mfj:    TAX_2026.ltcgBreakpoints.mfj.map(b => ({ rate: b.rate, max: b.upTo })),
+  mfs:    TAX_2026.ltcgBreakpoints.mfs.map(b => ({ rate: b.rate, max: b.upTo })),
+  hoh:    TAX_2026.ltcgBreakpoints.hoh.map(b => ({ rate: b.rate, max: b.upTo })),
 };
 
-const STD_DEDUCTIONS = { single: 15000, mfj: 30000, mfs: 15000, hoh: 22500 };
+const STD_DEDUCTIONS = TAX_2026.standardDeduction;
 
 function calcOrdinaryTax(income, filing) {
   const brackets = BRACKETS[filing];

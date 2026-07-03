@@ -1207,10 +1207,17 @@ function TabBudget() {
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem"}}>
         <div className="t-card" style={{padding:"1.25rem"}}>
           <div style={{fontSize:"0.72rem",fontWeight:700,color:GREEN,marginBottom:"0.75rem"}}>WHERE MONEY COMES FROM (REVENUE)</div>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie data={REVENUE_DATA} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75}
-                label={({name,value})=>`${value}%`} labelLine={true}>
+          <ResponsiveContainer width="100%" height={240}>
+            <PieChart margin={{top:16,right:16,bottom:16,left:16}}>
+              <Pie data={REVENUE_DATA} dataKey="value" nameKey="name" cx="50%" cy="50%"
+                outerRadius={80} innerRadius={32}
+                labelLine={false}
+                label={({cx,cy,midAngle,outerRadius,value})=>{
+                  if(value<5) return null;
+                  const R=Math.PI/180, r=outerRadius+22;
+                  const x=cx+r*Math.cos(-midAngle*R), y=cy+r*Math.sin(-midAngle*R);
+                  return <text x={x} y={y} fill="var(--text-2)" textAnchor={x>cx?'start':'end'} dominantBaseline="central" fontSize={10} fontWeight={700}>{value}%</text>;
+                }}>
                 {REVENUE_DATA.map((d,i)=><Cell key={i} fill={d.color}/>)}
               </Pie>
               <Tooltip content={<CustomTip/>}/>
@@ -1229,11 +1236,18 @@ function TabBudget() {
         {/* Mandatory vs discretionary */}
         <div className="t-card" style={{padding:"1.25rem"}}>
           <div style={{fontSize:"0.72rem",fontWeight:700,color:GOLD,marginBottom:"0.75rem"}}>SPENDING SPLIT</div>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
+          <ResponsiveContainer width="100%" height={240}>
+            <PieChart margin={{top:16,right:16,bottom:16,left:16}}>
               <Pie data={[{name:"Mandatory (~65%)",value:65,color:GOLD},{name:"Discretionary (~27%)",value:27,color:DEM},{name:"Interest (~8%)",value:8,color:REP}]}
-                dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75}
-                label={({name,value})=>`${value}%`}>
+                dataKey="value" nameKey="name" cx="50%" cy="50%"
+                outerRadius={80} innerRadius={32}
+                labelLine={false}
+                label={({cx,cy,midAngle,outerRadius,value})=>{
+                  if(value<5) return null;
+                  const R=Math.PI/180, r=outerRadius+22;
+                  const x=cx+r*Math.cos(-midAngle*R), y=cy+r*Math.sin(-midAngle*R);
+                  return <text x={x} y={y} fill="var(--text-2)" textAnchor={x>cx?'start':'end'} dominantBaseline="central" fontSize={10} fontWeight={700}>{value}%</text>;
+                }}>
                 {[GOLD,DEM,REP].map((c,i)=><Cell key={i} fill={c}/>)}
               </Pie>
               <Tooltip content={<CustomTip/>}/>
@@ -1475,7 +1489,6 @@ const TABS = [
   {key:"philosophy", label:"Economic Philosophy",  icon:BookOpen},
   {key:"debt",       label:"National Debt",        icon:TrendingUp},
   {key:"budget",     label:"Where Money Goes",     icon:DollarSign},
-  {key:"indicators", label:"Live Indicators",      icon:Activity},
   {key:"legislation",label:"Legislation Impact",   icon:FileText},
 ];
 
@@ -1490,7 +1503,6 @@ export default function PoliticsEconomy() {
       case "philosophy": return <TabPhilosophy/>;
       case "debt":       return <TabDebt/>;
       case "budget":     return <TabBudget/>;
-      case "indicators": return <TabIndicators/>;
       case "legislation":return <TabLegislation/>;
       default:           return <TabCommand/>;
     }

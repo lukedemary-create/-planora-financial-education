@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import GlassCard from "../shared/GlassCard";
 import { Receipt, PiggyBank, Lightbulb } from "lucide-react";
+import { TAX_2026 } from "../../config/taxConstants2026";
 
 export default function TaxSavingsCalc() {
   const [income, setIncome] = useState("75000");
@@ -28,35 +29,31 @@ export default function TaxSavingsCalc() {
     const stateTax = parseFloat(stateTaxes) || 0;
     const medical = parseFloat(medicalExpenses) || 0;
 
-    // 2024 standard deduction
-    const standardDeduction = filing === "single" ? 14600 : filing === "married" ? 29200 : 21900;
-    
+    // 2026 standard deduction
+    const stdMap = { single: TAX_2026.standardDeduction.single, married: TAX_2026.standardDeduction.mfj, hoh: TAX_2026.standardDeduction.hoh };
+    const standardDeduction = stdMap[filing] || TAX_2026.standardDeduction.single;
+
     // Calculate itemized deductions
     const itemizedDeductions = charity + mortgage + Math.min(propertyTax + stateTax, 10000) + Math.max(0, medical - (gross * 0.075));
-    
+
     // Use the greater of standard or itemized
     const deduction = Math.max(standardDeduction, itemizedDeductions);
     const usingItemized = itemizedDeductions > standardDeduction;
-    
+
     // Adjusted gross income
     const agi = gross - k401 - ira;
-    
+
     // Taxable income
     const taxableIncome = Math.max(0, agi - deduction);
-    
-    // Simple progressive tax calculation (2024 brackets - approximate)
-    let tax = 0;
-    if (filing === "single") {
-      if (taxableIncome <= 11600) tax = taxableIncome * 0.10;
-      else if (taxableIncome <= 47150) tax = 1160 + (taxableIncome - 11600) * 0.12;
-      else if (taxableIncome <= 100525) tax = 5426 + (taxableIncome - 47150) * 0.22;
-      else if (taxableIncome <= 191950) tax = 17168.50 + (taxableIncome - 100525) * 0.24;
-      else tax = 39110.50 + (taxableIncome - 191950) * 0.32;
-    } else if (filing === "married") {
-      if (taxableIncome <= 23200) tax = taxableIncome * 0.10;
-      else if (taxableIncome <= 94300) tax = 2320 + (taxableIncome - 23200) * 0.12;
-      else if (taxableIncome <= 201050) tax = 10852 + (taxableIncome - 94300) * 0.22;
-      else tax = 34337 + (taxableIncome - 201050) * 0.24;
+
+    // 2026 progressive tax calculation
+    const bracketKey = filing === "married" ? "mfj" : filing === "hoh" ? "hoh" : "single";
+    const brackets = TAX_2026.ordinaryBrackets[bracketKey];
+    let tax = 0, prev = 0;
+    for (const b of brackets) {
+      if (taxableIncome <= prev) break;
+      tax += (Math.min(taxableIncome, b.upTo) - prev) * b.rate;
+      prev = b.upTo;
     }
 
     const effectiveRate = (tax / gross) * 100;

@@ -11,11 +11,50 @@ import {
   Newspaper, Zap, Users, ShoppingCart, Home, Star, BarChart2, Landmark,
   Eye, Sparkles, LineChart, Calculator, GraduationCap, HeartPulse,
   BookUser, BookOpen, Target, Receipt, ShieldCheck, X, ChevronRight,
-  Menu, Sunrise, ClipboardList,
+  Menu, Sunrise, FileText,
 } from "lucide-react";
 
 const RAIL_W  = 56;
 const PANEL_W = 256;
+
+/* ─── FUN Bridge — route → FUN section mapping ───────────────────────────── */
+const FUN_MAP = {}
+
+function FUNBridge({ link }) {
+  const navigate = useNavigate()
+  return (
+    <button
+      onClick={() => navigate(link.to)}
+      style={{
+        width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+        background: 'rgba(129,140,248,0.07)', border: '1px solid rgba(129,140,248,0.20)',
+        borderRadius: 12, padding: '12px 16px', cursor: 'pointer', marginBottom: 16,
+        textAlign: 'left', transition: 'border-color 0.15s, background 0.15s',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(129,140,248,0.12)'; e.currentTarget.style.borderColor = 'rgba(129,140,248,0.35)' }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(129,140,248,0.07)'; e.currentTarget.style.borderColor = 'rgba(129,140,248,0.20)' }}
+    >
+      {/* FUN badge */}
+      <div style={{ flexShrink: 0, width: 36, height: 36, borderRadius: 9, background: 'rgba(129,140,248,0.15)', border: '1px solid rgba(129,140,248,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <GraduationCap size={16} color="#818cf8" />
+      </div>
+      {/* Text */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+          <span style={{ fontSize: 9, fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 800, color: '#818cf8', letterSpacing: '0.14em', textTransform: 'uppercase' }}>Learn in FUN</span>
+          <span style={{ fontSize: 9, fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 700, color: '#818cf8', background: 'rgba(129,140,248,0.15)', border: '1px solid rgba(129,140,248,0.25)', borderRadius: 4, padding: '1px 6px' }}>Financial Understanding Network</span>
+        </div>
+        <div style={{ fontSize: 12, fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 600, color: '#f0e8d8', marginBottom: 1 }}>{link.label}</div>
+        <div style={{ fontSize: 11, fontFamily: "'Inter', system-ui, sans-serif", color: '#a89070', lineHeight: 1.4 }}>{link.desc}</div>
+      </div>
+      {/* Arrow */}
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+        <span style={{ fontSize: 11, fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 700, color: '#818cf8' }}>Go deeper</span>
+        <ChevronRight size={14} color="#818cf8" />
+      </div>
+    </button>
+  )
+}
 
 const FONT = "'Inter', system-ui, sans-serif";
 const MONO = "'JetBrains Mono', 'Courier New', monospace";
@@ -54,12 +93,20 @@ const SECTIONS = [
     id: "markets", label: "Markets", icon: LayoutDashboard,
     desc: "Live market data, charts, and intelligence",
     items: [
-      { label: "Dashboard",      icon: LayoutDashboard, path: "/dashboard",      desc: "Portfolio and market overview" },
-      { label: "Terminal",       icon: MonitorDot,      path: "/terminal",       desc: "Bloomberg-style data terminal" },
-      { label: "Market History", icon: History,         path: "/MarketHistory",  desc: "Historical price and index data" },
-      { label: "Sectors",        icon: PieChart,        path: "/sectors",        desc: "Sector performance heatmaps" },
-      { label: "Top Performers", icon: TrendingUp,      path: "/top-performers", desc: "Leaders and laggards daily" },
-      { label: "Market News",    icon: Newspaper,       path: "/market-news",    desc: "Real-time financial news feed" },
+      { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard", desc: "Portfolio and market overview" },
+      { label: "Terminal",  icon: MonitorDot,      path: "/terminal",  desc: "Bloomberg-style data terminal" },
+    ],
+  },
+  {
+    id: "history", label: "History & Psychology", icon: History,
+    desc: "Market history, cycles, and behavioral finance",
+    items: [
+      { label: "Market History",          icon: History,   path: "/MarketHistory",  desc: "Long-term price history and market cycles" },
+      { label: "The Elastic Band Effect", icon: Zap,       path: "/elastic-band",   desc: "Why markets recover faster than they fall" },
+      { label: "The Best Days",           icon: Star,      path: "/best-days",      desc: "The cost of missing the market's best days" },
+      { label: "The Horizon Flip",        icon: Sunrise,   path: "/horizon-flip",   desc: "How time eliminates market risk" },
+      { label: "Perfect Time Illusion",   icon: Target,    path: "/perfect-time",   desc: "Why timing the market fails every investor" },
+      { label: "The Doom-Loop",           icon: Newspaper, path: "/doom-loop",      desc: "Hindsight bias and media-driven panic" },
     ],
   },
   {
@@ -67,7 +114,6 @@ const SECTIONS = [
     desc: "Economic indicators and macro intelligence",
     items: [
       { label: "Economic Calendar", icon: CalendarDays, path: "/economic-calendar", desc: "Fed meetings, CPI, jobs reports" },
-      { label: "Energy Markets",    icon: Zap,          path: "/energy",            desc: "Oil, gas, and commodity trends" },
       { label: "Labor Markets",     icon: Users,        path: "/labor",             desc: "Employment and wage data" },
       { label: "The Consumer",      icon: ShoppingCart, path: "/consumer",          desc: "Spending, sentiment, retail" },
       { label: "Real Estate",       icon: Home,         path: "/real-estate",       desc: "Housing market and mortgage data" },
@@ -78,34 +124,18 @@ const SECTIONS = [
     desc: "Deep research, risk, and intelligence tools",
     items: [
       { label: "Risk Analysis",          icon: ShieldAlert, path: "/RiskAnalysis",    desc: "Portfolio risk and stress testing" },
-      { label: "Watchlist",              icon: Star,        path: "/watchlist",        desc: "Track your securities" },
       { label: "Market Breadth",         icon: BarChart2,   path: "/market-breadth",  desc: "Advance/decline and internals" },
       { label: "Political Intelligence", icon: Landmark,    path: "/PoliticsEconomy", desc: "Policy and geopolitical impact" },
-      { label: "Insider Trading",        icon: Eye,         path: "/insider-trading", desc: "SEC Form 4 filings and flows" },
-    ],
-  },
-  {
-    id: "planning", label: "Planning", icon: ClipboardList,
-    desc: "Personal finance and future planning tools",
-    items: [
-      { label: "Budget Planner",      icon: Wallet,        path: "/BudgetPlanner",       desc: "Income, expenses, and cash flow" },
-      { label: "Net Worth Tracker",   icon: Target,        path: "/net-worth",           desc: "Assets, liabilities, and growth" },
-      { label: "Estate Planning",      icon: LineChart,     path: "/FuturePlanning",      desc: "Wills, trusts, and estate strategy" },
-      { label: "Retirement Planning", icon: Sunrise,       path: "/retirement-planning", desc: "Monte Carlo retirement projections" },
-      { label: "Business Planning",   icon: Briefcase,     path: "/business-planning",   desc: "Entity strategy, tax, and succession planning" },
-      { label: "Life Insurance",      icon: HeartPulse,    path: "/life-insurance",      desc: "Coverage needs analysis" },
-      { label: "Tax Planning",        icon: Receipt,       path: "/tax-planning",        desc: "Tax-efficiency strategies" },
-      { label: "Social Security",     icon: ShieldCheck,   path: "/social-security",     desc: "Benefits and claiming strategy" },
-      { label: "Calculators",         icon: Calculator,    path: "/Calculators",         desc: "TVM, compound growth, more" },
     ],
   },
   {
     id: "wealth", label: "Wealth", icon: Wallet,
     desc: "Wealth management education and guidance",
     items: [
-      { label: "Wealth Counsel",    icon: BookUser,      path: "/WealthCounsel",   desc: "Private wealth strategies" },
-      { label: "Breakdown Reports", icon: Sparkles,      path: "/AIAdvisor",       desc: "AI-generated investment briefs" },
-      { label: "Brokerage Guide",   icon: BookOpen,      path: "/brokerage-guide", desc: "Platform comparison and selection" },
+      { label: "Wealth Counsel",    icon: BookUser,      path: "/wealth-counsel",    desc: "Private wealth strategies" },
+      { label: "Financial Reports", icon: Sparkles,      path: "/financial-reports", desc: "Personalized financial planning reports" },
+      { label: "Brokerage Guide",   icon: BookOpen,      path: "/brokerage-guide",   desc: "Platform comparison and selection" },
+      { label: "Calculators",       icon: Calculator,    path: "/Calculators",       desc: "TVM, compound growth, and more" },
     ],
   },
   {
@@ -328,11 +358,11 @@ function HomeButton({ navigate }) {
         <polygon
           points="26,3 49,14 49,38 26,49 3,38 3,14"
           fill="none"
-          stroke={hovered ? C.textMuted : C.border}
+          stroke={hovered ? C.textSec : C.textMuted}
           strokeWidth="4"
           style={{ transition: "stroke 0.18s" }}
         />
-        <circle cx="26" cy="26" r="6" fill={hovered ? C.textMuted : C.border} style={{ transition: "fill 0.18s" }} />
+        <circle cx="26" cy="26" r="6" fill={hovered ? C.textSec : C.textMuted} style={{ transition: "fill 0.18s" }} />
       </svg>
     </motion.button>
   );
@@ -756,7 +786,7 @@ const MOBILE_QUICK = [
   { label: "Markets",  icon: LayoutDashboard, path: "/dashboard"         },
   { label: "Macro",    icon: CalendarDays,    path: "/economic-calendar" },
   { label: "Analysis", icon: ShieldAlert,     path: "/RiskAnalysis"      },
-  { label: "Planning", icon: ClipboardList,   path: "/BudgetPlanner"     },
+  { label: "Calculators", icon: Calculator,   path: "/Calculators"       },
   { label: "AI",       icon: Brain,           path: "/planora-ai"        },
 ];
 
@@ -1081,6 +1111,7 @@ export default function Layout({ children }) {
           transition={{ duration: 0.3, ease: EASE_OUT }}
           style={{ padding: "1.25rem 1.25rem 2rem", maxWidth: 1400, margin: "0 auto" }}
         >
+          {FUN_MAP[pathname] && <FUNBridge link={FUN_MAP[pathname]} />}
           {children}
         </motion.div>
       </main>

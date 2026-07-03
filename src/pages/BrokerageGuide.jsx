@@ -1,4 +1,18 @@
 import React, { useState, useMemo } from "react";
+import logoFidelity      from "../assets/brokerages/fidelity.png";
+import logoSchwab        from "../assets/brokerages/schwab.jpg";
+import logoMerrill       from "../assets/brokerages/merrill.png";
+import logoEdwardJones   from "../assets/brokerages/edwardjones.webp";
+import logoVanguard      from "../assets/brokerages/vanguard.jpeg";
+import logoJPMorgan      from "../assets/brokerages/jpmorgan.png";
+import logoRaymondJames  from "../assets/brokerages/raymondjames.jpeg";
+import logoAmeriprise    from "../assets/brokerages/ameriprise.jpeg";
+import logoWellsFargo    from "../assets/brokerages/wellsfargo.png";
+import logoIBKR          from "../assets/brokerages/ibkr.png";
+import logoETrade        from "../assets/brokerages/etrade.png";
+import logoWebull        from "../assets/brokerages/webull.png";
+import logoRobinhood     from "../assets/brokerages/robinhood.png";
+import logoSofi          from "../assets/brokerages/sofi.png";
 import {
   BarChart, Bar, RadarChart, Radar, PolarGrid, PolarAngleAxis,
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -30,6 +44,7 @@ const BROKERAGES = [
     name: "Fidelity Investments",
     category: "full-service",
     logo: "FD",
+    logoImg: logoFidelity,
     logoColor: "#00713e",
     tagline: "Best Overall Brokerage",
     rating: 4.9,
@@ -68,6 +83,7 @@ const BROKERAGES = [
     name: "Charles Schwab",
     category: "full-service",
     logo: "CS",
+    logoImg: logoSchwab,
     logoColor: "#00a0dc",
     tagline: "Best for Active Traders & Beginners",
     rating: 4.8,
@@ -106,6 +122,7 @@ const BROKERAGES = [
     name: "Merrill Lynch",
     category: "full-service",
     logo: "ML",
+    logoImg: logoMerrill,
     logoColor: "#e31837",
     tagline: "Best for Bank of America Customers",
     rating: 4.4,
@@ -143,6 +160,7 @@ const BROKERAGES = [
     name: "Edward Jones",
     category: "full-service",
     logo: "EJ",
+    logoImg: logoEdwardJones,
     logoColor: "#006db7",
     tagline: "Best for Personal Advisor Relationship",
     rating: 4.1,
@@ -182,6 +200,7 @@ const BROKERAGES = [
     name: "Vanguard",
     category: "full-service",
     logo: "VG",
+    logoImg: logoVanguard,
     logoColor: "#922610",
     tagline: "Best for Long-Term Buy-and-Hold Investors",
     rating: 4.5,
@@ -222,6 +241,7 @@ const BROKERAGES = [
     name: "J.P. Morgan Self-Directed",
     category: "full-service",
     logo: "JP",
+    logoImg: logoJPMorgan,
     logoColor: "#003087",
     tagline: "Best for Chase Banking Customers",
     rating: 4.2,
@@ -261,6 +281,7 @@ const BROKERAGES = [
     name: "Raymond James",
     category: "full-service",
     logo: "RJ",
+    logoImg: logoRaymondJames,
     logoColor: "#003087",
     tagline: "Best Independent Full-Service Advisor Network",
     rating: 4.3,
@@ -300,6 +321,7 @@ const BROKERAGES = [
     name: "Ameriprise Financial",
     category: "full-service",
     logo: "AM",
+    logoImg: logoAmeriprise,
     logoColor: "#c8102e",
     tagline: "Best for Comprehensive Financial Planning",
     rating: 4.1,
@@ -333,99 +355,99 @@ const BROKERAGES = [
     highlights: { aum: "$1.4T", accounts: "2M+", founded: "1894" },
     verdict: "Strong choice if you want a single advisor coordinating your full financial picture — investments, insurance, and estate planning.",
   },
+
+  /* ── Online Discount Brokers ── */
   {
     id: "wellsfargo",
     name: "Wells Fargo Advisors",
-    category: "full-service",
+    category: "online",
     logo: "WF",
+    logoImg: logoWellsFargo,
     logoColor: "#d71e28",
-    tagline: "Best for Existing Wells Fargo Banking Customers",
-    rating: 3.9,
-    stockTrades: "$0 (WellsTrade self-directed)",
-    optionTrades: "$0.65/contract",
-    minDeposit: "$0",
-    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA", "529", "Trust", "Managed"],
-    platforms: ["Web", "Mobile", "Wells Fargo app", "Advisor meetings"],
-    research: 3,
+    tagline: "Best Bank-Integrated Brokerage",
+    rating: 4.0,
+    stockTrades: "Varies",
+    optionTrades: "Varies",
+    minDeposit: "Varies",
+    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA", "Trust", "Managed"],
+    platforms: ["Web", "Mobile", "WellsTrade"],
+    research: 4,
     tools: 3,
     mobile: 4,
     education: 3,
-    customerService: 3,
+    customerService: 4,
     ease: 4,
     description:
-      "Wells Fargo Advisors offers both self-directed investing (WellsTrade) and full-service advisor relationships through its branch network. The integration with Wells Fargo banking is convenient, though the platform lags behind dedicated online brokers in tools and technology.",
+      "Wells Fargo Advisors offers full-service wealth management backed by one of America's largest banks. Seamless banking integration with lending, cash management, and investment accounts under one roof.",
     pros: [
-      "Seamless Wells Fargo bank integration",
-      "Nationwide branch network for in-person service",
-      "Both self-directed and advisor-managed options",
-      "PMA accounts for premium banking + brokerage bundle",
-      "529 plans and education savings",
+      "Seamless bank-brokerage integration",
+      "Access to Wells Fargo banking products",
+      "Nationwide advisor network",
+      "WellsTrade for self-directed trading",
     ],
     cons: [
-      "WellsTrade platform is dated",
-      "Limited research vs. Merrill/Schwab",
-      "Historical reputation issues (account scandal)",
-      "Higher fees than discount brokers",
-      "Weak mobile trading experience",
+      "Higher advisory fees",
+      "Mixed customer service reputation",
+      "Cross-selling pressure",
     ],
-    bestFor: ["Existing Wells Fargo customers", "People who want in-person advisor access", "Bundled banking + brokerage"],
-    highlights: { aum: "$2.0T", accounts: "70M+ (bank)", founded: "1852" },
-    verdict: "Best if you're already a Wells Fargo customer and want everything in one place. Not competitive vs. Fidelity or Schwab for serious investors.",
+    bestFor: ["Wells Fargo banking customers", "Those wanting banking + investing integration"],
+    highlights: { aum: "$1.9T", accounts: "3M+", founded: "1852" },
+    verdict: "Strong for Wells Fargo banking customers who want integrated wealth management.",
   },
-
-  /* ── Online Discount Brokers ── */
   {
     id: "ibkr",
     name: "Interactive Brokers",
     category: "online",
     logo: "IB",
-    logoColor: "#e31837",
-    tagline: "Best for Professional & International Traders",
-    rating: 4.8,
-    stockTrades: "$0 (IBKR Lite) / $0.005/share (Pro)",
+    logoImg: logoIBKR,
+    logoColor: "#d40000",
+    tagline: "Best for Active & Professional Traders",
+    rating: 4.7,
+    stockTrades: "$0 (Lite) / $0.005/share (Pro)",
     optionTrades: "$0.65/contract",
     minDeposit: "$0",
-    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA", "Corporate", "Trust", "Margin"],
-    platforms: ["Trader Workstation", "IBKR Mobile", "Client Portal", "API"],
+    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA", "Trust", "Corporate"],
+    platforms: ["Desktop (TWS)", "Web", "Mobile", "API"],
     research: 5,
     tools: 5,
     mobile: 4,
-    education: 4,
+    education: 5,
     customerService: 3,
     ease: 2,
     description:
-      "Interactive Brokers is the choice of professional traders worldwide. Access to 150+ markets in 33 countries, 23 currencies, stocks, options, futures, forex, bonds, funds, crypto. The platform is complex but unmatched in power and low margin rates.",
+      "Interactive Brokers is the professional's choice — lowest margin rates, broadest global market access, and the most powerful trading platform (TWS). Institutional-grade tools for serious traders.",
     pros: [
-      "Access to global markets (150+ countries)",
-      "Lowest margin rates in industry",
-      "Advanced order types & algorithms",
-      "Real-time risk management",
-      "Excellent for institutional-level trading",
-      "Stock lending income program",
+      "Lowest margin rates in the industry",
+      "Access to 150 global markets",
+      "Institutional-grade TWS platform",
+      "Fractional shares",
+      "Comprehensive research tools",
+      "Best for international investing",
     ],
     cons: [
-      "Very steep learning curve",
-      "Customer service can be slow",
-      "Platform overwhelms beginners",
-      "IBKR Pro has activity fees",
+      "Steep learning curve",
+      "TWS interface can be overwhelming",
+      "Customer service is limited",
+      "Not beginner-friendly",
     ],
-    bestFor: ["Professional traders", "International investors", "Options/futures traders", "High-volume traders"],
-    highlights: { aum: "$560B", accounts: "2.6M+", founded: "1978" },
-    verdict: "The professional's choice. Unmatched access and tools — but not for beginners.",
+    bestFor: ["Active traders", "Options traders", "International investors", "Professionals"],
+    highlights: { aum: "$500B+", accounts: "2.5M+", founded: "1977" },
+    verdict: "The professional's broker. Unmatched for active traders, global markets, and lowest margin rates.",
   },
   {
     id: "etrade",
-    name: "E*TRADE (Morgan Stanley)",
+    name: "E*TRADE",
     category: "online",
     logo: "ET",
-    logoColor: "#7b1fa2",
-    tagline: "Best Options Trading Experience",
-    rating: 4.6,
+    logoImg: logoETrade,
+    logoColor: "#6632a8",
+    tagline: "Best Platform Experience",
+    rating: 4.5,
     stockTrades: "$0",
-    optionTrades: "$0.65/contract ($0.50 for 30+/month)",
+    optionTrades: "$0.65/contract",
     minDeposit: "$0",
-    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA", "Custodial", "Business"],
-    platforms: ["Web", "E*TRADE Mobile", "Power E*TRADE"],
+    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA", "SEP IRA", "Trust", "Custodial"],
+    platforms: ["Web", "Mobile", "Power E*TRADE Desktop"],
     research: 4,
     tools: 5,
     mobile: 5,
@@ -433,74 +455,76 @@ const BROKERAGES = [
     customerService: 4,
     ease: 4,
     description:
-      "E*TRADE (now Morgan Stanley) offers one of the best options trading experiences with Power E*TRADE. The mobile app is excellent and the platform offers a great balance of sophistication and usability.",
+      "E*TRADE (now part of Morgan Stanley) offers the best hybrid experience — beginner-friendly for new investors while Power E*TRADE satisfies active traders with advanced charting, options analytics, and paper trading.",
     pros: [
-      "Power E*TRADE is excellent for options",
-      "Top-rated mobile app",
-      "Good educational resources",
+      "Power E*TRADE desktop for active traders",
+      "Best mobile app in the industry",
+      "Paper trading for practice",
+      "Strong options analytics",
       "Morgan Stanley research access",
-      "Prebuilt portfolio options",
+      "Extensive education center",
     ],
     cons: [
+      "No fractional shares for stocks",
+      "Not cheapest for options-heavy traders",
       "Website can feel cluttered",
-      "No fractional shares on all stocks",
-      "Futures only available on Power platform",
     ],
-    bestFor: ["Options traders", "Mobile-first investors", "Intermediate investors"],
-    highlights: { aum: "$580B", accounts: "5.2M+", founded: "1982" },
-    verdict: "Power E*TRADE makes this the go-to for options traders who want a polished experience.",
+    bestFor: ["Mobile-first investors", "Active traders wanting a polished platform", "Options traders"],
+    highlights: { aum: "$360B+", accounts: "5.2M+", founded: "1982" },
+    verdict: "Best overall platform experience. Power E*TRADE rivals desktop platforms while the mobile app leads the industry.",
   },
   {
     id: "webull",
     name: "Webull",
     category: "online",
     logo: "WB",
-    logoColor: "#00b2ff",
-    tagline: "Best Free Platform for Active Traders",
-    rating: 4.4,
+    logoImg: logoWebull,
+    logoColor: "#00c2ff",
+    tagline: "Best Free Advanced Charting",
+    rating: 4.3,
     stockTrades: "$0",
     optionTrades: "$0",
     minDeposit: "$0",
-    accountTypes: ["Individual", "IRA", "Roth IRA", "Margin"],
-    platforms: ["Web", "Desktop", "Mobile", "Paper Trading"],
-    research: 3,
+    accountTypes: ["Individual", "IRA", "Roth IRA", "SEP IRA"],
+    platforms: ["Desktop", "Web", "Mobile"],
+    research: 4,
     tools: 5,
     mobile: 5,
-    education: 3,
-    customerService: 2,
+    education: 4,
+    customerService: 3,
     ease: 3,
     description:
-      "Webull offers commission-free trading with no options contract fees and a surprisingly powerful platform. Extended hours trading, paper trading simulation, advanced charting, and a social feed make it popular with active retail traders.",
+      "Webull offers institutional-grade charting and analytics completely free. Advanced technical indicators, paper trading, extended hours, and options trading — all with zero commissions.",
     pros: [
+      "Advanced free charting (50+ indicators)",
+      "Paper trading simulator",
+      "Extended hours trading (4am–8pm)",
       "Zero commissions including options",
-      "Free paper trading simulator",
-      "Extended hours (4am-8pm)",
-      "Advanced charting tools",
-      "Fractional shares",
-      "Crypto trading available",
+      "Crypto trading",
+      "Level 2 quotes included",
     ],
     cons: [
-      "Customer service is limited",
       "No mutual funds",
-      "Chinese parent company (data concerns for some)",
-      "Less educational content",
+      "Customer service is limited",
+      "Not beginner-friendly",
     ],
-    bestFor: ["Active traders", "Options beginners", "Chartists", "Crypto traders"],
-    highlights: { aum: "$50B+", accounts: "20M+", founded: "2017" },
-    verdict: "Impressive free platform for active traders. Excellent charting, zero options fees.",
+    bestFor: ["Technical analysts", "Active self-directed investors", "Chart-focused traders"],
+    highlights: { aum: "$20B+", accounts: "20M+", founded: "2017" },
+    verdict: "Best free charting platform. If technical analysis drives your decisions, Webull is essential.",
   },
   {
     id: "robinhood",
     name: "Robinhood",
     category: "online",
     logo: "RH",
+    logoImg: logoRobinhood,
     logoColor: "#00c805",
-    tagline: "Best for Simplicity & Beginners",
+    tagline: "Best for Beginner Investors",
     rating: 4.0,
     stockTrades: "$0",
     optionTrades: "$0",
     minDeposit: "$0",
-    accountTypes: ["Individual", "IRA (Gold)", "Roth IRA (Gold)"],
+    accountTypes: ["Individual", "IRA", "Roth IRA"],
     platforms: ["Mobile", "Web"],
     research: 2,
     tools: 3,
@@ -509,17 +533,16 @@ const BROKERAGES = [
     customerService: 2,
     ease: 5,
     description:
-      "Robinhood pioneered commission-free trading and democratized investing for millions. The interface is beautiful and dead simple. Robinhood Gold ($5/mo) adds IRA matching, margin, and better data.",
+      "Robinhood pioneered commission-free trading and remains the most user-friendly platform for new investors. Simple, clean interface with instant account funding, fractional shares, and crypto — all in one app.",
     pros: [
-      "Simplest interface in the industry",
-      "Zero commissions including options",
-      "Gold: 3% IRA match",
+      "Cleanest, most intuitive interface",
+      "Instant deposit up to $1,000",
       "Fractional shares from $1",
-      "24/5 crypto trading",
-      "Spending/cash card integration",
+      "Crypto trading",
+      "Cash Card with stock rewards",
+      "Robinhood Gold: 5% APY + margin",
     ],
     cons: [
-      "Payment for order flow model",
       "Limited investment options",
       "No retirement accounts without Gold",
       "Gamification concerns",
@@ -529,206 +552,14 @@ const BROKERAGES = [
     highlights: { aum: "$150B+", accounts: "23M+", founded: "2013" },
     verdict: "Best onboarding in the industry. Limited for serious traders but perfect as a first brokerage.",
   },
-  {
-    id: "tastytrade",
-    name: "tastytrade",
-    category: "online",
-    logo: "TT",
-    logoColor: "#ff4040",
-    tagline: "Best Dedicated Options Platform",
-    rating: 4.6,
-    stockTrades: "$0",
-    optionTrades: "$1/contract (max $10/leg, free to close)",
-    minDeposit: "$0",
-    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA", "Trust"],
-    platforms: ["Desktop", "Mobile", "Web"],
-    research: 3,
-    tools: 5,
-    mobile: 4,
-    education: 5,
-    customerService: 4,
-    ease: 3,
-    description:
-      "tastytrade was built by options traders for options traders. It has the most options-focused interface, best probability analytics, and caps options commissions at $10 per leg. Their educational content (tastylive) is exceptional.",
-    pros: [
-      "$10 max commission per leg",
-      "Best options analytics and P&L visualization",
-      "tastylive education (thousands of hours)",
-      "Quick order entry for complex spreads",
-      "Excellent futures options",
-      "Active community",
-    ],
-    cons: [
-      "Not great for stock-only investors",
-      "Interface built for options first",
-      "Limited research beyond options",
-      "Per-contract fee (not $0)",
-    ],
-    bestFor: ["Options traders", "Futures traders", "Derivatives specialists"],
-    highlights: { aum: "$20B+", accounts: "600K+", founded: "2017" },
-    verdict: "The best dedicated options platform. tastylive education alone is worth it.",
-  },
-  {
-    id: "tradovate",
-    name: "TradeStation",
-    category: "online",
-    logo: "TS",
-    logoColor: "#0052cc",
-    tagline: "Best Platform for Algorithmic Trading",
-    rating: 4.5,
-    stockTrades: "$0 (TS Select)",
-    optionTrades: "$0.60/contract",
-    minDeposit: "$0 (TS Select)",
-    accountTypes: ["Individual", "Joint", "IRA", "Corporate"],
-    platforms: ["Desktop", "Web", "Mobile", "EasyLanguage API"],
-    research: 4,
-    tools: 5,
-    mobile: 3,
-    education: 4,
-    customerService: 4,
-    ease: 2,
-    description:
-      "TradeStation is a professional-grade platform known for EasyLanguage — a proprietary scripting language for automating and backtesting trading strategies. Best for systematic and algorithmic traders.",
-    pros: [
-      "EasyLanguage for strategy automation",
-      "Powerful backtesting engine",
-      "Advanced charting with 300+ indicators",
-      "Simulated trading environment",
-      "Crypto trading",
-      "Futures & options depth",
-    ],
-    cons: [
-      "Steep learning curve",
-      "EasyLanguage is proprietary",
-      "Mobile app is limited",
-      "Not beginner-friendly",
-    ],
-    bestFor: ["Algorithmic traders", "Systematic traders", "Backtesting enthusiasts"],
-    highlights: { aum: "$5B+", accounts: "120K+", founded: "1982" },
-    verdict: "The quant trader's playground. EasyLanguage is a superpower for systematic strategies.",
-  },
 
   /* ── Robo-Advisors ── */
-  {
-    id: "betterment",
-    name: "Betterment",
-    category: "robo",
-    logo: "BT",
-    logoColor: "#0a7cff",
-    tagline: "Best Overall Robo-Advisor",
-    rating: 4.7,
-    stockTrades: "N/A (managed)",
-    optionTrades: "N/A",
-    minDeposit: "$0",
-    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA", "SEP IRA", "Trust"],
-    platforms: ["Web", "Mobile"],
-    research: 4,
-    tools: 4,
-    mobile: 5,
-    education: 4,
-    customerService: 4,
-    ease: 5,
-    description:
-      "Betterment pioneered the robo-advisor category and remains the leader. Auto-rebalancing, tax-loss harvesting, goal-based planning, and access to human CFPs make it the most complete hands-off investing solution.",
-    pros: [
-      "Industry-leading tax-loss harvesting",
-      "Goal-based investing with projections",
-      "Socially responsible portfolios",
-      "Access to CFP advisors (Premium)",
-      "Cash management with high APY",
-      "Automatic rebalancing",
-    ],
-    cons: [
-      "0.25% annual fee",
-      "No individual stock picking",
-      "Premium tier requires $100K",
-    ],
-    bestFor: ["Hands-off investors", "Tax-conscious investors", "Goal-based savers"],
-    highlights: { aum: "$47B+", accounts: "900K+", founded: "2008" },
-    verdict: "The benchmark robo-advisor. Tax-loss harvesting alone can offset the 0.25% fee.",
-  },
-  {
-    id: "wealthfront",
-    name: "Wealthfront",
-    category: "robo",
-    logo: "WF",
-    logoColor: "#00d47e",
-    tagline: "Best for Tax Optimization",
-    rating: 4.6,
-    stockTrades: "N/A (managed)",
-    optionTrades: "N/A",
-    minDeposit: "$500",
-    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA", "SEP IRA", "529", "Trust"],
-    platforms: ["Web", "Mobile"],
-    research: 4,
-    tools: 5,
-    mobile: 4,
-    education: 4,
-    customerService: 3,
-    ease: 5,
-    description:
-      "Wealthfront focuses on tax optimization through daily tax-loss harvesting, direct indexing (for $100K+), and the Path financial planning tool. No human advisors — purely algorithmic.",
-    pros: [
-      "Daily tax-loss harvesting",
-      "Direct indexing at $100K+",
-      "Excellent financial planning tool (Path)",
-      "529 college savings accounts",
-      "High-yield cash account",
-      "Self-driving money features",
-    ],
-    cons: [
-      "$500 minimum deposit",
-      "No human advisor access",
-      "0.25% management fee",
-      "Limited account types vs Betterment",
-    ],
-    bestFor: ["Tax optimization focus", "High earners", "College savers", "Tech-savvy investors"],
-    highlights: { aum: "$50B+", accounts: "700K+", founded: "2008" },
-    verdict: "Best pure robo for tax efficiency. Direct indexing at $100K is a significant advantage.",
-  },
-  {
-    id: "vanguard-digital",
-    name: "Vanguard Digital Advisor",
-    category: "robo",
-    logo: "VG",
-    logoColor: "#922610",
-    tagline: "Best for Low Costs + Vanguard Funds",
-    rating: 4.3,
-    stockTrades: "N/A (managed)",
-    optionTrades: "N/A",
-    minDeposit: "$3,000",
-    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA"],
-    platforms: ["Web", "Mobile"],
-    research: 3,
-    tools: 3,
-    mobile: 3,
-    education: 4,
-    customerService: 3,
-    ease: 4,
-    description:
-      "Vanguard Digital Advisor is built on Vanguard's legendary low-cost index funds. The all-in cost (advisory fee + fund expenses) is the lowest in the robo space at ~0.15% net.",
-    pros: [
-      "Ultra-low total cost (~0.15% net)",
-      "Vanguard's legendary index funds",
-      "Retirement income planning",
-      "Personalized portfolio allocation",
-      "Trusted brand with 50-year track record",
-    ],
-    cons: [
-      "$3,000 minimum",
-      "Basic interface",
-      "Less sophisticated than Betterment/Wealthfront",
-      "No tax-loss harvesting",
-    ],
-    bestFor: ["Long-term buy-and-hold investors", "Retirement savers", "Vanguard loyalists"],
-    highlights: { aum: "$8.7T (total Vanguard)", accounts: "50M+", founded: "2020 (digital)" },
-    verdict: "Lowest-cost robo if you already believe in Vanguard. Not flashy but rock-solid.",
-  },
   {
     id: "sofi-auto",
     name: "SoFi Automated Investing",
     category: "robo",
     logo: "SF",
+    logoImg: logoSofi,
     logoColor: "#6366f1",
     tagline: "Best Free Robo-Advisor",
     rating: 4.2,
@@ -762,122 +593,8 @@ const BROKERAGES = [
     highlights: { aum: "$1B+", accounts: "7M+", founded: "2011" },
     verdict: "Best free robo-advisor. Zero fee + CFP access is hard to beat for small accounts.",
   },
-  {
-    id: "ellevest",
-    name: "Ellevest",
-    category: "robo",
-    logo: "EL",
-    logoColor: "#ff6b9d",
-    tagline: "Best Robo Built for Women",
-    rating: 4.1,
-    stockTrades: "N/A (managed)",
-    optionTrades: "N/A",
-    minDeposit: "$0",
-    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA"],
-    platforms: ["Web", "Mobile"],
-    research: 3,
-    tools: 3,
-    mobile: 4,
-    education: 5,
-    customerService: 4,
-    ease: 5,
-    description:
-      "Ellevest was built specifically for women, accounting for the pay gap, career breaks, and longer life expectancy in its algorithms. It offers impact investing, career coaching, and financial planning sessions.",
-    pros: [
-      "Built for women's unique financial situations",
-      "Impact investing options",
-      "Career coaching included",
-      "Financial planning workshops",
-      "Great educational content",
-    ],
-    cons: [
-      "Membership fee model",
-      "Less optimized for tax efficiency",
-      "Limited advanced features",
-    ],
-    bestFor: ["Women investors", "Impact investors", "Financial wellness focus"],
-    highlights: { aum: "$2B+", accounts: "350K+", founded: "2016" },
-    verdict: "Uniquely addresses financial planning for women's life patterns. Great community and education.",
-  },
 
   /* ── Specialty ── */
-  {
-    id: "m1finance",
-    name: "M1 Finance",
-    category: "specialty",
-    logo: "M1",
-    logoColor: "#21ce99",
-    tagline: "Best Hybrid: Automated + Self-Directed",
-    rating: 4.5,
-    stockTrades: "$0",
-    optionTrades: "N/A",
-    minDeposit: "$100 ($500 for IRA)",
-    accountTypes: ["Individual", "Joint", "IRA", "Roth IRA", "SEP IRA", "Trust"],
-    platforms: ["Web", "Mobile"],
-    research: 3,
-    tools: 4,
-    mobile: 5,
-    education: 3,
-    customerService: 3,
-    ease: 5,
-    description:
-      "M1 Finance lets you build 'pies' — customizable portfolios of stocks and ETFs — that auto-rebalance automatically. It's free, fractional, and combines the discipline of automation with the control of self-directed investing.",
-    pros: [
-      "Pie investing with auto-rebalance",
-      "Fractional shares from $1",
-      "Zero management fee",
-      "M1 Borrow: margin at ~4.5-5%",
-      "M1 Spend: integrated banking",
-      "Pre-built expert pies available",
-    ],
-    cons: [
-      "Only one trading window per day",
-      "No options or crypto",
-      "M1 Plus is $3/mo for some features",
-      "Limited research tools",
-    ],
-    bestFor: ["Passive investors who want control", "Portfolio builders", "Long-term wealth builders"],
-    highlights: { aum: "$6B+", accounts: "700K+", founded: "2015" },
-    verdict: "Brilliant concept. Build your perfect portfolio once and let it run on autopilot forever.",
-  },
-  {
-    id: "public",
-    name: "Public.com",
-    category: "specialty",
-    logo: "PB",
-    logoColor: "#3a86ff",
-    tagline: "Best Social Investing Platform",
-    rating: 4.0,
-    stockTrades: "$0",
-    optionTrades: "$0",
-    minDeposit: "$0",
-    accountTypes: ["Individual", "IRA", "Roth IRA"],
-    platforms: ["Web", "Mobile"],
-    research: 4,
-    tools: 3,
-    mobile: 5,
-    education: 4,
-    customerService: 3,
-    ease: 5,
-    description:
-      "Public.com adds a social layer to investing — see what others are buying, follow investors, and join communities around stocks. No PFOF for equities. Also offers Treasury bills, bonds, and high-yield cash.",
-    pros: [
-      "Social feed — see what others are buying",
-      "No payment for order flow",
-      "Treasury bills & bonds direct",
-      "High-yield cash account (5%+)",
-      "Crypto trading",
-      "Premium AI investing research",
-    ],
-    cons: [
-      "Social features can encourage FOMO",
-      "Limited advanced trading tools",
-      "Options via premium ($10/mo)",
-    ],
-    bestFor: ["Social investors", "Community-driven investors", "Bond/Treasury buyers"],
-    highlights: { aum: "$1B+", accounts: "3M+", founded: "2019" },
-    verdict: "Best for investors who learn from community. The no-PFOF stance and bond access stand out.",
-  },
   {
     id: "acorns",
     name: "Acorns",
@@ -898,7 +615,7 @@ const BROKERAGES = [
     customerService: 3,
     ease: 5,
     description:
-      "Acorns rounds up your everyday purchases to the nearest dollar and invests the spare change. It's the simplest way to start investing with literally nothing. Great for people who struggle to save.",
+      "Acorns rounds up your everyday purchases to the nearest dollar and invests the spare change. The simplest way to start investing with literally nothing — great for people who struggle to save.",
     pros: [
       "Round-up investing from debit/credit",
       "Automatic recurring investments",
@@ -914,122 +631,7 @@ const BROKERAGES = [
     ],
     bestFor: ["Non-savers who need automation", "Young adults", "Small account starters"],
     highlights: { aum: "$3B+", accounts: "10M+", founded: "2012" },
-    verdict: "The absolute easiest way to start. Just link a card and forget — spare change becomes wealth.",
-  },
-  {
-    id: "stash",
-    name: "Stash",
-    category: "specialty",
-    logo: "ST",
-    logoColor: "#00cc88",
-    tagline: "Best Investing + Banking Bundle",
-    rating: 3.9,
-    stockTrades: "$0",
-    optionTrades: "N/A",
-    minDeposit: "$0",
-    accountTypes: ["Individual", "IRA", "Roth IRA", "Custodial"],
-    platforms: ["Mobile", "Web"],
-    research: 2,
-    tools: 3,
-    mobile: 4,
-    education: 5,
-    customerService: 3,
-    ease: 5,
-    description:
-      "Stash combines investing, banking, and financial education in one app. The Stock-Back card rewards purchases with stock in the companies you shop at. Great for beginners who want to learn while they invest.",
-    pros: [
-      "Stock-Back debit card rewards",
-      "Bundled banking + investing",
-      "Excellent educational content",
-      "Fractional shares",
-      "Auto-stash recurring investments",
-    ],
-    cons: [
-      "$3/month fee for Growth plan",
-      "Limited investment choices",
-      "Higher fee relative to balance",
-      "Not for sophisticated investors",
-    ],
-    bestFor: ["Beginner investors who want to learn", "Bundled banking users"],
-    highlights: { aum: "$3B+", accounts: "6M+", founded: "2015" },
-    verdict: "The Stock-Back card is unique and fun. Education-first approach makes it ideal for beginners.",
-  },
-  {
-    id: "fundrise",
-    name: "Fundrise",
-    category: "specialty",
-    logo: "FR",
-    logoColor: "#ff6340",
-    tagline: "Best Real Estate Investment Platform",
-    rating: 4.5,
-    stockTrades: "N/A (real estate)",
-    optionTrades: "N/A",
-    minDeposit: "$10",
-    accountTypes: ["Individual", "IRA (via self-directed)"],
-    platforms: ["Web", "Mobile"],
-    research: 4,
-    tools: 3,
-    mobile: 4,
-    education: 4,
-    customerService: 3,
-    ease: 4,
-    description:
-      "Fundrise democratizes real estate investing — previously only available to ultra-wealthy or institutional investors. Start with $10 in diversified portfolios of commercial and residential real estate via eREITs.",
-    pros: [
-      "$10 minimum to start",
-      "Diversified private real estate",
-      "Historical returns ~8-12% annualized",
-      "Passive income via dividends",
-      "Not correlated with stock market",
-      "Fundrise Innovation Fund (VC access)",
-    ],
-    cons: [
-      "Illiquid — 5-year recommended holding",
-      "1% annual fee",
-      "Not suitable for short-term goals",
-      "No public market liquidity",
-    ],
-    bestFor: ["Real estate investors", "Income seekers", "Portfolio diversifiers"],
-    highlights: { aum: "$7B+", accounts: "400K+", founded: "2012" },
-    verdict: "Best way to add real estate to your portfolio. The $10 minimum removes all barriers to entry.",
-  },
-  {
-    id: "yieldstreet",
-    name: "Yieldstreet",
-    category: "specialty",
-    logo: "YS",
-    logoColor: "#2e4a7c",
-    tagline: "Best Alternative Investment Platform",
-    rating: 4.2,
-    stockTrades: "N/A (alternatives)",
-    optionTrades: "N/A",
-    minDeposit: "$2,500",
-    accountTypes: ["Individual", "Joint", "IRA", "Trust"],
-    platforms: ["Web", "Mobile"],
-    research: 4,
-    tools: 3,
-    mobile: 3,
-    education: 4,
-    customerService: 3,
-    ease: 3,
-    description:
-      "Yieldstreet offers access to alternative investments — art, marine finance, legal finance, commercial real estate, private equity, and more. Historically exclusive to institutions, now available to accredited and non-accredited investors.",
-    pros: [
-      "Access to alternative asset classes",
-      "Target returns of 7-15% annualized",
-      "Portfolio diversification beyond stocks",
-      "Short-duration options available",
-      "Yieldstreet Wallet high-yield savings",
-    ],
-    cons: [
-      "$2,500 minimum",
-      "Illiquid investments (1-5 year terms)",
-      "Many deals require accredited status",
-      "Higher risk profile",
-    ],
-    bestFor: ["Accredited investors", "Alternative investment seekers", "Ultra-diversified portfolios"],
-    highlights: { aum: "$4B+", accounts: "450K+", founded: "2015" },
-    verdict: "Best for adding true alternatives. Art loans and marine finance in your portfolio is genuinely unique.",
+    verdict: "The easiest way to start. Just link a card and forget — spare change becomes wealth.",
   },
 ];
 
@@ -1087,11 +689,15 @@ function BrokerageCard({ b, expanded, onToggle, comparing, onToggleCompare }) {
         {/* Logo */}
         <div style={{
           width: 44, height: 44, borderRadius: 10, flexShrink: 0,
-          background: b.logoColor + "22",
-          border: `1px solid ${b.logoColor}44`,
+          background: b.logoImg ? "#fff" : b.logoColor + "22",
+          border: `1px solid ${b.logoImg ? "#ddd" : b.logoColor + "44"}`,
           display: "flex", alignItems: "center", justifyContent: "center",
+          overflow: "hidden",
         }}>
-          <span style={{ fontSize: 13, fontWeight: 800, color: b.logoColor }}>{b.logo}</span>
+          {b.logoImg
+            ? <img src={b.logoImg} alt={b.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: 5 }} />
+            : <span style={{ fontSize: 13, fontWeight: 800, color: b.logoColor }}>{b.logo}</span>
+          }
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -1576,90 +1182,90 @@ function scoreMatch(broker, answers) {
 
   // ── Advisor preference (most heavily weighted) ──────────────────
   if (advisor === "diy") {
-    if (["fidelity","schwab","etrade","ibkr","webull","tastytrade","tradovate","public","merrill"].includes(broker.id)) score += 4;
+    if (["fidelity","schwab","etrade","ibkr","webull","merrill"].includes(broker.id)) score += 4;
     if (["ameriprise","raymondjames","wellsfargo","jpmorgan"].includes(broker.id)) score -= 3;
     if (broker.category === "robo") score -= 1;
   } else if (advisor === "robo") {
     if (broker.category === "robo") score += 5;
-    if (["betterment","wealthfront","sofi-auto","m1finance","vanguard-digital","ellevest","acorns","stash"].includes(broker.id)) score += 3;
-    if (["ameriprise","raymondjames","wellsfargo","jpmorgan","ibkr","tastytrade","tradovate"].includes(broker.id)) score -= 3;
+    if (["sofi-auto"].includes(broker.id)) score += 3;
+    if (["ameriprise","raymondjames","wellsfargo","jpmorgan","ibkr"].includes(broker.id)) score -= 3;
   } else if (advisor === "hybrid") {
     if (["fidelity","schwab","merrill","etrade","jpmorgan"].includes(broker.id)) score += 4;
-    if (["betterment","wealthfront"].includes(broker.id)) score += 2;
-    if (["acorns","stash","robinhood","tradovate"].includes(broker.id)) score -= 1;
+    if ([].includes(broker.id)) score += 2;
+    if (["robinhood"].includes(broker.id)) score -= 1;
   } else if (advisor === "full_service") {
     if (["ameriprise","raymondjames","wellsfargo","merrill","jpmorgan"].includes(broker.id)) score += 6;
     if (broker.category === "robo") score -= 4;
-    if (["robinhood","webull","acorns","stash","tradovate","tastytrade","public"].includes(broker.id)) score -= 4;
+    if (["robinhood","webull"].includes(broker.id)) score -= 4;
   }
 
   // ── Financial needs ─────────────────────────────────────────────
   if (needs === "simple") {
-    if (["fidelity","robinhood","schwab","webull","public","m1finance","sofi-auto"].includes(broker.id)) score += 3;
+    if (["fidelity","robinhood","schwab","webull","sofi-auto"].includes(broker.id)) score += 3;
   } else if (needs === "retirement") {
-    if (["fidelity","schwab","vanguard-digital","betterment","wealthfront","merrill","ameriprise","raymondjames"].includes(broker.id)) score += 3;
+    if (["fidelity","schwab","merrill","ameriprise","raymondjames"].includes(broker.id)) score += 3;
   } else if (needs === "trading") {
-    if (["ibkr","tastytrade","tradovate","webull","etrade","schwab"].includes(broker.id)) score += 4;
-    if (["ameriprise","raymondjames","wellsfargo","acorns","stash"].includes(broker.id)) score -= 2;
+    if (["ibkr","webull","etrade","schwab"].includes(broker.id)) score += 4;
+    if (["ameriprise","raymondjames","wellsfargo"].includes(broker.id)) score -= 2;
   } else if (needs === "comprehensive") {
     if (["ameriprise","raymondjames","wellsfargo","merrill","jpmorgan"].includes(broker.id)) score += 5;
     if (["fidelity","schwab"].includes(broker.id)) score += 1;
-    if (["robinhood","acorns","stash","webull","tradovate","tastytrade","public"].includes(broker.id)) score -= 3;
+    if (["robinhood","webull"].includes(broker.id)) score -= 3;
   }
 
   // ── Experience ──────────────────────────────────────────────────
   if (experience === "beginner") {
-    if (["fidelity","robinhood","acorns","stash","sofi-auto","ellevest","ameriprise","raymondjames","wellsfargo"].includes(broker.id)) score += 2;
-    if (["ibkr","tastytrade","tradovate"].includes(broker.id)) score -= 2;
+    if (["fidelity","robinhood","sofi-auto","ameriprise","raymondjames","wellsfargo"].includes(broker.id)) score += 2;
+    if (["ibkr"].includes(broker.id)) score -= 2;
   } else if (experience === "intermediate") {
-    if (["fidelity","schwab","etrade","merrill","m1finance"].includes(broker.id)) score += 2;
+    if (["fidelity","schwab","etrade","merrill"].includes(broker.id)) score += 2;
   } else if (experience === "expert") {
-    if (["ibkr","tastytrade","tradovate","schwab"].includes(broker.id)) score += 3;
-    if (["acorns","stash","robinhood"].includes(broker.id)) score -= 1;
+    if (["ibkr","schwab"].includes(broker.id)) score += 3;
+    if (["robinhood"].includes(broker.id)) score -= 1;
   }
 
   // ── Investment amount ───────────────────────────────────────────
   if (amount === "small") {
-    if (["fidelity","robinhood","acorns","webull","sofi-auto","public","stash"].includes(broker.id)) score += 2;
-    if (["ameriprise","raymondjames","wellsfargo","yieldstreet"].includes(broker.id)) score -= 2;
+    if (["fidelity","robinhood","webull","sofi-auto"].includes(broker.id)) score += 2;
+    if (["ameriprise","raymondjames","wellsfargo"].includes(broker.id)) score -= 2;
   } else if (amount === "medium") {
-    if (["fidelity","schwab","betterment","wealthfront","m1finance","etrade"].includes(broker.id)) score += 2;
+    if (["fidelity","schwab","etrade"].includes(broker.id)) score += 2;
   } else if (amount === "large") {
-    if (["fidelity","schwab","ibkr","merrill","wealthfront","betterment","jpmorgan"].includes(broker.id)) score += 3;
+    if (["fidelity","schwab","ibkr","merrill","jpmorgan"].includes(broker.id)) score += 3;
     if (["ameriprise","raymondjames","wellsfargo"].includes(broker.id)) score += 2;
   } else if (amount === "xlarge") {
-    if (["ameriprise","raymondjames","wellsfargo","merrill","jpmorgan","ibkr","fidelity","schwab","yieldstreet"].includes(broker.id)) score += 4;
-    if (["robinhood","acorns","stash","sofi-auto","public"].includes(broker.id)) score -= 2;
+    if (["ameriprise","raymondjames","wellsfargo","merrill","jpmorgan","ibkr","fidelity","schwab"].includes(broker.id)) score += 4;
+    if (["robinhood","sofi-auto"].includes(broker.id)) score -= 2;
   }
 
   // ── Priority ────────────────────────────────────────────────────
   if (priority === "fees") {
-    if (["fidelity","webull","robinhood","sofi-auto","m1finance","schwab"].includes(broker.id)) score += 3;
+    if (["fidelity","webull","robinhood","sofi-auto","schwab"].includes(broker.id)) score += 3;
     if (["ameriprise","raymondjames","wellsfargo"].includes(broker.id)) score -= 2;
   } else if (priority === "research") {
     if (["fidelity","schwab","ibkr","merrill","etrade","raymondjames"].includes(broker.id)) score += 3;
   } else if (priority === "simplicity") {
-    if (["robinhood","acorns","stash","sofi-auto","ellevest","m1finance"].includes(broker.id)) score += 3;
+    if (["robinhood","sofi-auto"].includes(broker.id)) score += 3;
   } else if (priority === "relationship") {
     if (["ameriprise","raymondjames","wellsfargo","merrill","jpmorgan"].includes(broker.id)) score += 5;
     if (broker.category === "robo") score -= 3;
-    if (["robinhood","webull","acorns","tastytrade","tradovate"].includes(broker.id)) score -= 3;
+    if (["robinhood","webull"].includes(broker.id)) score -= 3;
   }
 
   // ── Financial complexity ─────────────────────────────────────────
   if (complexity === "simple") {
-    if (["robinhood","fidelity","schwab","webull","sofi-auto","acorns","m1finance"].includes(broker.id)) score += 2;
+    if (["robinhood","fidelity","schwab","webull","sofi-auto"].includes(broker.id)) score += 2;
     if (["ameriprise","raymondjames","wellsfargo"].includes(broker.id)) score -= 1;
   } else if (complexity === "moderate") {
-    if (["fidelity","schwab","betterment","merrill","etrade"].includes(broker.id)) score += 2;
+    if (["fidelity","schwab","merrill","etrade"].includes(broker.id)) score += 2;
   } else if (complexity === "complex") {
     if (["ameriprise","raymondjames","merrill","jpmorgan","fidelity","schwab","ibkr"].includes(broker.id)) score += 3;
-    if (["robinhood","acorns","stash","tradovate"].includes(broker.id)) score -= 2;
+    if (["robinhood"].includes(broker.id)) score -= 2;
   } else if (complexity === "very_complex") {
     if (["ameriprise","raymondjames","wellsfargo","merrill","jpmorgan"].includes(broker.id)) score += 5;
     if (["ibkr","fidelity","schwab"].includes(broker.id)) score += 1;
     if (broker.category === "robo") score -= 3;
-    if (["robinhood","acorns","stash","webull","public","tradovate","tastytrade"].includes(broker.id)) score -= 4;
+    if (["robinhood","webull"].includes(broker.id)) score -= 4;
   }
 
   return score;
@@ -1704,11 +1310,16 @@ function FindTab() {
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                 <div style={{
-                  width: 40, height: 40, borderRadius: 9, background: b.logoColor + "22",
-                  border: `1px solid ${b.logoColor}44`,
+                  width: 40, height: 40, borderRadius: 9,
+                  background: b.logoImg ? "#fff" : b.logoColor + "22",
+                  border: `1px solid ${b.logoImg ? "#ddd" : b.logoColor + "44"}`,
                   display: "flex", alignItems: "center", justifyContent: "center",
+                  overflow: "hidden",
                 }}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: b.logoColor }}>{b.logo}</span>
+                  {b.logoImg
+                    ? <img src={b.logoImg} alt={b.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: 4 }} />
+                    : <span style={{ fontSize: 12, fontWeight: 800, color: b.logoColor }}>{b.logo}</span>
+                  }
                 </div>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: TX1 }}>{b.name}</div>
@@ -1803,11 +1414,7 @@ function FeesTab() {
     { id: "fidelity", name: "Fidelity", stockFee: 0, optionFee: 0.65, managementFee: 0 },
     { id: "schwab", name: "Schwab", stockFee: 0, optionFee: 0.65, managementFee: 0 },
     { id: "ibkr", name: "IBKR Pro", stockFee: 0.005, optionFee: 0.65, managementFee: 0 },
-    { id: "betterment", name: "Betterment", stockFee: 0, optionFee: 0, managementFee: 0.0025 },
-    { id: "wealthfront", name: "Wealthfront", stockFee: 0, optionFee: 0, managementFee: 0.0025 },
-    { id: "tastytrade", name: "tastytrade", stockFee: 0, optionFee: 1.0, managementFee: 0 },
     { id: "robinhood", name: "Robinhood", stockFee: 0, optionFee: 0, managementFee: 0 },
-    { id: "acorns", name: "Acorns", stockFee: 0, optionFee: 0, managementFee: 36 }, // $3/mo flat
     { id: "sofi", name: "SoFi Auto", stockFee: 0, optionFee: 0, managementFee: 0 },
   ];
 
@@ -1816,8 +1423,7 @@ function FeesTab() {
     const shareQuantity = avgTradeSize * 0.01;
     if (b.stockFee > 0) cost += tradesPerMonth * 12 * b.stockFee * shareQuantity;
     cost += optionContracts * 12 * b.optionFee;
-    if (b.id === "acorns") cost += b.managementFee;
-    else cost += investmentAmount * b.managementFee;
+    cost += investmentAmount * b.managementFee;
     return cost;
   };
 

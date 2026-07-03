@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom'
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import {
-  BarChart2, TrendingUp, Activity, Globe, Calendar, Clock,
-  Newspaper, Eye, ArrowUpRight, ChevronRight, Zap, Target, Shield,
+  BarChart2, Globe, Calendar, Clock,
+  Eye, ArrowUpRight, ChevronRight, Zap, Target, Shield,
   CheckCircle2, XCircle,
 } from 'lucide-react'
 
@@ -85,34 +85,6 @@ const SECTIONS = [
     desc: 'Live indices, major benchmarks, and the daily market pulse — S&P 500, Dow, Nasdaq, Russell 2000.',
     href: '/dashboard',
     concept: 'Index Weighting',
-  },
-  {
-    icon: Activity,
-    label: 'Sector Performance',
-    desc: 'All 11 GICS sectors with day-over-day heat maps — track rotation and see where money is moving.',
-    href: '/sectors',
-    concept: 'Sector Rotation',
-  },
-  {
-    icon: TrendingUp,
-    label: 'Top Movers',
-    desc: 'The day\'s biggest gainers and losers — with volume, momentum, and catalyst context.',
-    href: '/top-performers',
-    concept: 'Price Momentum',
-  },
-  {
-    icon: Globe,
-    label: 'Market History',
-    desc: 'Long-term historical performance, recession overlays, and cyclical pattern analysis going back decades.',
-    href: '/MarketHistory',
-    concept: 'Cyclical vs. Secular',
-  },
-  {
-    icon: Newspaper,
-    label: 'Market News',
-    desc: 'Curated financial news filtered for signal — not noise. Catalyst-focused coverage for active investors.',
-    href: '/market-news',
-    concept: 'Information Asymmetry',
   },
   {
     icon: Zap,
@@ -200,7 +172,7 @@ export default function MarketsHub() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: UI, fontSize: '0.75rem', color: C.t3, padding: 0 }}>Home</button>
           <ChevronRight size={12} color={C.t3} />
-          <span style={{ fontFamily: UI, fontSize: '0.75rem', color: C.t2, fontWeight: 500 }}>Markets & Intelligence</span>
+          <span style={{ fontFamily: UI, fontSize: '0.75rem', color: C.t2, fontWeight: 500 }}>Planora Terminal</span>
         </div>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
           {['Planning', 'Wealth', 'Macro'].map(s => (
@@ -216,7 +188,7 @@ export default function MarketsHub() {
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: EASE }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '1.25rem' }}>
             <div style={{ width: 24, height: 1, background: C.gold, opacity: 0.7 }} />
-            <span style={{ fontFamily: UI, fontSize: '0.625rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: C.gold }}>Markets & Intelligence</span>
+            <span style={{ fontFamily: UI, fontSize: '0.625rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: C.gold }}>Planora Terminal</span>
           </div>
           <h1 style={{ fontFamily: DISPLAY, fontSize: 'clamp(2.25rem, 4.5vw, 3.5rem)', fontWeight: 700, color: C.t1, lineHeight: 1.08, margin: '0 0 1.5rem', letterSpacing: '-0.02em' }}>
             Markets don't reward<br />the loudest opinion —<br />they reward the best{' '}

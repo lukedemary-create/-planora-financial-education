@@ -87,13 +87,6 @@ const SECTIONS = [
     concept: 'Market-Moving Events',
   },
   {
-    icon: Zap,
-    label: 'Energy Markets',
-    desc: 'Crude oil, natural gas, renewable energy — the commodity markets that drive inflation and industrial output.',
-    href: '/energy',
-    concept: 'WTI vs. Brent Spread',
-  },
-  {
     icon: Users,
     label: 'Labor Markets',
     desc: 'NFP, unemployment rate, jobless claims, wage growth — the labor market metrics the Fed watches most closely.',

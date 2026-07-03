@@ -6,7 +6,7 @@ import {
 import {
   Target, Home, TrendingUp, DollarSign, Car, Briefcase, CreditCard,
   GraduationCap, ChevronDown, ChevronUp, Plus, Trash2, Camera,
-  AlertTriangle, CheckCircle, BookOpen,
+  AlertTriangle, CheckCircle, BookOpen, Link2,
 } from "lucide-react";
 
 /* ─── Constants ──────────────────────────────────────────────────── */
@@ -458,6 +458,40 @@ export default function NetWorthTracker() {
           <StatBox label="Total Liabilities" value={totalLiabilities} color={RED} />
           <StatBox label="Net Worth" value={netWorth} color={netWorth >= 0 ? GOLD : RED} sub={ytdChange} />
           <StatBox label="YTD Change" value={ytdChange} color={ytdChange >= 0 ? "var(--up)" : "var(--down)"} />
+        </div>
+      </div>
+
+      {/* ─── Data Connection Banner ─── */}
+      <div style={{
+        display: "flex", alignItems: "flex-start", gap: 12,
+        background: "rgba(201,169,110,0.06)",
+        border: "1px solid rgba(201,169,110,0.18)",
+        borderRadius: 12, padding: "12px 16px", marginBottom: 20,
+      }}>
+        <div style={{ width: 30, height: 30, borderRadius: 8, background: "rgba(201,169,110,0.12)", border: "1px solid rgba(201,169,110,0.22)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+          <Link2 size={13} color={GOLD} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-1)", fontFamily: "'Inter', system-ui, sans-serif", marginBottom: 3 }}>
+            This data is used in two downstream sections
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
+            {[
+              { label: "Budget Planner → Financial Health Ratios", detail: "Net Worth Ratio, Debt-to-Asset" },
+              { label: "Retirement Planning → Snapshot",          detail: "401(k), IRA, home value, total debt" },
+            ].map(link => (
+              <div key={link.label} style={{ padding: "3px 9px", background: "rgba(201,169,110,0.07)", border: "1px solid rgba(201,169,110,0.18)", borderRadius: 6, fontSize: 10, color: GOLD, fontFamily: "'Inter', system-ui, sans-serif" }}>
+                <span style={{ fontWeight: 700 }}>{link.label}</span>
+                <span style={{ color: "var(--text-3)", marginLeft: 5 }}>({link.detail})</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+          <div style={{ width: 7, height: 7, borderRadius: "50%", background: (totalAssets > 0 || totalLiabilities > 0) ? "#4a7c59" : "#6b5540" }} />
+          <span style={{ fontSize: 10, fontWeight: 700, color: (totalAssets > 0 || totalLiabilities > 0) ? "#4a7c59" : "#6b5540", letterSpacing: "0.08em", textTransform: "uppercase", fontFamily: "'Inter', system-ui, sans-serif" }}>
+            {(totalAssets > 0 || totalLiabilities > 0) ? "Synced" : "Awaiting data"}
+          </span>
         </div>
       </div>
 

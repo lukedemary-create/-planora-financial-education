@@ -8,6 +8,7 @@ import {
   BookOpen, Calculator, ExternalLink, ChevronRight, ArrowRight,
   Info, CheckCircle2, AlertCircle, TrendingUp, ChevronDown, ChevronUp,
   Shield, Building, User, Landmark, Users, Layers,
+  Building2, Heart, BarChart2,
 } from 'lucide-react';
 
 const TEAL  = '#00B4C6';
@@ -82,215 +83,384 @@ const CustomTip = ({ active, payload, label, valueFormatter }) => {
 };
 
 /* ══════════════════════════════════════════════════════════════════
-   LEARN — Account Types
+   MASTER ACCOUNT DATA — 2026 CFP TAX TABLES
+   SOURCE: CFP Board 2026 Exam Tax Reference Tables
 ══════════════════════════════════════════════════════════════════ */
-const ACCOUNTS = [
+// 2026 LTCG thresholds (single): 0% ≤$49,450 | 15% ≤$545,500 | 20% above
+// 2026 LTCG thresholds (MFJ):    0% ≤$98,900  | 15% ≤$613,700 | 20% above
+const ACCT_GOLD   = '#c9a96e';
+const ACCT_GREEN  = '#22c55e';
+const ACCT_BLUE   = '#3b82f6';
+const ACCT_ORANGE = '#f97316';
+const ACCT_RED    = '#ef4444';
+const ACCT_PURPLE = '#a855f7';
+const ACCT_AMBER  = '#f59e0b';
+const ACCT_SLATE  = '#94a3b8';
+
+const MASTER_ACCOUNTS = [
+  /* ── 401(k) Traditional ─────────────────────────────────── */
   {
-    name: '401(k) — Traditional',
-    group: 'employer',
-    limit: '$24,500/yr ($32,500 if 50+; ages 60–63: $35,750)',
-    tax: 'Pre-tax',
-    taxColor: '#22c55e',
-    highlight: 'Employer match is free money — always capture it first.',
-    details: [
-      'Contributions reduce your taxable income today',
-      'Grows tax-deferred; withdrawals taxed as ordinary income in retirement',
-      'Required Minimum Distributions (RMDs) start at age 73',
-      'Early withdrawal penalty: 10% before age 59½ (plus taxes)',
-      'Many plans offer a Roth 401(k) option within the same account',
+    key:'trad_401k', name:'401(k) — Traditional', group:'employer',
+    color:ACCT_GOLD, icon:Building2,
+    taxType:'Pre-Tax', taxColor:'#22c55e',
+    limit:'$24,500/yr employee | $32,500 if 50–59 or 64+ | $35,750 if 60–63 (SECURE 2.0) | $70,000 total with employer',
+    incomeLimit:'No income limits — available to all employees of participating employers',
+    contribution:'Pre-tax dollars. Reduces your W-2 taxable income in the year contributed. Employer match may also apply (always contribute enough to capture the full match first).',
+    growth:'Tax-deferred — no annual tax on dividends, interest, or capital gains. Compounds without drag.',
+    withdrawal:'All withdrawals taxed as ordinary income at your rate in retirement. Treated like a paycheck from the IRS.',
+    rmd:'RMDs begin at age 73 (SECURE 2.0). If still employed at plan sponsor, may delay RMDs past 73. Amount based on IRS Uniform Lifetime Table.',
+    earlyPenalty:'10% penalty + ordinary income tax on withdrawals before age 59½. Exception: Rule of 55 — if you leave your employer in the year you turn 55 (50 for public safety employees), no penalty.',
+    bestAssets:['Bond funds (AGG, BND, TLT)','REITs (VNQ, O, VICI)','Active mutual funds','High-dividend stocks','TIPS (inflation-protected bonds)'],
+    rationale:'Tax-inefficient assets that generate ordinary income annually (bonds, REITs, active funds) benefit most from deferral. Keep them here so they compound without annual tax drag.',
+    highlight:'Employer match is free money — always contribute at least enough to capture the full match before funding any other account.',
+    bestFor:'Employees at companies offering a retirement plan — especially with employer matching contributions.',
+    proTips:[
+      'Mega Backdoor Roth: some plans allow after-tax contributions up to the $70,000 total limit — then convert to Roth (check if your plan allows in-plan Roth conversions)',
+      '401k loan: can borrow up to 50% of balance or $50,000 — but if you leave your job, the loan becomes due immediately or is treated as a taxable distribution',
+      'In-service distribution: some plans allow rolling to an IRA while still employed after 59½',
+      'Check your plan\'s investment options and fees — if expense ratios exceed 0.5%, consider whether an IRA after the match makes more sense',
+      'Roth 401k option: if your plan offers it, you can split contributions between Traditional and Roth (combined limit still $24,500)',
     ],
-    bestFor: 'Employees at companies offering retirement plans — especially those with a match',
   },
+  /* ── Roth 401(k) ─────────────────────────────────────────── */
   {
-    name: 'Roth 401(k)',
-    group: 'employer',
-    limit: '$24,500/yr ($32,500 if 50+; ages 60–63: $35,750)',
-    tax: 'Post-tax',
-    taxColor: TEAL,
-    highlight: 'Tax-free in retirement. Same limit as Traditional 401(k) — combined.',
-    details: [
-      'Contributions made with after-tax dollars — no tax break today',
-      'Grows tax-free; qualified withdrawals in retirement are 100% tax-free',
-      'RMDs required (unlike Roth IRA) — roll to Roth IRA to avoid',
-      'Same contribution limit shared with Traditional 401(k)',
-      'Employer match goes into traditional (pre-tax) account regardless',
+    key:'roth_401k', name:'Roth 401(k)', group:'employer',
+    color:ACCT_PURPLE, icon:Heart,
+    taxType:'Post-Tax', taxColor:TEAL,
+    limit:'$24,500/yr — COMBINED limit with Traditional 401(k) | $32,500 if 50–59 or 64+ | $35,750 if 60–63',
+    incomeLimit:'No income limits — anyone can contribute regardless of income (unlike Roth IRA)',
+    contribution:'After-tax dollars. No deduction now. Taxed upfront, never again on contributions or earnings.',
+    growth:'100% tax-free growth — identical tax treatment to Roth IRA.',
+    withdrawal:'Contributions + earnings: tax-free after age 59½ (and 5-year rule met). Employer match portion goes to Traditional side — taxed at withdrawal.',
+    rmd:'SECURE 2.0 (2024): Roth 401k RMDs eliminated — now matches Roth IRA treatment. Roll to Roth IRA upon leaving employer to eliminate RMDs entirely.',
+    earlyPenalty:'10% penalty + income tax on earnings withdrawn before 59½. Contributions can be withdrawn penalty-free (like Roth IRA). Early = before 59½ and 5-year rule.',
+    bestAssets:['Highest-growth assets you own — individual growth stocks, small-cap ETFs','Aggressive sector funds','Any asset you expect to grow most (gains are never taxed)'],
+    rationale:'No income limit makes this the only way for high earners (above $168K single) to access new Roth contributions without the Backdoor strategy. Put your best-performing assets here.',
+    highlight:'High earners above the Roth IRA income limit ($168K single / $252K MFJ) — Roth 401k is the ONLY direct path to new Roth contributions without the backdoor strategy.',
+    bestFor:'High earners who exceed Roth IRA income limits, young investors expecting higher future tax brackets, anyone wanting Roth treatment with higher contribution room.',
+    proTips:[
+      'You can split contributions between Traditional and Roth 401k in the same year — total cannot exceed $24,500',
+      'Upon leaving employer, roll Roth 401k → Roth IRA to gain more investment flexibility and eliminate RMDs',
+      'Employer match always goes to the Traditional (pre-tax) side, even if your contributions are 100% Roth',
+      'The 5-year clock for Roth 401k starts independently from your Roth IRA 5-year clock',
+      'If you\'re in a low tax bracket now and expect to be higher in retirement, Roth 401k wins clearly',
     ],
-    bestFor: 'People who expect to be in a higher tax bracket in retirement',
   },
+  /* ── Roth IRA ─────────────────────────────────────────────── */
   {
-    name: 'Traditional IRA',
-    group: 'individual',
-    limit: '$7,500/yr ($8,600 if 50+)',
-    tax: 'Pre-tax*',
-    taxColor: '#22c55e',
-    highlight: 'Deductibility phases out if you have a workplace plan and earn above $81K (single) / $129K (MFJ).',
-    details: [
-      'Contributions may be tax-deductible depending on income and workplace plan',
-      'Grows tax-deferred; withdrawals in retirement taxed as ordinary income',
-      'RMDs start at age 73',
-      '10% penalty for withdrawals before 59½ (with exceptions)',
-      'Income limits only affect deductibility — anyone can contribute',
+    key:'roth_ira', name:'Roth IRA', group:'individual',
+    color:ACCT_GREEN, icon:TrendingUp,
+    taxType:'Post-Tax', taxColor:TEAL,
+    limit:'$7,500/yr | $8,600 if 50+ (2026 CFP) — income limits apply',
+    incomeLimit:'Phase-out: $153,000–$168,000 single | $242,000–$252,000 MFJ (2026). Above limit: use Backdoor Roth strategy.',
+    contribution:'After-tax dollars. No deduction today. The tax cost is paid now — never again.',
+    growth:'100% tax-free. No annual tax on dividends, interest, or capital gains. Compounds entirely untouched.',
+    withdrawal:'Contributions: withdraw anytime, any age — no tax, no penalty. Earnings: tax-free after 59½ AND 5-year rule met.',
+    rmd:'No RMDs during the owner\'s lifetime. Money can compound indefinitely — ideal for wealth transfer and estate planning.',
+    earlyPenalty:'Contributions withdrawn early: no penalty ever. Earnings withdrawn before 59½ or 5-yr rule: 10% penalty + income tax. Exceptions: disability, first home ($10K lifetime), substantially equal payments.',
+    bestAssets:['Individual growth stocks (highest upside — gains never taxed)','Small-cap and emerging market ETFs','Aggressive REITs','High-growth sector funds','Any investment with the greatest expected long-term gain'],
+    rationale:"Put your highest-growth assets here. A stock that 10x's inside a Roth IRA = zero tax ever on those gains. The tax-free compounding is most powerful on assets with the greatest upside.",
+    highlight:'The most flexible account in personal finance — contributions can be withdrawn anytime penalty-free, no RMDs, no age restrictions on contributions, and no taxes on earnings in retirement.',
+    bestFor:'Young investors, those expecting higher future tax rates, high earners using Backdoor Roth, anyone who values flexibility and tax-free wealth transfer.',
+    proTips:[
+      'Backdoor Roth: contribute to a non-deductible Traditional IRA then convert. No income limit on conversions. Watch for the pro-rata rule if you have existing pre-tax IRA balances.',
+      '5-year rule: the Roth IRA must have been open at least 5 years for earnings to be tax-free at withdrawal — open one as early as possible even if funding is minimal',
+      'Roth conversion ladder: convert Traditional IRA/401k to Roth in low-income years (career break, early retirement) — each conversion is penalty-free after 5 years',
+      'Fund your Roth IRA before January 1st to maximize years of tax-free compounding — you have until tax filing deadline (April 15) to contribute for the prior year',
+      'Inherited Roth IRAs (non-spouse): must empty within 10 years, but all distributions remain tax-free',
     ],
-    bestFor: 'People without a 401(k) or who earn under the deductibility threshold',
   },
+  /* ── Traditional IRA ─────────────────────────────────────── */
   {
-    name: 'Roth IRA',
-    group: 'individual',
-    limit: '$7,500/yr ($8,600 if 50+)',
-    tax: 'Post-tax',
-    taxColor: TEAL,
-    highlight: 'The most flexible account in personal finance. Income limits apply ($153K–$168K single, $242K–$252K MFJ).',
-    details: [
-      'After-tax contributions — no deduction today',
-      'Tax-free growth and tax-free qualified withdrawals in retirement',
-      'No RMDs during owner\'s lifetime — great for wealth transfer',
-      'Contributions (not earnings) can be withdrawn anytime penalty-free',
-      'Backdoor Roth available for high earners who exceed income limits',
+    key:'trad_ira', name:'Traditional IRA', group:'individual',
+    color:ACCT_BLUE, icon:BookOpen,
+    taxType:'Pre-Tax*', taxColor:'#22c55e',
+    limit:'$7,500/yr | $8,600 if 50+ (2026 CFP) — no income limit to contribute',
+    incomeLimit:'Deductibility phases out if covered by a workplace plan: $81,000–$87,000 single | $129,000–$143,000 MFJ (2026 est.). Anyone can contribute — income limits only affect deductibility.',
+    contribution:'Pre-tax if deductible (reduces taxable income now). After-tax (non-deductible) if above deductibility threshold — still grows tax-deferred.',
+    growth:'Tax-deferred — no annual tax on dividends, interest, or capital gains inside the account.',
+    withdrawal:'All withdrawals taxed as ordinary income at your rate in retirement (for deductible contributions). Non-deductible contributions: basis is tax-free, earnings taxed.',
+    rmd:'RMDs begin at age 73 (SECURE 2.0). Amount calculated annually from IRS Uniform Lifetime Table based on account balance and life expectancy.',
+    earlyPenalty:'10% penalty + ordinary income tax on withdrawals before 59½. Exceptions: first home purchase ($10K lifetime), disability, death, substantially equal payments (72t), unreimbursed medical expenses >7.5% AGI.',
+    bestAssets:['Bond funds (defer ordinary income tax)','REITs (defer ordinary income from REIT dividends)','High-dividend funds','Active mutual funds (prevent annual capital gain distributions from hitting your return)'],
+    rationale:'Bond interest and REIT dividends are taxed as ordinary income each year in a taxable account. Holding them in a Traditional IRA defers that tax entirely until retirement when you may be in a lower bracket.',
+    highlight:'Deductibility phases out at $81K–$87K (single) if you have a workplace plan — but anyone can contribute regardless of income. Non-deductible contributions still grow tax-deferred.',
+    bestFor:'People without a 401(k) or earning below the deductibility threshold, those doing Roth conversions, high earners doing Backdoor Roth.',
+    proTips:[
+      "Non-deductible contributions create 'basis' — track it on IRS Form 8606 every year or you'll pay taxes twice on the same money",
+      '401k rollover to IRA: penalty-free. Strategy when changing jobs to consolidate accounts and gain better investment options',
+      'Roth conversion: convert Traditional IRA balances to Roth in low-income years — pay income tax now at a lower rate, then never again',
+      'Pro-rata rule: if you have both deductible and non-deductible IRA balances, each conversion is partially taxable proportionally — can complicate Backdoor Roth',
+      'Unlike Roth, heirs pay ordinary income tax on inherited Traditional IRA distributions (10-year rule for non-spouse beneficiaries)',
     ],
-    bestFor: 'Young investors, those expecting higher future taxes, and high earners doing backdoor Roth',
   },
+  /* ── HSA ─────────────────────────────────────────────────── */
   {
-    name: 'HSA (Health Savings Account)',
-    group: 'individual',
-    limit: '$4,400 single / $8,750 family (2026)',
-    tax: 'Triple tax advantage',
-    taxColor: '#8b5cf6',
-    highlight: 'The only account with a triple tax advantage — the Holy Grail of tax-advantaged investing.',
-    details: [
-      'Contributions are pre-tax (or deductible if made directly)',
-      'Grows tax-free (invest the balance — don\'t let it sit in cash)',
-      'Withdrawals tax-free for qualified medical expenses at any age',
-      'After 65: withdraw for any purpose (taxed as income, like Traditional IRA)',
-      'Must be enrolled in a High-Deductible Health Plan (HDHP) to contribute',
+    key:'hsa', name:'HSA', group:'individual',
+    color:ACCT_PURPLE, icon:Shield,
+    taxType:'Triple Tax Advantage', taxColor:'#8b5cf6',
+    limit:'$4,400 self-only | $8,750 family (2026 CFP) | +$1,000 catch-up if 55+',
+    incomeLimit:'Must be enrolled in a High-Deductible Health Plan (HDHP). 2026 HDHP minimums: $1,650 deductible (self) / $3,300 (family). Cannot contribute if enrolled in Medicare.',
+    contribution:'Pre-tax via payroll OR tax-deductible if contributed directly. No FICA tax on payroll contributions (unique among retirement accounts).',
+    growth:'100% tax-free growth on all invested assets — dividends, interest, and capital gains never taxed.',
+    withdrawal:'Tax-free for qualified medical expenses at any age. After age 65: withdraw for any purpose — taxed as ordinary income (functions like a Traditional IRA). Before 65 for non-medical: 20% penalty + income tax.',
+    rmd:'No RMDs ever. Funds roll over year to year — no "use it or lose it." Balance can compound indefinitely if you pay medical costs out-of-pocket.',
+    earlyPenalty:'Non-medical withdrawal before 65: 20% penalty + ordinary income tax. After 65: no penalty, just income tax (like a Traditional IRA). No penalty for withdrawals for qualified medical expenses at any age.',
+    bestAssets:['Growth ETFs and stocks (gains never taxed if used for medical)','Broad market index funds','Any high-growth investment — triple tax advantage maximizes benefit of appreciation'],
+    rationale:'The HSA is the only account with a triple tax advantage: pre-tax in, tax-free growth, tax-free out for medical. Invest the balance rather than spending it — pay medical costs out-of-pocket to preserve the tax-free compounding.',
+    highlight:"The only account with a triple tax advantage. Invest the balance — don't let it sit in cash. Pay medical expenses out-of-pocket now and preserve the tax-free compounding for retirement.",
+    bestFor:'Anyone with an HDHP who can afford to pay current medical costs out-of-pocket and invest the HSA balance. Particularly powerful as a stealth retirement account for high earners.',
+    proTips:[
+      'Invest the full HSA balance — most providers offer investment options once balance exceeds $1,000–$2,000. Cash earns almost nothing.',
+      'Save all medical receipts permanently — there is no time limit to reimburse yourself. You can contribute now and reimburse yourself from the HSA for old expenses years later.',
+      'After 65, HSA functions like a Traditional IRA for non-medical withdrawals — no penalty, just income tax. It becomes a second retirement account.',
+      'FICA tax savings: payroll HSA contributions avoid Social Security and Medicare taxes (2.9–7.65% savings) — direct contributions do not get this benefit.',
+      'Spousal HSA strategy: contribute to both spouses\' HSAs to maximize limits. Surviving spouse inherits HSA tax-free.',
     ],
-    bestFor: 'Anyone with an HDHP who can afford to pay medical costs out-of-pocket and invest the HSA balance',
   },
+  /* ── 529 Plan ────────────────────────────────────────────── */
   {
-    name: '529 Education Savings Plan',
-    group: 'individual',
-    limit: 'No annual limit (gift tax: $19K/yr)',
-    tax: 'Post-tax (state deduction varies)',
-    taxColor: '#f59e0b',
-    highlight: 'Unused funds can now be rolled to a Roth IRA (lifetime max $35K, 15-year rule applies).',
-    details: [
-      'Contributions not federally deductible; many states offer deductions',
-      'Grows tax-free; withdrawals tax-free for qualified education expenses',
-      'Qualified expenses: tuition, room & board, books, K-12 (up to $10K/yr)',
-      'Can change beneficiary to another family member at any time',
-      'Superfunding: contribute 5 years of gifts at once ($95K per beneficiary)',
+    key:'plan529', name:'529 Education Plan', group:'individual',
+    color:ACCT_AMBER, icon:Users,
+    taxType:'Post-Tax (state deduction)', taxColor:'#f59e0b',
+    limit:'No annual limit. Gift tax annual exclusion: $19,000/yr per beneficiary (2026). Superfunding: 5-year front-loading = $95,000 lump sum per beneficiary without gift tax.',
+    incomeLimit:'No income limits — anyone can open and contribute regardless of income.',
+    contribution:'After-tax federal dollars. No federal deduction. Most states offer a state income tax deduction for contributions (varies by state).',
+    growth:'Tax-free — all dividends, interest, and capital gains inside the account grow untaxed.',
+    withdrawal:'Tax-free for qualified education expenses: tuition (K-12 up to $10K/yr; college unlimited), room & board, books, supplies, fees. Non-qualified: 10% penalty + income tax on earnings only.',
+    rmd:'No RMDs. Funds can be kept indefinitely. Beneficiary can be changed to another family member at any time with no tax consequence.',
+    earlyPenalty:'Non-qualified withdrawals: 10% penalty + ordinary income tax on the earnings portion only (contributions are never penalized — you already paid tax on them).',
+    bestAssets:['Age-based index fund portfolios (many plans offer automatic glide paths)','Broad market index funds when beneficiary is young','Conservative/bond funds as college approaches'],
+    rationale:'Tax-free growth on education savings. The earlier you open and fund it, the more years of tax-free compounding you get. State deductions make contributions often immediately tax-beneficial.',
+    highlight:"SECURE 2.0: unused 529 funds can now be rolled to a Roth IRA for the beneficiary — lifetime max $35,000, 15-year rule, Roth IRA annual limits apply. This eliminates the 'overfunding' risk.",
+    bestFor:"Parents saving for children's education — open one when the child is born to maximize growth years. Also useful for graduate school or adult education.",
+    proTips:[
+      'Superfunding: contribute 5 years of annual exclusion gifts at once ($95,000 per beneficiary in 2026) — removes the lump sum from your estate immediately with no gift tax',
+      'SECURE 2.0 Roth rollover: after 15 years, unused 529 funds → Roth IRA for beneficiary (lifetime max $35K, subject to Roth IRA annual limits)',
+      'Change beneficiary to any family member (siblings, cousins, even yourself) if original beneficiary doesn\'t need it — no taxes or penalties',
+      'Many states give deductions for any state\'s 529 plan; some require contributions to their own state\'s plan — check your state\'s rules before choosing',
+      'Room and board is qualified only if the student is enrolled at least half-time. Keep receipts.',
     ],
-    bestFor: 'Parents saving for children\'s education — open one when child is born',
   },
+  /* ── Taxable Brokerage ───────────────────────────────────── */
   {
-    name: 'Taxable Brokerage Account',
-    group: 'individual',
-    limit: 'No limit',
-    tax: 'Taxable',
-    taxColor: '#6b7280',
-    highlight: 'No restrictions on withdrawals. Essential after maxing tax-advantaged accounts.',
-    details: [
-      'No contribution limits, no income restrictions, no early withdrawal penalties',
-      'Dividends and interest taxed in the year earned',
-      'Capital gains taxed when you sell — 0%, 15%, or 20% if held over 1 year',
-      'Step-up in basis at death eliminates embedded capital gains for heirs',
-      'Tax-loss harvesting can reduce your taxable gains',
+    key:'brokerage', name:'Taxable Brokerage', group:'individual',
+    color:ACCT_ORANGE, icon:BarChart2,
+    taxType:'Taxable', taxColor:'#6b7280',
+    limit:'Unlimited — no contribution caps, no income limits, no restrictions.',
+    incomeLimit:'None. Available to anyone at any age with no restrictions.',
+    contribution:'After-tax dollars. No deduction, no tax benefit at contribution.',
+    growth:'Partially taxable each year: dividends and interest taxed in the year earned. Capital gains taxed only when you sell. Index ETFs minimize annual distributions.',
+    withdrawal:'Withdraw anytime — no age restrictions, no penalties, no RMDs. Complete flexibility.',
+    rmd:'No RMDs ever. Withdraw on your schedule. Assets can be held indefinitely.',
+    earlyPenalty:'No penalties of any kind at any age. Sell whenever you want. Capital gains tax applies but no penalty surcharge.',
+    bestAssets:['Tax-efficient index ETFs (SPY, VTI, QQQ, SCHB) — minimal capital gain distributions','Growth stocks held long-term (LTCG rates: 0% ≤$49,450, 15% ≤$545,500, 20% above — 2026 single filer)','Municipal bonds (federally tax-exempt interest)','Buy-and-hold individual stocks — defer gains indefinitely'],
+    rationale:'Tax efficiency is everything here. Index ETFs rarely distribute capital gains (unlike active funds). Growth stocks held over 1 year qualify for long-term capital gains rates (0–20%) vs ordinary income (up to 37%). The less you sell, the less you pay.',
+    highlight:'Essential after you\'ve maxed all tax-advantaged accounts. Step-up in basis at death eliminates all embedded capital gains for heirs — the most powerful estate planning feature of any taxable account.',
+    bestFor:'Anyone who has maxed tax-advantaged accounts, needs flexibility before retirement age, or is saving toward goals with no timeline restrictions.',
+    proTips:[
+      'Tax-loss harvesting: sell a losing position to realize a deductible loss, immediately buy a similar (not substantially identical) ETF — wash-sale rule is 30 days',
+      "Step-up in basis at death: heirs receive cost basis = fair market value on date of death. Pre-death capital gains are permanently eliminated — don't sell appreciated assets you plan to leave to heirs",
+      '2026 LTCG rates (single): 0% on gains if income ≤$49,450 | 15% up to $545,500 | 20% above. Married filing jointly: 0% ≤$98,900 | 15% ≤$613,700 | 20% above',
+      'Qualified dividends (held 60+ days) are taxed at LTCG rates, not ordinary income — most major U.S. stock dividends qualify',
+      'NIIT (Net Investment Income Tax): 3.8% additional tax on investment income if modified AGI exceeds $200K single / $250K MFJ',
     ],
-    bestFor: 'Anyone who has maxed tax-advantaged accounts, or needs flexibility before retirement age',
   },
+  /* ── SEP IRA ─────────────────────────────────────────────── */
   {
-    name: 'SEP IRA',
-    group: 'self-employed',
-    limit: '25% of compensation or $72,000 (2026)',
-    tax: 'Pre-tax',
-    taxColor: '#22c55e',
-    highlight: 'The simplest high-limit retirement account for self-employed individuals and small business owners.',
-    details: [
-      'Employer (self) contributions only — employees cannot contribute',
-      'Grows tax-deferred; withdrawals in retirement taxed as ordinary income',
-      'Contribution deadline: tax filing deadline including extensions',
-      'RMDs start at age 73',
-      'No catch-up contributions for those 50+',
+    key:'sep_ira', name:'SEP IRA', group:'self-employed',
+    color:ACCT_GOLD, icon:Landmark,
+    taxType:'Pre-Tax', taxColor:'#22c55e',
+    limit:'25% of compensation OR $70,000 (2026 est.) — whichever is less. Employer (self) contributions only.',
+    incomeLimit:'No income limits. Available to self-employed individuals, freelancers, sole proprietors, and small business owners.',
+    contribution:'Employer contributions only — you are both the employer and employee as a self-employed person. Contributions are made from business income and are tax-deductible.',
+    growth:'Tax-deferred — identical to Traditional IRA. No annual tax on gains inside the account.',
+    withdrawal:'All withdrawals taxed as ordinary income. No special treatment for any asset class.',
+    rmd:'RMDs begin at age 73 — same rules as Traditional IRA. Amount based on IRS Uniform Lifetime Table.',
+    earlyPenalty:'10% penalty + ordinary income tax on withdrawals before 59½. Same exceptions as Traditional IRA.',
+    bestAssets:['Bond funds and REITs (defer ordinary income)','Active funds (avoid annual distributions)','High-dividend funds — assets that would otherwise generate taxable income each year'],
+    rationale:'Same asset location logic as a Traditional IRA. Hold tax-inefficient assets here to defer ordinary income. The large contribution limit makes this a powerful wealth-building tool for high-earning self-employed individuals.',
+    highlight:'The simplest high-contribution retirement account for self-employed. Contribution deadline is your tax filing deadline including extensions — giving you until October 15 to decide.',
+    bestFor:'Freelancers and self-employed with high income who want maximum contribution room with minimal administrative complexity.',
+    proTips:[
+      'Contribution is discretionary each year — you can contribute $0 in a bad year without penalty. Ideal for variable income businesses.',
+      'If you have employees, you must contribute the same percentage of compensation to their SEP IRAs as you contribute for yourself',
+      'Solo 401k advantage: for most self-employed, a Solo 401k allows higher contributions at lower income levels than a SEP IRA — compare before choosing',
+      'Contribution deadline flexibility: if you extend your tax return, you have until October 15 to fund the SEP IRA for the prior year',
+      'No catch-up contributions for age 50+ (unlike IRA and 401k) — a key limitation compared to other accounts',
     ],
-    bestFor: 'Freelancers and self-employed with high income who want maximum contribution room',
   },
+  /* ── SIMPLE IRA ──────────────────────────────────────────── */
   {
-    name: 'SIMPLE IRA',
-    group: 'self-employed',
-    limit: '$17,000/yr ($21,000 if 50+; ages 60–63: $22,250)',
-    tax: 'Pre-tax',
-    taxColor: '#22c55e',
-    highlight: 'Designed for small businesses. Employer must contribute 2–3% match or 2% non-elective.',
-    details: [
-      'Available to businesses with 100 or fewer employees',
-      'Employee elective deferrals + required employer contributions',
-      'Early withdrawal in first 2 years: 25% penalty (not 10%)',
-      'Grows tax-deferred; taxed in retirement',
-      'Cannot have other retirement plans simultaneously (usually)',
+    key:'simple_ira', name:'SIMPLE IRA', group:'self-employed',
+    color:ACCT_SLATE, icon:Layers,
+    taxType:'Pre-Tax', taxColor:'#22c55e',
+    limit:'$17,000/yr employee deferrals | $21,000 if 50–59 or 64+ | $22,250 if 60–63 (SECURE 2.0). Employer: 2–3% match OR 2% non-elective.',
+    incomeLimit:'Available to businesses with 100 or fewer employees who earned at least $5,000 in the previous year.',
+    contribution:'Employee elective deferrals (pre-tax) + mandatory employer contributions. Employer must choose: dollar-for-dollar match up to 3% of compensation, or 2% non-elective for all eligible employees.',
+    growth:'Tax-deferred — same as Traditional IRA and 401k.',
+    withdrawal:'Withdrawals taxed as ordinary income. No special treatment.',
+    rmd:'RMDs begin at age 73 — same as Traditional IRA/401k.',
+    earlyPenalty:'Before 59½: 10% penalty + income tax. Critical exception: within the first 2 years of participation, early withdrawal penalty is 25% (not 10%). After 2 years, reverts to standard 10%.',
+    bestAssets:['Bond funds','REITs','Active mutual funds — same tax-inefficient assets as Traditional IRA/401k'],
+    rationale:'Same logic as Traditional IRA — hold tax-inefficient assets to defer ordinary income. Primary advantage is mandatory employer contributions, which add to your balance beyond your own deferrals.',
+    highlight:'25% early withdrawal penalty in the first 2 years of participation — much steeper than other accounts. Do not contribute funds you may need before the 2-year mark.',
+    bestFor:'Small business owners (≤100 employees) who want a simple retirement plan structure with required employer contributions.',
+    proTips:[
+      'Cannot have other qualified retirement plans simultaneously in most cases — the SIMPLE must be the only plan',
+      'The mandatory employer match/contribution is a significant benefit — employees receive free money on top of their own deferrals',
+      'Transfer rules: after 2 years, can roll to Traditional IRA or another employer plan penalty-free',
+      'Lower contribution limits than Solo 401k or SEP IRA — if income is high, other self-employed options typically win',
+      'Salary reduction agreement must be in place before the plan year begins — cannot start mid-year for an existing business',
     ],
-    bestFor: 'Small business owners who want a simple retirement plan with mandatory employer contributions',
   },
 ];
 
-const GROUP_ICONS = { employer: Building, individual: User, 'self-employed': Landmark };
-const GROUP_LABELS = { employer: 'Employer-Sponsored', individual: 'Individual', 'self-employed': 'Self-Employed' };
+const GROUP_LABELS = { employer:'Employer-Sponsored', individual:'Individual', 'self-employed':'Self-Employed' };
 
-function AccountCards() {
-  const [open, setOpen] = useState(null);
+/* ── AccInfoBox helper ───────────────────────────────────────────── */
+function AccInfoBox({ label, value, color }) {
+  return (
+    <div style={{ padding:'0.5rem 0.75rem', background:RAISE, borderRadius:8, border:`1px solid ${B1}` }}>
+      <div style={{ fontSize:'0.5rem', fontWeight:800, letterSpacing:'0.1em', textTransform:'uppercase', color, marginBottom:4, fontFamily:UI }}>{label}</div>
+      <div style={{ fontSize:'0.6875rem', color:T2, lineHeight:1.55, fontFamily:UI }}>{value}</div>
+    </div>
+  );
+}
+
+/* ── Unified account master section ─────────────────────────────── */
+function AccountMasterSection() {
   const [filter, setFilter] = useState('all');
-
+  const [open, setOpen]     = useState(null);
   const groups = ['employer', 'individual', 'self-employed'];
-  const shown  = ACCOUNTS.filter(a => filter === 'all' || a.group === filter);
+  const shown  = filter === 'all' ? MASTER_ACCOUNTS : MASTER_ACCOUNTS.filter(a => a.group === filter);
 
   return (
     <div>
-      {/* Filter tabs */}
+      {/* ── Filter pills ── */}
       <div style={{ display:'flex', gap:'0.5rem', marginBottom:'1.25rem', flexWrap:'wrap' }}>
         {['all', ...groups].map(g => (
-          <button key={g} onClick={() => setFilter(g)} style={{
-            padding:'5px 14px', borderRadius:100, border:`1.5px solid ${filter===g ? TEAL : '#2a2018'}`,
-            background: filter===g ? `rgba(0,180,198,0.1)` : '#2a2018',
-            color: filter===g ? TEAL : '#a89070', fontSize:'0.8125rem', fontWeight: filter===g ? 700 : 500,
-            cursor:'pointer', fontFamily:UI, transition:'all 0.13s',
+          <button key={g} onClick={() => { setFilter(g); setOpen(null); }} style={{
+            padding:'5px 14px', borderRadius:100,
+            border:`1.5px solid ${filter===g ? TEAL : B1}`,
+            background: filter===g ? 'rgba(0,180,198,0.1)' : RAISE,
+            color: filter===g ? TEAL : T2, fontSize:'0.8125rem',
+            fontWeight: filter===g ? 700 : 500, cursor:'pointer', fontFamily:UI, transition:'all 0.13s',
           }}>
             {g === 'all' ? 'All Accounts' : GROUP_LABELS[g]}
           </button>
         ))}
       </div>
 
-      <div style={{ display:'flex', flexDirection:'column', gap:'0.625rem' }}>
-        {shown.map((acct, i) => {
-          const isOpen = open === acct.name;
+      {/* ── Accordion list ── */}
+      <div style={{ display:'flex', flexDirection:'column', gap:'0.5rem' }}>
+        {shown.map(a => {
+          const Icon   = a.icon;
+          const isOpen = open === a.key;
           return (
-            <div key={acct.name} style={{ border:`1.5px solid ${isOpen ? TEAL+'50' : '#2a2018'}`, borderRadius:12, overflow:'hidden', transition:'border-color 0.15s' }}>
+            <div key={a.key} style={{
+              border:`1.5px solid ${isOpen ? a.color+'55' : B1}`,
+              borderRadius:12, overflow:'hidden', transition:'border-color 0.15s',
+            }}>
+              {/* ── Row header ── */}
               <button
-                onClick={() => setOpen(isOpen ? null : acct.name)}
-                style={{ width:'100%', background: isOpen ? 'rgba(0,180,198,0.06)' : '#231c16', border:'none', cursor:'pointer', textAlign:'left', padding:'0.875rem 1rem', display:'flex', alignItems:'center', gap:'0.875rem' }}
+                onClick={() => setOpen(isOpen ? null : a.key)}
+                style={{
+                  width:'100%', background: isOpen ? `${a.color}08` : SURF,
+                  border:'none', cursor:'pointer', textAlign:'left',
+                  padding:'0.875rem 1rem', display:'flex', alignItems:'center', gap:'0.875rem',
+                  transition:'background 0.15s',
+                }}
               >
+                <Icon size={18} color={isOpen ? a.color : T3} style={{ flexShrink:0, transition:'color 0.15s' }}/>
                 <div style={{ flex:1 }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:'0.625rem', flexWrap:'wrap', marginBottom:4 }}>
-                    <span style={{ fontFamily:DISP, fontSize:'0.9375rem', fontWeight:700, color:NAVY }}>{acct.name}</span>
-                    <span style={{ padding:'2px 9px', background:`${acct.taxColor}15`, border:`1px solid ${acct.taxColor}35`, borderRadius:100, fontSize:'0.6875rem', fontWeight:700, color:acct.taxColor, fontFamily:UI }}>{acct.tax}</span>
+                  <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', flexWrap:'wrap', marginBottom:3 }}>
+                    <span style={{ fontFamily:DISP, fontSize:'0.9375rem', fontWeight:700, color:NAVY }}>{a.name}</span>
+                    <span style={{ padding:'2px 9px', background:`${a.taxColor}15`, border:`1px solid ${a.taxColor}35`, borderRadius:100, fontSize:'0.625rem', fontWeight:700, color:a.taxColor, fontFamily:UI }}>{a.taxType}</span>
+                    <span style={{ padding:'2px 8px', background:'rgba(255,255,255,0.04)', border:`1px solid ${B1}`, borderRadius:100, fontSize:'0.5625rem', fontWeight:600, color:T3, fontFamily:UI, textTransform:'uppercase', letterSpacing:'0.06em' }}>{GROUP_LABELS[a.group]}</span>
                   </div>
                   <div style={{ fontSize:'0.8125rem', color:T3, fontFamily:UI }}>
-                    <span style={{ fontWeight:600, color:NAVY }}>{acct.limit}</span>
+                    <span style={{ fontWeight:600, color:T2 }}>{a.limit}</span>
                   </div>
                 </div>
-                {isOpen ? <ChevronUp size={16} color={TEAL}/> : <ChevronDown size={16} color="#9ca3af"/>}
+                {isOpen
+                  ? <ChevronUp size={16} color={a.color}/>
+                  : <ChevronDown size={16} color="#9ca3af"/>}
               </button>
 
+              {/* ── Expanded detail ── */}
               {isOpen && (
-                <div style={{ borderTop:'1px solid #2a2018', padding:'0.875rem 1rem', background:'#1e1912' }}>
-                  <div style={{ display:'flex', gap:8, marginBottom:'0.75rem', padding:'0.5rem 0.75rem', background:`${TEAL}0d`, borderRadius:8 }}>
-                    <TrendingUp size={13} color={TEAL} style={{ flexShrink:0, marginTop:2 }}/>
-                    <p style={{ margin:0, fontSize:'0.8125rem', fontWeight:600, color:NAVY, lineHeight:1.6, fontFamily:UI }}>{acct.highlight}</p>
+                <div style={{ borderTop:`1px solid ${a.color}20`, padding:'1rem 1.25rem', background:'#1e1912' }}>
+
+                  {/* Key Insight */}
+                  <div style={{ display:'flex', gap:8, marginBottom:'1rem', padding:'0.625rem 0.875rem', background:`${a.color}09`, border:`1px solid ${a.color}22`, borderRadius:9 }}>
+                    <TrendingUp size={13} color={a.color} style={{ flexShrink:0, marginTop:2 }}/>
+                    <p style={{ margin:0, fontSize:'0.8125rem', fontWeight:600, color:NAVY, lineHeight:1.6, fontFamily:UI }}>{a.highlight}</p>
                   </div>
-                  <ul style={{ margin:'0 0 0.875rem', paddingLeft:'1.25rem' }}>
-                    {acct.details.map((d, j) => (
-                      <li key={j} style={{ fontSize:'0.8125rem', color:T2, lineHeight:1.7, marginBottom:4, fontFamily:UI }}>{d}</li>
+
+                  {/* Tax Timeline */}
+                  <div style={{ marginBottom:'1rem' }}>
+                    <div style={{ fontSize:'0.5625rem', fontWeight:800, letterSpacing:'0.12em', textTransform:'uppercase', color:T3, marginBottom:'0.5rem', fontFamily:UI }}>Tax Timeline</div>
+                    <div style={{ display:'flex', alignItems:'stretch' }}>
+                      {[
+                        { label:'CONTRIBUTION', detail:a.contribution, step:1 },
+                        { label:'GROWTH PHASE', detail:a.growth, step:2 },
+                        { label:'WITHDRAWAL',   detail:a.withdrawal,   step:3 },
+                      ].map((s, i) => {
+                        const free  = s.detail.toLowerCase().includes('tax-free') || s.detail.toLowerCase().includes('never taxed');
+                        const pre   = s.detail.toLowerCase().includes('pre-tax');
+                        const after = s.detail.toLowerCase().includes('after-tax') && i === 0;
+                        const taxed = s.detail.toLowerCase().includes('taxed') && !free;
+                        const c = free ? ACCT_GREEN : after ? ACCT_ORANGE : pre ? ACCT_GOLD : taxed ? ACCT_ORANGE : ACCT_BLUE;
+                        return (
+                          <div key={i} style={{
+                            flex:1, padding:'0.625rem 0.75rem',
+                            background:`${c}07`, border:`1px solid ${c}28`,
+                            borderRadius: i===0 ? '7px 0 0 7px' : i===2 ? '0 7px 7px 0' : '0',
+                            borderLeft: i > 0 ? 'none' : undefined,
+                          }}>
+                            <div style={{ fontSize:'0.45rem', fontWeight:800, letterSpacing:'0.1em', textTransform:'uppercase', color:c, marginBottom:4, fontFamily:UI }}>
+                              Step {s.step}: {s.label}
+                            </div>
+                            <div style={{ fontSize:'0.5625rem', color:T2, lineHeight:1.55, fontFamily:UI }}>{s.detail}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Rules Grid */}
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:'1rem' }}>
+                    <AccInfoBox label="Income / Eligibility" value={a.incomeLimit} color={a.color}/>
+                    <AccInfoBox label="RMD Rules" value={a.rmd} color={ACCT_ORANGE}/>
+                    <AccInfoBox label="Early Withdrawal (before 59½)" value={a.earlyPenalty} color={ACCT_RED}/>
+                    <AccInfoBox label="Best Assets To Hold Here" value={a.bestAssets.join(' · ')} color={ACCT_GREEN}/>
+                  </div>
+
+                  {/* Rationale */}
+                  <div style={{ padding:'0.75rem 0.875rem', background:`${a.color}07`, border:`1px solid ${a.color}1e`, borderRadius:8, marginBottom:'0.875rem' }}>
+                    <div style={{ fontSize:'0.5rem', fontWeight:800, letterSpacing:'0.1em', textTransform:'uppercase', color:a.color, marginBottom:4, fontFamily:UI }}>Why Hold These Assets Here?</div>
+                    <div style={{ fontSize:'0.6875rem', color:T2, lineHeight:1.65, fontFamily:UI }}>{a.rationale}</div>
+                  </div>
+
+                  {/* Best For */}
+                  <div style={{ padding:'0.5rem 0.875rem', background:'rgba(0,180,198,0.07)', border:'1px solid rgba(0,180,198,0.18)', borderRadius:8, marginBottom:'0.875rem', display:'flex', gap:8, alignItems:'flex-start' }}>
+                    <CheckCircle2 size={13} color={TEAL} style={{ flexShrink:0, marginTop:2 }}/>
+                    <div style={{ fontSize:'0.6875rem', fontFamily:UI }}>
+                      <span style={{ fontWeight:700, color:NAVY }}>Best for: </span>
+                      <span style={{ color:T2 }}>{a.bestFor}</span>
+                    </div>
+                  </div>
+
+                  {/* Pro Tips */}
+                  <div style={{ fontSize:'0.5rem', fontWeight:800, letterSpacing:'0.12em', textTransform:'uppercase', color:T3, marginBottom:'0.5rem', fontFamily:UI }}>Pro Tips</div>
+                  <div style={{ display:'flex', flexDirection:'column', gap:5 }}>
+                    {a.proTips.map((t, i) => (
+                      <div key={i} style={{ display:'flex', gap:7, alignItems:'flex-start' }}>
+                        <div style={{ width:4, height:4, borderRadius:'50%', background:a.color, flexShrink:0, marginTop:6 }}/>
+                        <div style={{ fontSize:'0.6875rem', color:T2, lineHeight:1.55, fontFamily:UI }}>{t}</div>
+                      </div>
                     ))}
-                  </ul>
-                  <div style={{ padding:'0.5rem 0.75rem', background:'rgba(0,180,198,0.08)', borderRadius:8, fontSize:'0.8125rem', color:T2, fontFamily:UI }}>
-                    <strong style={{ color:NAVY }}>Best for:</strong> {acct.bestFor}
                   </div>
                 </div>
               )}
@@ -301,6 +471,7 @@ function AccountCards() {
     </div>
   );
 }
+
 
 /* ══════════════════════════════════════════════════════════════════
    LEARN — Funding Waterfall
@@ -910,8 +1081,8 @@ export default function Investing() {
 
         {tab === 'learn' && (
           <>
-            <SectionCard title="Account Types — Complete Guide" subtitle="Click any account to expand contribution limits, tax treatment, withdrawal rules, and who it's best for.">
-              <AccountCards/>
+            <SectionCard title="Investment Account Types — Complete Breakdown" subtitle="Roth IRA, Traditional IRA, 401k, Roth 401k, HSA, 529, Brokerage, SEP IRA, SIMPLE IRA — 2026 CFP limits, tax rules, asset location & pro tips">
+              <AccountMasterSection/>
             </SectionCard>
             <SectionCard title="Which Account Should I Fund First?" subtitle="Follow this waterfall to maximize every tax advantage before moving to the next step.">
               <FundingWaterfall/>

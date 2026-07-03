@@ -784,6 +784,188 @@ function DTICalc() {
   );
 }
 
+/* ── Financial Health Ratios ──────────────────────────────────────── */
+const MONO = "'JetBrains Mono', 'Courier New', monospace";
+
+function getStatus(value, thresholds, isLower = false) {
+  for (const t of thresholds) {
+    if (isLower) {
+      if (t.max === undefined || value <= t.max) return t;
+    } else {
+      if (t.min === undefined || value >= t.min) return t;
+    }
+  }
+  return thresholds[thresholds.length - 1];
+}
+
+function FinancialHealthRatios() {
+  const [grossIncome,  setGrossIncome]  = useState(5000);
+  const [netIncome,    setNetIncome]    = useState(3800);
+  const [housing,      setHousing]      = useState(1200);
+  const [totalDebt,    setTotalDebt]    = useState(1600);
+  const [nonHouseDebt, setNonHouseDebt] = useState(400);
+  const [savings,      setSavings]      = useState(760);
+  const [efund,        setEfund]        = useState(9000);
+  const [monthlyExp,   setMonthlyExp]   = useState(3200);
+  const [liquidAssets, setLiquidAssets] = useState(15000);
+
+  const sr  = netIncome   > 0 ? (savings      / netIncome)   * 100 : 0;
+  const hr  = grossIncome > 0 ? (housing      / grossIncome) * 100 : 0;
+  const dti = grossIncome > 0 ? (totalDebt    / grossIncome) * 100 : 0;
+  const ef  = monthlyExp  > 0 ?  efund        / monthlyExp        : 0;
+  const liq = monthlyExp  > 0 ?  liquidAssets / monthlyExp        : 0;
+  const cdr = grossIncome > 0 ? (nonHouseDebt / grossIncome) * 100 : 0;
+  const ir  = grossIncome > 0 ? (savings      / grossIncome) * 100 : 0;
+
+  const RATIOS = [
+    {
+      label: 'Savings Rate', value: sr, display: `${sr.toFixed(1)}%`, target: '≥ 20% of net income',
+      desc: 'Your take-home pay going toward savings & investments. The single most powerful lever in personal finance.',
+      isLower: false,
+      thresholds: [
+        { min: 20,            color: '#22c55e', label: 'Excellent', score: 1.0 },
+        { min: 15,            color: TEAL,      label: 'Good',      score: 0.7 },
+        { min: 10,            color: '#f59e0b', label: 'Building',  score: 0.3 },
+        {                     color: '#ef4444', label: 'Low',       score: 0.0 },
+      ],
+    },
+    {
+      label: 'Housing Cost Ratio', value: hr, display: `${hr.toFixed(1)}%`, target: '≤ 28% of gross income',
+      desc: 'Housing as a share of gross income. Lenders require this below 28–31% for mortgage approval.',
+      isLower: true,
+      thresholds: [
+        { max: 27.9,          color: '#22c55e', label: 'Excellent',  score: 1.0 },
+        { max: 32.9,          color: '#f59e0b', label: 'Borderline', score: 0.3 },
+        {                     color: '#ef4444', label: 'Over limit', score: 0.0 },
+      ],
+    },
+    {
+      label: 'Debt-to-Income (DTI)', value: dti, display: `${dti.toFixed(1)}%`, target: '≤ 36% of gross income',
+      desc: 'All monthly debt payments ÷ gross income. The key ratio lenders use to assess your loan eligibility.',
+      isLower: true,
+      thresholds: [
+        { max: 27.9,          color: '#22c55e', label: 'Excellent', score: 1.0 },
+        { max: 35.9,          color: TEAL,      label: 'Good',      score: 0.7 },
+        { max: 49.9,          color: '#f59e0b', label: 'High',      score: 0.3 },
+        {                     color: '#ef4444', label: 'Critical',  score: 0.0 },
+      ],
+    },
+    {
+      label: 'Emergency Fund', value: ef, display: `${ef.toFixed(1)} mo`, target: '3–6 months of expenses',
+      desc: "Months of essential expenses covered by liquid savings. Your buffer against life's curveballs.",
+      isLower: false,
+      thresholds: [
+        { min: 6,             color: '#22c55e', label: 'Fully funded', score: 1.0 },
+        { min: 3,             color: TEAL,      label: 'On track',     score: 0.7 },
+        { min: 1,             color: '#f59e0b', label: 'Building',     score: 0.3 },
+        {                     color: '#ef4444', label: 'At risk',      score: 0.0 },
+      ],
+    },
+    {
+      label: 'Liquidity Ratio', value: liq, display: `${liq.toFixed(1)}×`, target: '≥ 3× monthly expenses',
+      desc: 'Total liquid assets relative to monthly spending. Measures how quickly you could survive an income loss.',
+      isLower: false,
+      thresholds: [
+        { min: 6,             color: '#22c55e', label: 'Very liquid',   score: 1.0 },
+        { min: 3,             color: TEAL,      label: 'Liquid',        score: 0.7 },
+        { min: 1,             color: '#f59e0b', label: 'Low liquidity', score: 0.3 },
+        {                     color: '#ef4444', label: 'At risk',       score: 0.0 },
+      ],
+    },
+    {
+      label: 'Consumer Debt Ratio', value: cdr, display: `${cdr.toFixed(1)}%`, target: '≤ 10–15% of gross income',
+      desc: 'Non-housing debt payments as a share of gross income. High consumer debt squeezes savings and wealth building.',
+      isLower: true,
+      thresholds: [
+        { max: 9.9,           color: '#22c55e', label: 'Excellent',   score: 1.0 },
+        { max: 14.9,          color: TEAL,      label: 'Manageable',  score: 0.7 },
+        { max: 19.9,          color: '#f59e0b', label: 'High',        score: 0.3 },
+        {                     color: '#ef4444', label: 'Concerning',  score: 0.0 },
+      ],
+    },
+    {
+      label: 'Investment Rate', value: ir, display: `${ir.toFixed(1)}%`, target: '≥ 15% of gross income',
+      desc: 'Percentage of gross income directed to retirement & long-term wealth building.',
+      isLower: false,
+      thresholds: [
+        { min: 20,            color: '#22c55e', label: 'Excellent', score: 1.0 },
+        { min: 15,            color: TEAL,      label: 'On track',  score: 0.7 },
+        { min: 10,            color: '#f59e0b', label: 'Building',  score: 0.3 },
+        {                     color: '#ef4444', label: 'Low',       score: 0.0 },
+      ],
+    },
+  ];
+
+  const scored = RATIOS.map(r => ({ ...r, status: getStatus(r.value, r.thresholds, r.isLower) }));
+  const totalScore   = Math.round((scored.reduce((s, r) => s + r.status.score, 0) / RATIOS.length) * 100);
+  const scoreColor   = totalScore >= 75 ? '#22c55e' : totalScore >= 50 ? TEAL : totalScore >= 30 ? '#f59e0b' : '#ef4444';
+  const scoreLabel   = totalScore >= 75 ? 'Strong' : totalScore >= 50 ? 'Good' : totalScore >= 30 ? 'Fair' : 'Needs Work';
+  const nGreen  = scored.filter(r => r.status.color === '#22c55e').length;
+  const nTeal   = scored.filter(r => r.status.color === TEAL).length;
+  const nYellow = scored.filter(r => r.status.color === '#f59e0b').length;
+  const nRed    = scored.filter(r => r.status.color === '#ef4444').length;
+
+  return (
+    <div>
+      {/* Inputs */}
+      <SectionCard title="Your Financial Inputs" subtitle="Enter your monthly figures — all ratios update instantly.">
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 1.25rem' }}>
+          <CalcInput label="Monthly Gross Income (pre-tax)"     value={grossIncome}  onChange={setGrossIncome}  step={100} hint="Your income before taxes"/>
+          <CalcInput label="Monthly Net Income (take-home)"     value={netIncome}    onChange={setNetIncome}    step={100} hint="After taxes and deductions"/>
+          <CalcInput label="Monthly Housing Cost"               value={housing}      onChange={setHousing}      step={50}  hint="Rent or mortgage payment"/>
+          <CalcInput label="Total Monthly Debt Payments"        value={totalDebt}    onChange={setTotalDebt}    step={50}  hint="All loans + credit card minimums"/>
+          <CalcInput label="Non-Housing Debt Payments"          value={nonHouseDebt} onChange={setNonHouseDebt} step={25}  hint="Car, student, credit cards only"/>
+          <CalcInput label="Monthly Savings & Investments"      value={savings}      onChange={setSavings}      step={50}  hint="401(k), IRA, brokerage, e-fund contributions"/>
+          <CalcInput label="Emergency Fund Balance"             value={efund}        onChange={setEfund}        step={500} hint="Total liquid emergency savings"/>
+          <CalcInput label="Monthly Essential Expenses"         value={monthlyExp}   onChange={setMonthlyExp}   step={100} hint="What you must spend to survive monthly"/>
+          <CalcInput label="Total Liquid Assets"                value={liquidAssets} onChange={setLiquidAssets} step={500} hint="Cash + savings + easily accessible funds"/>
+        </div>
+      </SectionCard>
+
+      {/* Overall Score */}
+      <div style={{ background:SURF, border:`1px solid ${B1}`, borderRadius:16, padding:'1.25rem 1.5rem', marginBottom:'1.25rem', display:'flex', alignItems:'center', gap:'1.5rem', flexWrap:'wrap' }}>
+        <div style={{ textAlign:'center', minWidth:96, flexShrink:0 }}>
+          <div style={{ fontSize:'3rem', fontWeight:800, color:scoreColor, lineHeight:1, letterSpacing:'-0.03em', fontFamily:MONO }}>{totalScore}</div>
+          <div style={{ fontSize:'0.65rem', fontWeight:700, color:T3, textTransform:'uppercase', letterSpacing:'0.08em', fontFamily:UI, marginTop:4 }}>out of 100</div>
+        </div>
+        <div style={{ flex:1 }}>
+          <div style={{ fontFamily:`'Playfair Display', serif`, fontSize:'1.25rem', fontWeight:700, color:NAVY, marginBottom:4 }}>
+            Financial Health: <span style={{ color:scoreColor }}>{scoreLabel}</span>
+          </div>
+          <div style={{ fontSize:'0.8rem', color:T3, lineHeight:1.65, fontFamily:UI, marginBottom:'0.625rem' }}>
+            {nGreen} excellent &middot; {nTeal} good &middot; {nYellow} fair &middot; {nRed} need{nRed !== 1 ? 's' : ''} work
+          </div>
+          <div style={{ height:7, background:RAISE, borderRadius:99, overflow:'hidden' }}>
+            <div style={{ height:'100%', width:`${totalScore}%`, background:scoreColor, borderRadius:99, transition:'width 0.45s ease' }}/>
+          </div>
+        </div>
+      </div>
+
+      {/* Ratio Cards */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.875rem', marginBottom:'1.25rem' }}>
+        {scored.map(r => (
+          <div key={r.label} style={{ background:SURF, border:`1.5px solid ${r.status.color}22`, borderRadius:14, padding:'1rem 1.125rem' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.5rem' }}>
+              <div style={{ fontSize:'0.72rem', fontWeight:700, color:T3, textTransform:'uppercase', letterSpacing:'0.07em', fontFamily:UI, lineHeight:1.3 }}>{r.label}</div>
+              <span style={{ fontSize:'0.6rem', fontWeight:700, color:r.status.color, background:`${r.status.color}15`, border:`1px solid ${r.status.color}30`, borderRadius:99, padding:'2px 8px', fontFamily:UI, whiteSpace:'nowrap', flexShrink:0, marginLeft:6 }}>{r.status.label}</span>
+            </div>
+            <div style={{ fontSize:'1.875rem', fontWeight:800, color:r.status.color, lineHeight:1, letterSpacing:'-0.02em', marginBottom:'0.25rem', fontFamily:MONO }}>{r.display}</div>
+            <div style={{ fontSize:'0.695rem', color:T3, fontFamily:UI, marginBottom:'0.5rem' }}>Benchmark: <strong style={{ color:T2 }}>{r.target}</strong></div>
+            <div style={{ fontSize:'0.75rem', color:T3, lineHeight:1.6, fontFamily:UI }}>{r.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display:'flex', gap:8, padding:'0.875rem 1rem', background:`${TEAL}0d`, border:`1px solid ${TEAL}25`, borderRadius:12 }}>
+        <Info size={14} color={TEAL} style={{ flexShrink:0, marginTop:2 }}/>
+        <p style={{ margin:0, fontSize:'0.8125rem', color:T2, lineHeight:1.65, fontFamily:UI }}>
+          These ratios are educational benchmarks, not rigid rules. Use them as a diagnostic tool and work with a fee-only fiduciary advisor on personalized goals.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════════════════════════════
    RESOURCES TAB
 ══════════════════════════════════════════════════════════════════ */
@@ -906,7 +1088,8 @@ const TABS = [
 
 export default function Budgeting() {
   const navigate  = useNavigate();
-  const [tab, setTab] = useState('learn');
+  const [tab,     setTab]     = useState('learn');
+  const [calcTab, setCalcTab] = useState('budget');
 
   return (
     <div style={{ minHeight:'100vh', background:BG, fontFamily:UI }}>
@@ -1005,33 +1188,73 @@ export default function Budgeting() {
         {/* ── CALCULATE TAB ── */}
         {tab === 'calc' && (
           <div>
-            <SectionCard
-              title="Monthly Budget Builder"
-              subtitle="Enter your take-home income and adjust each category. Live surplus or deficit updates instantly as you type."
-            >
-              <BudgetBuilder/>
-            </SectionCard>
+            {/* Sub-tab pills */}
+            <div style={{ display:'flex', gap:'0.4rem', flexWrap:'wrap', marginBottom:'1.5rem' }}>
+              {[
+                { id:'budget',  label:'Budget Builder'      },
+                { id:'efund',   label:'Emergency Fund'      },
+                { id:'savings', label:'Savings Rate'        },
+                { id:'dti',     label:'Debt-to-Income'      },
+                { id:'ratios',  label:'Financial Health Ratios' },
+              ].map(t => {
+                const active = calcTab === t.id;
+                return (
+                  <button key={t.id} onClick={() => setCalcTab(t.id)} style={{
+                    padding:'7px 16px', borderRadius:99,
+                    border:`1px solid ${active ? TEAL : B2}`,
+                    background: active ? TEAL : RAISE, cursor:'pointer',
+                    fontFamily:UI, fontSize:'0.8125rem',
+                    fontWeight: active ? 700 : 500, color: active ? '#1a1410' : T3,
+                    whiteSpace:'nowrap',
+                  }}>{t.label}</button>
+                );
+              })}
+            </div>
 
-            <SectionCard
-              title="Emergency Fund Calculator"
-              subtitle="How large should your emergency fund be? Use this to find your target and how long it'll take to get there."
-            >
-              <EmergencyFundCalc/>
-            </SectionCard>
+            {calcTab === 'budget' && (
+              <SectionCard
+                title="Monthly Budget Builder"
+                subtitle="Enter your take-home income and adjust each category. Live surplus or deficit updates instantly as you type."
+              >
+                <BudgetBuilder/>
+              </SectionCard>
+            )}
 
-            <SectionCard
-              title="Savings Rate Calculator"
-              subtitle="Your savings rate is one of the most important numbers in personal finance. Where do you stand?"
-            >
-              <SavingsRateCalc/>
-            </SectionCard>
+            {calcTab === 'efund' && (
+              <SectionCard
+                title="Emergency Fund Calculator"
+                subtitle="How large should your emergency fund be? Use this to find your target and how long it'll take to get there."
+              >
+                <EmergencyFundCalc/>
+              </SectionCard>
+            )}
 
-            <SectionCard
-              title="Debt-to-Income Ratio (DTI)"
-              subtitle="Lenders use DTI to evaluate your financial health. It's also a great personal benchmark."
-            >
-              <DTICalc/>
-            </SectionCard>
+            {calcTab === 'savings' && (
+              <SectionCard
+                title="Savings Rate Calculator"
+                subtitle="Your savings rate is one of the most important numbers in personal finance. Where do you stand?"
+              >
+                <SavingsRateCalc/>
+              </SectionCard>
+            )}
+
+            {calcTab === 'dti' && (
+              <SectionCard
+                title="Debt-to-Income Ratio (DTI)"
+                subtitle="Lenders use DTI to evaluate your financial health. It's also a great personal benchmark."
+              >
+                <DTICalc/>
+              </SectionCard>
+            )}
+
+            {calcTab === 'ratios' && (
+              <SectionCard
+                title="Financial Health Ratios"
+                subtitle="Seven key ratios that diagnose your overall financial health — all in one place."
+              >
+                <FinancialHealthRatios/>
+              </SectionCard>
+            )}
           </div>
         )}
 

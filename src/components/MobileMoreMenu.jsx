@@ -17,7 +17,7 @@ const moreItems = [
   { label: "Politics & Economy", icon: Vote, path: "/PoliticsEconomy", color: "#ef4444" },
   { label: "My Portfolio", icon: Briefcase, path: "/PortfolioTracker", color: "#06b6d4" },
   { label: "Risk Analysis", icon: ShieldAlert, path: "/RiskAnalysis", color: "#ec4899" },
-  { label: "Find Advisors", icon: Users, path: "/AdvisorMarketplace", color: "#00d4aa" },
+  { label: "Wealth Counsel", icon: Users, path: "/wealth-counsel", color: "#00d4aa" },
   { label: "Settings", icon: Settings, path: "/Settings", color: "#64748b" }
 ];
 

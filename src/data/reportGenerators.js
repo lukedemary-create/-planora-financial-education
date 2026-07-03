@@ -1,3 +1,5 @@
+import { TAX_2026 } from '../config/taxConstants2026';
+
 // ─── Formatting Helpers ───────────────────────────────────────────────────────
 
 const fc = (n) => {
@@ -631,16 +633,16 @@ function generateTaxEfficiency(data) {
   const capGains = parseFloat(data.capital_gains) || 0;
 
   const isMFJ = filing === 'Married Filing Jointly';
-  const standardDed = isMFJ ? 29200 : filing === 'Head of Household' ? 21900 : 14600;
+  const isHOH = filing === 'Head of Household';
+  const standardDed = isMFJ ? TAX_2026.standardDeduction.mfj : isHOH ? TAX_2026.standardDeduction.hoh : TAX_2026.standardDeduction.single;
   const totalIncome = w2 + selfEmp + investInc + rental;
   const selfEmpTax = selfEmp > 0 ? selfEmp * 0.9235 * 0.153 * 0.5 : 0;
   const deduction = Math.max(standardDed, itemized);
   const useItemized = itemized > standardDed;
   const taxableIncome = Math.max(0, totalIncome - k401 - ira - hsa - selfEmpTax - deduction);
 
-  const brackets = isMFJ
-    ? [[23200, 0.10], [94300, 0.12], [201050, 0.22], [383900, 0.24], [487450, 0.32], [731200, 0.35], [Infinity, 0.37]]
-    : [[11600, 0.10], [47150, 0.12], [100525, 0.22], [191950, 0.24], [243725, 0.32], [609350, 0.35], [Infinity, 0.37]];
+  const bracketKey = isMFJ ? 'mfj' : isHOH ? 'hoh' : 'single';
+  const brackets = TAX_2026.ordinaryBrackets[bracketKey].map(b => [b.upTo, b.rate]);
 
   let federalTax = 0;
   let prev = 0;
@@ -654,15 +656,16 @@ function generateTaxEfficiency(data) {
 
   const effectiveRate = totalIncome > 0 ? federalTax / totalIncome * 100 : 0;
   const selfEmpTaxFull = selfEmp > 0 ? selfEmp * 0.9235 * 0.153 : 0;
-  const max401k = 23000;
-  const maxIra = 7000;
-  const maxHsa = 4150;
+  const max401k = TAX_2026.retirement.e401kElective;
+  const maxIra = TAX_2026.ira.limit;
+  const maxHsa = TAX_2026.hsa.selfOnly;
   const add401k = Math.max(0, max401k - k401);
   const addIra = Math.max(0, maxIra - ira);
   const addHsa = Math.max(0, maxHsa - hsa);
   const additionalTaxSavings = (add401k + addIra + addHsa) * marginalRate;
 
-  const cgRate = totalIncome < (isMFJ ? 94050 : 47025) ? 0 : totalIncome < (isMFJ ? 583750 : 518900) ? 0.15 : 0.20;
+  const ltcg = TAX_2026.ltcgBreakpoints[bracketKey];
+  const cgRate = totalIncome < ltcg[0].upTo ? 0 : totalIncome < ltcg[1].upTo ? 0.15 : 0.20;
 
   let score = 60;
   if (k401 >= max401k) score += 15; else if (k401 >= max401k * 0.5) score += 8;
@@ -1551,7 +1554,7 @@ function generateEstatePlanning(data) {
   const minorChildren = data.minor_children === 'Yes';
   const goal = data.estate_goal || 'Avoid probate';
 
-  const federalExemption = 13610000;
+  const federalExemption = TAX_2026.estate.lifetimeExemption;
   const grossEstate = totalAssets + lifeIns;
   const overExemption = Math.max(0, grossEstate - federalExemption);
   const estimatedEstateTax = overExemption * 0.40;

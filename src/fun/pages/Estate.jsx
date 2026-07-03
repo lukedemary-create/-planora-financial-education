@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   ScrollText, ChevronRight, Info, CheckCircle2, XCircle,
   AlertCircle, BookOpen, Calculator, ExternalLink, ArrowRight,
-  User, FileText, Heart, DollarSign, Shield,
+  User, FileText, Heart, DollarSign, Shield, Scale, Landmark,
+  Plus, Trash2, Users,
 } from 'lucide-react';
 
 const TEAL  = '#00B4C6';
@@ -406,6 +407,316 @@ function BeneficiariesLearn() {
 }
 
 /* ══════════════════════════════════════════════════════════════════
+   LEARN — PROBATE
+══════════════════════════════════════════════════════════════════ */
+function ProbateLearn() {
+  const goesThrough = [
+    'Assets in your name alone with no beneficiary designation',
+    'Bank accounts without a TOD (Transfer on Death) designation',
+    'Solely-owned real estate not held in a trust',
+    'Vehicles and personal property (furniture, jewelry, collectibles)',
+    'Business interests owned individually',
+  ];
+  const avoidMethods = [
+    { method: 'Beneficiary designations', how: '401(k), IRA, and life insurance pass directly to named beneficiaries — completely bypassing probate.', color: '#22c55e' },
+    { method: 'Joint ownership (JTWROS)', how: 'Joint Tenants with Right of Survivorship — the surviving owner inherits automatically at death, no court needed.', color: TEAL },
+    { method: 'TOD / POD designations', how: 'Add Transfer on Death to brokerage accounts and Payable on Death to bank accounts through your institution.', color: '#8b5cf6' },
+    { method: 'Revocable living trust', how: 'Assets held in a funded trust skip probate entirely — the trustee distributes directly to beneficiaries.', color: '#f59e0b' },
+  ];
+
+  return (
+    <div>
+      <p style={{ margin:'0 0 1.25rem', fontSize:'0.9375rem', color:T2, lineHeight:1.75, fontFamily:UI }}>
+        Probate is the court-supervised process of validating your will and distributing your estate. It is <strong>public, slow, and expensive</strong> — typically 6–18 months and 2–5% of your estate value in legal and court fees.
+      </p>
+
+      <div style={{ background:'#fef2f2', border:'1px solid #fecaca', borderRadius:12, padding:'1rem 1.125rem', marginBottom:'1.25rem', display:'flex', gap:10 }}>
+        <AlertCircle size={16} color='#ef4444' style={{ flexShrink:0, marginTop:2 }}/>
+        <div style={{ fontFamily:UI, fontSize:'0.875rem', color:T2, lineHeight:1.65 }}>
+          <strong style={{ color:'#ef4444' }}>Probate is public record.</strong> Anyone can look up your will, see what you owned, who your beneficiaries are, and what debts you had. A revocable living trust avoids this — trust distributions are completely private.
+        </div>
+      </div>
+
+      <SectionCard title="What Goes Through Probate">
+        <p style={{ margin:'0 0 0.875rem', fontSize:'0.875rem', color:T2, lineHeight:1.65, fontFamily:UI }}>
+          Not everything you own goes through probate. Only assets that are solely in your name with no designated beneficiary and not held in a trust require probate.
+        </p>
+        {goesThrough.map(item => (
+          <div key={item} style={{ display:'flex', gap:10, alignItems:'flex-start', padding:'0.4rem 0', fontFamily:UI, fontSize:'0.8375rem', color:T2 }}>
+            <AlertCircle size={13} color='#ef4444' style={{ flexShrink:0, marginTop:2 }}/>{item}
+          </div>
+        ))}
+        <InfoBox>The good news: most assets that people care most about — retirement accounts, life insurance, jointly held property — already avoid probate through beneficiary designations and titling. Probate mostly catches assets people forgot to plan for.</InfoBox>
+      </SectionCard>
+
+      <SectionCard title="Four Ways to Avoid Probate">
+        {avoidMethods.map(m => (
+          <div key={m.method} style={{ padding:'0.875rem 0', borderBottom:`1px solid ${B2}` }}>
+            <div style={{ fontFamily:UI, fontSize:'0.875rem', fontWeight:700, color:m.color, marginBottom:4 }}>{m.method}</div>
+            <div style={{ fontFamily:UI, fontSize:'0.8125rem', color:T2, lineHeight:1.65 }}>{m.how}</div>
+          </div>
+        ))}
+      </SectionCard>
+
+      <SectionCard title="Small Estate Shortcuts">
+        <p style={{ margin:'0 0 0.875rem', fontSize:'0.875rem', color:T2, lineHeight:1.65, fontFamily:UI }}>
+          Most states have simplified probate procedures for small estates (typically under $100K–$200K). These "summary administration" or "small estate affidavit" processes take weeks instead of a year and cost a fraction of full probate.
+        </p>
+        {[
+          { label:'California', detail:'Estates under $184,500 can use a simplified affidavit procedure 40 days after death.' },
+          { label:'Texas', detail:'Estates under $75,000 can use a small estate affidavit. Texas also has relatively simple full probate.' },
+          { label:'Florida', detail:'Estates under $75,000 (summary administration) or insolvent estates have simplified process.' },
+          { label:'Your state', detail:'Search "[your state] small estate affidavit" to find your state\'s threshold and procedure.' },
+        ].map(r => (
+          <div key={r.label} style={{ display:'flex', gap:10, padding:'0.5rem 0', borderBottom:`1px solid ${B1}`, fontFamily:UI }}>
+            <span style={{ minWidth:90, fontSize:'0.8125rem', fontWeight:700, color:NAVY }}>{r.label}</span>
+            <span style={{ fontSize:'0.8125rem', color:T3, lineHeight:1.6 }}>{r.detail}</span>
+          </div>
+        ))}
+        <InfoBox color='#f59e0b'>If your estate is modest and straightforward — home, retirement accounts with beneficiaries, one or two bank accounts — you may not need a living trust. The simplest probate avoidance strategy is good beneficiary hygiene on all your accounts.</InfoBox>
+      </SectionCard>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LEARN — ESTATE TAXES
+══════════════════════════════════════════════════════════════════ */
+function EstateTaxLearn() {
+  const stateTaxStates = [
+    { state:'Massachusetts / Oregon', exemption:'$1M', note:'Lowest thresholds in the US — full 40% rate above.' },
+    { state:'Washington', exemption:'$2.193M', note:'Progressive rate up to 20%.' },
+    { state:'Minnesota', exemption:'$3M', note:'Tax on estates above $3M.' },
+    { state:'Illinois', exemption:'$4M', note:'Graduated rates up to 16%.' },
+    { state:'New York', exemption:'$6.94M', note:'Cliff tax: if estate exceeds 105% of exemption, entire estate is taxable.' },
+    { state:'Connecticut', exemption:'$13.61M', note:'Matches federal exemption as of 2023.' },
+  ];
+
+  return (
+    <div>
+      <p style={{ margin:'0 0 1.25rem', fontSize:'0.9375rem', color:T2, lineHeight:1.75, fontFamily:UI }}>
+        The federal estate tax applies only to estates above the exemption threshold — and very few estates qualify. Here's what you need to know in plain terms.
+      </p>
+
+      <SectionCard title="Federal Estate Tax — 2026 Numbers">
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'0.75rem', marginBottom:'1rem' }}>
+          {[
+            { label:'Federal Exemption', value:'$15M', sub:'Per person', color:TEAL },
+            { label:'Married Couple', value:'$30M', sub:'With portability election', color:'#22c55e' },
+            { label:'Tax Rate', value:'40%', sub:'On excess above exemption', color:'#ef4444' },
+          ].map(s => (
+            <div key={s.label} style={{ background:`${s.color}0d`, border:`1px solid ${s.color}25`, borderRadius:10, padding:'0.875rem', textAlign:'center' }}>
+              <div style={{ fontFamily:DISP, fontSize:'1.5rem', fontWeight:700, color:s.color }}>{s.value}</div>
+              {s.sub && <div style={{ fontFamily:UI, fontSize:'0.6875rem', color:T3, marginTop:2 }}>{s.sub}</div>}
+              <div style={{ fontFamily:UI, fontSize:'0.6875rem', color:T3, textTransform:'uppercase', letterSpacing:'0.08em', marginTop:4 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ background:`${TEAL}0d`, border:`1px solid ${TEAL}25`, borderRadius:10, padding:'0.875rem 1rem', fontFamily:UI, fontSize:'0.875rem', color:T2, lineHeight:1.65 }}>
+          <strong style={{ color:NAVY }}>The reality for most people:</strong> Less than 0.2% of estates owe federal estate tax. If your net worth is under $10M, federal estate tax is not your primary concern. Focus instead on income tax planning for your heirs.
+        </div>
+      </SectionCard>
+
+      <SectionCard title="What Your Heirs Will Actually Pay — Income Taxes">
+        {[
+          {
+            title:'Inherited IRAs — The 10-Year Rule (SECURE 2.0)',
+            color:'#ef4444',
+            desc:'Non-spouse beneficiaries who inherit a traditional IRA must empty the entire account within 10 years. Every dollar they withdraw is taxed as ordinary income at their tax rate. A $1M inherited IRA could generate $350K+ in taxes for your heirs.',
+          },
+          {
+            title:'Step-Up in Basis — Your Most Powerful Gift',
+            color:'#22c55e',
+            desc:'When your heirs inherit appreciated assets (stocks, real estate) held in a taxable brokerage or real estate — not an IRA — they get a new cost basis at the date of your death. They pay zero capital gains tax on all pre-death appreciation. This is one of the most valuable wealth transfer tools in the tax code.',
+          },
+          {
+            title:'Roth Conversion Strategy',
+            color:TEAL,
+            desc:'Converting traditional IRA funds to Roth before death means your heirs inherit tax-free money. Even though they still must empty the Roth within 10 years, all growth and withdrawals are tax-free. Paying the tax now (at your rate) can be significantly better than forcing heirs to pay at theirs.',
+          },
+        ].map(item => (
+          <div key={item.title} style={{ padding:'0.875rem 0', borderBottom:`1px solid ${B2}` }}>
+            <div style={{ fontFamily:UI, fontSize:'0.875rem', fontWeight:700, color:item.color, marginBottom:4 }}>{item.title}</div>
+            <div style={{ fontFamily:UI, fontSize:'0.8125rem', color:T2, lineHeight:1.65 }}>{item.desc}</div>
+          </div>
+        ))}
+      </SectionCard>
+
+      <SectionCard title="State Estate Taxes — Check Your State">
+        <p style={{ margin:'0 0 0.875rem', fontSize:'0.875rem', color:T2, lineHeight:1.65, fontFamily:UI }}>
+          12 states + Washington D.C. have their own estate taxes with exemptions far below the federal level. If you live in one of these states, estate tax planning may be relevant even at relatively modest wealth levels.
+        </p>
+        {stateTaxStates.map(r => (
+          <div key={r.state} style={{ display:'grid', gridTemplateColumns:'1.2fr 0.6fr 1.8fr', gap:8, padding:'0.5rem 0', borderBottom:`1px solid ${B1}`, fontFamily:UI }}>
+            <span style={{ fontSize:'0.8375rem', fontWeight:700, color:NAVY }}>{r.state}</span>
+            <span style={{ fontFamily:DISP, fontSize:'0.8375rem', color:TEAL, fontWeight:700 }}>{r.exemption}</span>
+            <span style={{ fontSize:'0.8rem', color:T3, lineHeight:1.55 }}>{r.note}</span>
+          </div>
+        ))}
+        <InfoBox color='#f59e0b'>Annual gift tax exclusion: $19,000 per recipient in 2026. You can give up to $19,000 per person per year to as many people as you want — tax-free and it reduces your taxable estate. A couple can give $38,000 per recipient per year.</InfoBox>
+      </SectionCard>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CALCULATOR — Beneficiary Planner
+══════════════════════════════════════════════════════════════════ */
+const RELATIONSHIPS = ['Spouse', 'Child', 'Parent', 'Sibling', 'Grandchild', 'Friend', 'Charity', 'Trust', 'Other'];
+const ACCOUNT_TYPES = ['401(k) / 403(b)', 'Traditional IRA', 'Roth IRA', 'Life Insurance', 'Bank Account (POD)', 'Brokerage (TOD)', 'Annuity', 'HSA', 'Pension', 'Other'];
+
+function useLS(key, def) {
+  const [v, setV] = useState(() => {
+    try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : def; } catch { return def; }
+  });
+  const set = val => {
+    const next = typeof val === 'function' ? val(v) : val;
+    setV(next);
+    try { localStorage.setItem(key, JSON.stringify(next)); } catch {}
+  };
+  return [v, set];
+}
+
+const EMPTY_ACCOUNT  = () => ({ id: Date.now() + Math.random(), type: ACCOUNT_TYPES[0], label: '', value: '' });
+const EMPTY_PRIMARY  = () => ({ id: Date.now() + Math.random(), name: '', relationship: RELATIONSHIPS[0], pct: '' });
+const EMPTY_CONTINGENT = () => ({ id: Date.now() + Math.random(), name: '', relationship: RELATIONSHIPS[0], pct: '' });
+
+function BeneficiaryPlanner() {
+  const [accounts,    setAccounts]    = useLS('fun_estate_accounts_v1',    []);
+  const [primaries,   setPrimaries]   = useLS('fun_estate_primaries_v1',   []);
+  const [contingents, setContingents] = useLS('fun_estate_contingents_v1', []);
+
+  const totalValue    = accounts.reduce((s, a) => s + (parseFloat(a.value) || 0), 0);
+  const primaryPct    = primaries.reduce((s, b) => s + (parseFloat(b.pct) || 0), 0);
+  const contingentPct = contingents.reduce((s, b) => s + (parseFloat(b.pct) || 0), 0);
+  const primaryOk     = Math.abs(primaryPct - 100) < 0.5;
+  const contingentOk  = contingents.length === 0 || Math.abs(contingentPct - 100) < 0.5;
+
+  const addAccount    = () => setAccounts(p => [...p, EMPTY_ACCOUNT()]);
+  const removeAccount = id => setAccounts(p => p.filter(a => a.id !== id));
+  const updateAccount = (id, field, val) => setAccounts(p => p.map(a => a.id === id ? { ...a, [field]: val } : a));
+
+  const addPrimary    = () => setPrimaries(p => [...p, EMPTY_PRIMARY()]);
+  const removePrimary = id => setPrimaries(p => p.filter(b => b.id !== id));
+  const updatePrimary = (id, field, val) => setPrimaries(p => p.map(b => b.id === id ? { ...b, [field]: val } : b));
+
+  const addContingent    = () => setContingents(p => [...p, EMPTY_CONTINGENT()]);
+  const removeContingent = id => setContingents(p => p.filter(b => b.id !== id));
+  const updateContingent = (id, field, val) => setContingents(p => p.map(b => b.id === id ? { ...b, [field]: val } : b));
+
+  const inputSt = {
+    background: '#2d2419', border: `1px solid ${B2}`, borderRadius: 8,
+    padding: '8px 10px', fontSize: '0.8125rem', color: NAVY,
+    outline: 'none', width: '100%', fontFamily: UI, boxSizing: 'border-box',
+  };
+  const selectSt = { ...inputSt, cursor: 'pointer' };
+
+  function AllocationBar({ pct, ok }) {
+    const color = ok ? '#22c55e' : pct > 100 ? '#ef4444' : '#f59e0b';
+    return (
+      <div style={{ marginTop: '0.875rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+          <span style={{ fontFamily: UI, fontSize: '0.75rem', color: T3 }}>Allocation total</span>
+          <span style={{ fontFamily: DISP, fontSize: '0.875rem', fontWeight: 700, color }}>{pct.toFixed(0)}% {ok ? '✓' : pct > 100 ? '— over 100%' : '— must equal 100%'}</span>
+        </div>
+        <div style={{ height: 6, background: '#2d2419', borderRadius: 3 }}>
+          <div style={{ height: '100%', width: `${Math.min(100, pct)}%`, background: color, borderRadius: 3, transition: 'width 0.3s' }} />
+        </div>
+      </div>
+    );
+  }
+
+  function BenTable({ entries, onAdd, onRemove, onUpdate, label, accentColor }) {
+    return (
+      <div style={{ background: SURF, border: `1px solid ${B1}`, borderRadius: 14, padding: '1.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div>
+            <div style={{ fontFamily: DISP, fontSize: '1rem', fontWeight: 700, color: NAVY }}>{label}</div>
+            <div style={{ fontFamily: UI, fontSize: '0.75rem', color: T3, marginTop: 2 }}>
+              {label.includes('Primary') ? 'Receives assets if they survive you — must total 100%' : 'Receives assets if all primary beneficiaries predecease you'}
+            </div>
+          </div>
+          <button onClick={onAdd} style={{
+            display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 8,
+            border: `1px solid ${accentColor}40`, background: `${accentColor}12`,
+            color: accentColor, fontFamily: UI, fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+          }}>
+            <Plus size={12} /> Add
+          </button>
+        </div>
+
+        {entries.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '1.25rem 0', color: T3, fontFamily: UI, fontSize: '0.8125rem' }}>
+            No beneficiaries added yet — click Add to get started.
+          </div>
+        )}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+          {entries.map(b => (
+            <div key={b.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 80px 30px', gap: 8, alignItems: 'center' }}>
+              <input value={b.name} placeholder="Full name" onChange={e => onUpdate(b.id, 'name', e.target.value)} style={inputSt} />
+              <select value={b.relationship} onChange={e => onUpdate(b.id, 'relationship', e.target.value)} style={selectSt}>
+                {RELATIONSHIPS.map(r => <option key={r}>{r}</option>)}
+              </select>
+              <div style={{ position: 'relative' }}>
+                <input type="number" value={b.pct} placeholder="%" min="0" max="100"
+                  onChange={e => onUpdate(b.id, 'pct', e.target.value)}
+                  style={{ ...inputSt, paddingRight: 22 }} />
+                <span style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', color: T3, fontSize: '0.75rem', pointerEvents: 'none' }}>%</span>
+              </div>
+              <button onClick={() => onRemove(b.id)} style={{
+                width: 28, height: 28, borderRadius: 6, border: 'none',
+                background: 'rgba(239,68,68,0.10)', color: '#ef4444', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Trash2 size={11} />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {entries.length > 0 && <AllocationBar pct={entries.reduce((s, b) => s + (parseFloat(b.pct) || 0), 0)} ok={label.includes('Primary') ? primaryOk : contingentOk} />}
+      </div>
+    );
+  }
+
+  const fmt = v => '$' + Math.round(v || 0).toLocaleString();
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+
+      {/* Header callout */}
+      <div style={{ background: `${TEAL}0d`, border: `1px solid ${TEAL}25`, borderRadius: 14, padding: '1rem 1.25rem', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+        <AlertCircle size={16} color={TEAL} style={{ flexShrink: 0, marginTop: 2 }} />
+        <div style={{ fontFamily: UI, fontSize: '0.875rem', color: T2, lineHeight: 1.65 }}>
+          <strong style={{ color: NAVY }}>Beneficiary designations override your will.</strong> It doesn't matter what your will says — whoever is named on your accounts, retirement plans, and life insurance receives those assets directly. Review and update after every major life event.
+        </div>
+      </div>
+
+      {/* Key reminders */}
+      <div style={{ background: SURF, border: `1px solid ${B1}`, borderRadius: 14, padding: '1.25rem' }}>
+        <div style={{ fontFamily: DISP, fontSize: '1rem', fontWeight: 700, color: NAVY, marginBottom: '0.875rem' }}>When to Update Beneficiaries</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+          {[
+            'After getting married or divorced',
+            'After the birth or adoption of a child',
+            'If a named beneficiary dies before you',
+            'After a significant change in your estate plan',
+            'If you change employers or roll over a retirement account',
+            'At minimum — every 3–5 years as an annual financial review',
+          ].map(r => (
+            <div key={r} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontFamily: UI, fontSize: '0.8125rem', color: T2 }}>
+              <CheckCircle2 size={13} color={TEAL} style={{ flexShrink: 0, marginTop: 2 }} />{r}
+            </div>
+          ))}
+        </div>
+        <InfoBox>This is a personal reference tool only — data is stored locally on your device. Actual beneficiary designations must be updated directly with each financial institution. A designation on file with the institution is the only one that counts legally.</InfoBox>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
    CALCULATOR — Estate Tax Threshold
 ══════════════════════════════════════════════════════════════════ */
 function EstateTaxCalc() {
@@ -614,6 +925,8 @@ const LEARN_TABS = [
   { id:'poa',          label:'Power of Attorney',    icon:User       },
   { id:'directives',   label:'Healthcare Directives',icon:Heart      },
   { id:'beneficiaries',label:'Beneficiaries',        icon:FileText   },
+  { id:'probate',      label:'Probate',              icon:Scale      },
+  { id:'estate-tax',   label:'Estate Taxes',         icon:Landmark   },
 ];
 
 /* ══════════════════════════════════════════════════════════════════
@@ -630,6 +943,8 @@ export default function Estate() {
     poa:           <POALearn/>,
     directives:    <DirectivesLearn/>,
     beneficiaries: <BeneficiariesLearn/>,
+    probate:       <ProbateLearn/>,
+    'estate-tax':  <EstateTaxLearn/>,
   };
 
   const learnTitles = {
@@ -638,6 +953,8 @@ export default function Estate() {
     poa:           { title:'Power of Attorney',    sub:'Who manages your finances and makes medical decisions if you can\'t.' },
     directives:    { title:'Healthcare Directives',sub:'Document your end-of-life medical wishes so loved ones aren\'t left guessing.' },
     beneficiaries: { title:'Beneficiary Designations', sub:'The designations that override your will — and the costly mistakes people make.' },
+    probate:       { title:'Probate',              sub:'What probate is, what goes through it, and four proven ways to avoid it.' },
+    'estate-tax':  { title:'Estate Taxes',         sub:'Federal and state estate taxes, the 10-year IRA rule, and step-up in basis.' },
   };
 
   return (
@@ -710,6 +1027,7 @@ export default function Estate() {
         {/* CALCULATORS TAB */}
         {tab === 'calculators' && (
           <>
+            <BeneficiaryPlanner/>
             <EstateTaxCalc/>
             <DocumentChecklist/>
           </>

@@ -1520,18 +1520,41 @@ const FIFTIES_LESSONS = [
 function DecadesPanel() {
   const [activeDec, setActiveDec] = useState("1950s");
   const [selectedBar, setSelectedBar] = useState(null);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <div>
       {/* Section header */}
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:"1rem" }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom: collapsed ? 0 : "1rem" }}>
         <div>
           <div className="t-section-title">Decade in Focus</div>
-          <div style={{ fontSize:"0.6875rem", color:"var(--text-3)", marginTop:2 }}>
-            Deep analysis of the most consequential market decades in history
-          </div>
+          {!collapsed && (
+            <div style={{ fontSize:"0.6875rem", color:"var(--text-3)", marginTop:2 }}>
+              Deep analysis of the most consequential market decades in history
+            </div>
+          )}
         </div>
+        <button
+          onClick={() => setCollapsed(c => !c)}
+          title={collapsed ? "Expand" : "Minimize"}
+          style={{
+            display:"flex", alignItems:"center", gap:5,
+            background:"transparent", border:"1px solid var(--border-c)",
+            borderRadius:7, padding:"4px 10px", cursor:"pointer",
+            color:"var(--text-3)", fontSize:"0.6875rem", fontFamily:"inherit",
+            transition:"all 0.15s",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = GOLD; e.currentTarget.style.color = GOLD; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-c)"; e.currentTarget.style.color = "var(--text-3)"; }}
+        >
+          {collapsed
+            ? <><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> Show</>
+            : <><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 8l4-4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> Hide</>
+          }
+        </button>
       </div>
+      {!collapsed && (
+      <div>
 
       {/* Decade tabs */}
       <div style={{ display:"flex", gap:"0.25rem", flexWrap:"wrap", marginBottom:"1.5rem",
@@ -1998,6 +2021,8 @@ function DecadesPanel() {
           </div>
 
         </div>
+      )}
+      </div>
       )}
     </div>
   );

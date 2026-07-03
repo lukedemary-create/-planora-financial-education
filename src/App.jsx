@@ -1,11 +1,19 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Outlet, Navigate } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Route, Routes, Outlet, Navigate, useLocation } from 'react-router-dom';
+import { Suspense, lazy, useEffect } from 'react';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import ErrorBoundary from '@/lib/ErrorBoundary';
 import Layout from './Layout';
+import NavAssistant from './components/NavAssistant';
+
+/* ─── Scroll to top on route change ─────────────────────────────── */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 
 /* ─── Route guards ───────────────────────────────────────────────── */
 function RequireAuth({ children }) {
@@ -24,42 +32,38 @@ function RedirectIfAuth({ children }) {
 const PageNotFound       = lazy(() => import('./lib/PageNotFound'));
 const Dashboard          = lazy(() => import('./pages/Dashboard'));
 const AIAdvisor          = lazy(() => import('./pages/AIAdvisor'));
-const AdvisorMarketplace = lazy(() => import('./pages/AdvisorMarketplace'));
-const BudgetPlanner      = lazy(() => import('./pages/BudgetPlanner'));
+// BudgetPlanner removed — lives in FUN platform
 const Calculators        = lazy(() => import('./pages/Calculators'));
-const FuturePlanning     = lazy(() => import('./pages/FuturePlanning'));
 const MarketHistory      = lazy(() => import('./pages/MarketHistory'));
 const PoliticsEconomy    = lazy(() => import('./pages/PoliticsEconomy'));
 const RiskAnalysis       = lazy(() => import('./pages/RiskAnalysis'));
-const StockLookup        = lazy(() => import('./pages/StockLookup'));
-const TickerLookup       = lazy(() => import('./pages/TickerLookup'));
+// const TickerLookup    = lazy(() => import('./pages/TickerLookup')); // paused
 const Settings           = lazy(() => import('./pages/Settings'));
 
 /* ─── New pages ──────────────────────────────────────────────────── */
 const Terminal           = lazy(() => import('./pages/Terminal'));
-const Sectors            = lazy(() => import('./pages/Sectors'));
-const TopPerformers      = lazy(() => import('./pages/TopPerformers'));
 const EconomicCalendar   = lazy(() => import('./pages/EconomicCalendar'));
-const Energy             = lazy(() => import('./pages/Energy'));
+// const Energy          = lazy(() => import('./pages/Energy'));          // paused
 const Labor              = lazy(() => import('./pages/Labor'));
-const Watchlist          = lazy(() => import('./pages/Watchlist'));
+// const Watchlist       = lazy(() => import('./pages/Watchlist'));       // paused
 const MarketBreadth      = lazy(() => import('./pages/MarketBreadth'));
-const LifeInsurance      = lazy(() => import('./pages/LifeInsurance'));
 const WealthCounsel      = lazy(() => import('./pages/WealthCounsel'));
 const Landing            = lazy(() => import('./pages/Landing'));
 const Consumer           = lazy(() => import('./pages/Consumer'));
 const PlonoraAI          = lazy(() => import('./pages/PlonoraAI'));
 const BrokerageGuide     = lazy(() => import('./pages/BrokerageGuide'));
-const MarketNews         = lazy(() => import('./pages/MarketNews'));
 const RealEstate         = lazy(() => import('./pages/RealEstate'));
-const InsiderTrading     = lazy(() => import('./pages/InsiderTrading'));
-const NetWorthTracker    = lazy(() => import('./pages/NetWorthTracker'));
-const TaxPlanning        = lazy(() => import('./pages/TaxPlanning'));
-const SocialSecurity        = lazy(() => import('./pages/SocialSecurity'));
-const RetirementPlanning    = lazy(() => import('./pages/RetirementPlanning'))
+// const InsiderTrading  = lazy(() => import('./pages/InsiderTrading'));  // paused
+// NetWorthTracker removed — lives in FUN platform
+// SocialSecurity removed — lives in FUN platform
 const BusinessPlanning      = lazy(() => import('./pages/BusinessPlanning'));
-const RealEstatePlanning    = lazy(() => import('./pages/RealEstatePlanning'));
-const FamilyPlanning        = lazy(() => import('./pages/FamilyPlanning'));
+const ElasticBand           = lazy(() => import('./pages/ElasticBand'));
+const BestDays              = lazy(() => import('./pages/BestDays'));
+const HorizonFlip           = lazy(() => import('./pages/HorizonFlip'));
+const PerfectTime           = lazy(() => import('./pages/PerfectTime'));
+const DoomLoop              = lazy(() => import('./pages/DoomLoop'));
+const PlanningLetter        = lazy(() => import('./pages/PlanningLetter'));
+const TheFeed               = lazy(() => import('./pages/TheFeed'));
 const Hub                   = lazy(() => import('./pages/Hub'));
 const TerminalHub           = lazy(() => import('./pages/TerminalHub'));
 const PlanningHub           = lazy(() => import('./pages/PlanningHub'));
@@ -127,7 +131,9 @@ function AppRoutes() {
   }
 
   return (
-    <Suspense fallback={<Loader />}>
+    <>
+      <NavAssistant />
+      <Suspense fallback={<Loader />}>
       <Routes>
         {/* ── Auth ── */}
         <Route path="/login" element={<RedirectIfAuth><Login /></RedirectIfAuth>} />
@@ -151,53 +157,47 @@ function AppRoutes() {
         <Route path="/wealth"              element={<RequireAuth><WealthHub /></RequireAuth>} />
         <Route path="/macro"               element={<RequireAuth><MacroHub /></RequireAuth>} />
         <Route path="/education-hub"       element={<RequireAuth><EducationHub /></RequireAuth>} />
-        <Route path="/wealth-counsel"      element={<RequireAuth><WealthCounselHub /></RequireAuth>} />
+        <Route path="/wealth-counsel"      element={<RequireAuth><WealthCounsel /></RequireAuth>} />
+        <Route path="/wealth-counsel-hub"  element={<RequireAuth><WealthCounselHub /></RequireAuth>} />
         <Route path="/insights"            element={<RequireAuth><FeaturedInsights /></RequireAuth>} />
         <Route path="/insights/:slug"      element={<RequireAuth><InsightArticle /></RequireAuth>} />
-        <Route path="/WealthCounsel"       element={<RequireAuth><WealthCounsel /></RequireAuth>} />
+        <Route path="/WealthCounsel"       element={<Navigate to="/wealth-counsel" replace />} />
+        <Route path="/business-planning"   element={<RequireAuth><BusinessPlanning /></RequireAuth>} />
+        <Route path="/planning-letter"     element={<RequireAuth><PlanningLetter /></RequireAuth>} />
+        <Route path="/the-feed"            element={<RequireAuth><TheFeed /></RequireAuth>} />
 
         {/* ── Planora Terminal (Layout sidebar) ── */}
         <Route element={<RequireAuth><Layout><Outlet /></Layout></RequireAuth>}>
           <Route path="/hub"                 element={<Hub />} />
           <Route path="/planning"            element={<PlanningHub />} />
           <Route path="/dashboard"           element={<Dashboard />} />
-          <Route path="/Dashboard"           element={<Dashboard />} />
-          <Route path="/AIAdvisor"           element={<AIAdvisor />} />
-          <Route path="/AdvisorMarketplace"  element={<AdvisorMarketplace />} />
-          <Route path="/BudgetPlanner"       element={<BudgetPlanner />} />
+          <Route path="/financial-reports"   element={<AIAdvisor />} />
           <Route path="/Calculators"         element={<Calculators />} />
-          <Route path="/FuturePlanning"      element={<FuturePlanning />} />
+
           <Route path="/MarketHistory"       element={<MarketHistory />} />
+          <Route path="/elastic-band"        element={<ElasticBand />} />
+          <Route path="/best-days"           element={<BestDays />} />
+          <Route path="/horizon-flip"        element={<HorizonFlip />} />
+          <Route path="/perfect-time"        element={<PerfectTime />} />
+          <Route path="/doom-loop"           element={<DoomLoop />} />
           <Route path="/PoliticsEconomy"     element={<PoliticsEconomy />} />
           <Route path="/RiskAnalysis"        element={<RiskAnalysis />} />
-          <Route path="/StockLookup"         element={<StockLookup />} />
-          <Route path="/TickerLookup"        element={<TickerLookup />} />
           <Route path="/Settings"            element={<Settings />} />
           <Route path="/terminal"            element={<Terminal />} />
-          <Route path="/sectors"             element={<Sectors />} />
-          <Route path="/top-performers"      element={<TopPerformers />} />
           <Route path="/economic-calendar"   element={<EconomicCalendar />} />
-          <Route path="/energy"              element={<Energy />} />
+          {/* <Route path="/energy" element={<Energy />} /> */}
           <Route path="/labor"               element={<Labor />} />
-          <Route path="/watchlist"           element={<Watchlist />} />
+          {/* <Route path="/watchlist" element={<Watchlist />} /> */}
           <Route path="/market-breadth"      element={<MarketBreadth />} />
-          <Route path="/life-insurance"      element={<LifeInsurance />} />
           <Route path="/consumer"            element={<Consumer />} />
           <Route path="/brokerage-guide"     element={<BrokerageGuide />} />
-          <Route path="/market-news"        element={<MarketNews />} />
           <Route path="/real-estate"        element={<RealEstate />} />
-          <Route path="/insider-trading"    element={<InsiderTrading />} />
-          <Route path="/net-worth"          element={<NetWorthTracker />} />
-          <Route path="/tax-planning"       element={<TaxPlanning />} />
-          <Route path="/social-security"       element={<SocialSecurity />} />
-          <Route path="/retirement-planning"   element={<RetirementPlanning />} />
-          <Route path="/business-planning"    element={<BusinessPlanning />} />
-          <Route path="/real-estate-planning" element={<RealEstatePlanning />} />
-          <Route path="/family-planning"      element={<FamilyPlanning />} />
+          {/* <Route path="/insider-trading" element={<InsiderTrading />} /> */}
           <Route path="*"                    element={<PageNotFound />} />
         </Route>
       </Routes>
     </Suspense>
+    </>
   );
 }
 
@@ -208,6 +208,7 @@ export default function App() {
       <AuthProvider>
         <QueryClientProvider client={queryClientInstance}>
           <Router>
+            <ScrollToTop />
             <AppRoutes />
           </Router>
           <Toaster />

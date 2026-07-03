@@ -10,21 +10,21 @@ const TAB_STACKS_KEY = "planora_tab_stacks";
 const SCROLL_POSITIONS_KEY = "planora_scroll_positions";
 
 // Main tab paths that preserve their own navigation stacks
-const TAB_ROOTS = ["/Dashboard", "/education-hub", "/TickerLookup", "/AIAdvisor"];
+const TAB_ROOTS = ["/dashboard", "/education-hub", "/terminal", "/financial-reports"];
 
 export function MobileStackManager({ children }) {
   const [globalHistory, setGlobalHistory] = useState(() => {
     const stored = sessionStorage.getItem(HISTORY_KEY);
-    return stored ? JSON.parse(stored) : ["/Dashboard"];
+    return stored ? JSON.parse(stored) : ["/dashboard"];
   });
-  
+
   const [tabStacks, setTabStacks] = useState(() => {
     const stored = sessionStorage.getItem(TAB_STACKS_KEY);
     return stored ? JSON.parse(stored) : {
-      "/Dashboard": ["/Dashboard"],
+      "/dashboard": ["/dashboard"],
       "/education-hub": ["/education-hub"],
-      "/TickerLookup": ["/TickerLookup"],
-      "/AIAdvisor": ["/AIAdvisor"]
+      "/terminal": ["/terminal"],
+      "/financial-reports": ["/financial-reports"]
     };
   });
 

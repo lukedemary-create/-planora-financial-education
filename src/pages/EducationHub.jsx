@@ -4,7 +4,7 @@ import { motion, useInView } from 'framer-motion'
 import {
   BookOpen, Wallet, CreditCard, TrendingUp, Shield, FileText,
   Clock, Home, Calendar, ArrowUpRight, ChevronRight, BarChart2,
-  Lightbulb, Target, Users, CheckCircle2, XCircle, GraduationCap, Scale,
+  Lightbulb, Target, Users, CheckCircle2, XCircle, GraduationCap, Scale, PieChart,
 } from 'lucide-react'
 
 const DISPLAY = "'Playfair Display', Georgia, serif"
@@ -100,42 +100,18 @@ const SECTIONS = [
   },
   {
     icon: TrendingUp,
-    label: 'Investing Fundamentals',
+    label: 'Investing & Accounts',
     desc: 'Index funds, ETFs, diversification, dollar-cost averaging — the investing principles that actually build long-term wealth.',
     href: '/fun/investing',
     concept: 'Dollar-Cost Averaging',
     accent: C.teal, accentDim: C.tealDim, accentBdr: C.tealBdr,
   },
   {
-    icon: Shield,
-    label: 'Insurance Planning',
-    desc: 'Life, health, disability, and auto insurance — how to calculate the right coverage and stop paying for the wrong kind.',
-    href: '/fun/insurance',
-    concept: 'Human Life Value',
-    accent: C.teal, accentDim: C.tealDim, accentBdr: C.tealBdr,
-  },
-  {
-    icon: FileText,
-    label: 'Estate & Wills',
-    desc: 'Wills, trusts, beneficiary designations, power of attorney — the documents everyone needs but few people have.',
-    href: '/fun/estate',
-    concept: 'Probate',
-    accent: C.teal, accentDim: C.tealDim, accentBdr: C.tealBdr,
-  },
-  {
-    icon: Clock,
-    label: 'Retirement Concepts',
-    desc: '401(k), IRA, Roth, pension — understand the accounts, the rules, and the strategy before you need them.',
-    href: '/fun/retirement',
-    concept: 'Safe Withdrawal Rate',
-    accent: C.teal, accentDim: C.tealDim, accentBdr: C.tealBdr,
-  },
-  {
-    icon: Home,
-    label: 'Major Purchases',
-    desc: 'Buying a home, a car, or any major asset — how to evaluate the true cost and make the decision strategically.',
-    href: '/fun/major-purchases',
-    concept: 'Opportunity Cost',
+    icon: PieChart,
+    label: 'Portfolio Structure',
+    desc: 'Asset allocation, rebalancing, diversification across asset classes — how to build and maintain a resilient portfolio.',
+    href: '/fun/portfolio',
+    concept: 'Asset Allocation',
     accent: C.teal, accentDim: C.tealDim, accentBdr: C.tealBdr,
   },
   {
@@ -152,14 +128,6 @@ const SECTIONS = [
     desc: 'Curated books, tools, calculators, and institutions — the trusted resources for every stage of the financial journey.',
     href: '/fun/resources',
     concept: 'Financial Literacy',
-    accent: C.teal, accentDim: C.tealDim, accentBdr: C.tealBdr,
-  },
-  {
-    icon: Scale,
-    label: 'Tax Planning',
-    desc: 'Tax brackets, deductions, Roth vs. traditional accounts, capital gains, and strategies every investor should know.',
-    href: '/fun/tax-planning',
-    concept: 'Tax Alpha',
     accent: C.teal, accentDim: C.tealDim, accentBdr: C.tealBdr,
   },
   {
@@ -347,7 +315,7 @@ export default function EducationHub() {
           <div>
             <div style={{ fontFamily: UI, fontSize: '0.625rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: C.t3, marginBottom: 8 }}>Explore FUN</div>
             <h2 style={{ fontFamily: DISPLAY, fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: C.t1, margin: 0, letterSpacing: '-0.02em' }}>
-              Nine modules.<em style={{ fontStyle: 'italic', color: C.teal }}> Every concept you need.</em>
+              Seven modules.<em style={{ fontStyle: 'italic', color: C.teal }}> Every concept you need.</em>
             </h2>
           </div>
           <p style={{ fontFamily: UI, fontSize: '0.8125rem', color: C.t3, maxWidth: 340, lineHeight: 1.65, margin: 0 }}>Each module combines education, interactive calculators, and practical frameworks. Start anywhere.</p>

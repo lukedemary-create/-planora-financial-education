@@ -9,6 +9,7 @@ import CompoundInterestCalc from "../components/calculators/CompoundInterestCalc
 import RetirementCalc from "../components/calculators/RetirementCalc";
 import MortgageCalc from "../components/calculators/MortgageCalc";
 import TaxSavingsCalc from "../components/calculators/TaxSavingsCalc";
+import { TAX_2026 } from "../config/taxConstants2026";
 
 /* ── Format helpers ─────────────────────────────────────────────────────── */
 const fC = (n, dec = 2) => n == null || isNaN(n) ? "—" :
@@ -968,13 +969,13 @@ const CALC_REGISTRY = [
     id: "income-tax", label: "Income Tax Calculator", category: "Tax & Salary",
     inputs: [
       { id: "income",  label: "Gross Income ($)",      defaultVal: 95000, step: 5000 },
-      { id: "filing",  label: "Standard Deduction ($)",defaultVal: 14600, step: 100  },
+      { id: "filing",  label: "Standard Deduction ($)",defaultVal: TAX_2026.standardDeduction.single, step: 100  },
       { id: "other",   label: "Other Deductions ($)",  defaultVal: 0,     step: 500  },
     ],
     calculate: (v) => {
       const taxable = Math.max(0, v.income - v.filing - v.other);
-      // 2024 single brackets
-      const brackets = [[11600,0.10],[47150,0.12],[100525,0.22],[191950,0.24],[243725,0.32],[609350,0.35],[Infinity,0.37]];
+      // 2026 single brackets
+      const brackets = TAX_2026.ordinaryBrackets.single.map(b => [b.upTo, b.rate]);
       let tax = 0, prev = 0;
       for (const [limit, rate] of brackets) {
         if (taxable <= prev) break;
@@ -1039,7 +1040,7 @@ const CALC_REGISTRY = [
     inputs: [
       { id: "estate",    label: "Gross Estate Value ($)",  defaultVal: 15000000, step: 500000 },
       { id: "debts",     label: "Debts & Expenses ($)",    defaultVal: 500000,   step: 100000 },
-      { id: "exemption", label: "Federal Exemption ($)",   defaultVal: 13610000, step: 100000 },
+      { id: "exemption", label: "Federal Exemption ($)",   defaultVal: TAX_2026.estate.lifetimeExemption, step: 100000 },
     ],
     calculate: (v) => {
       const netEstate = v.estate - v.debts;
@@ -1063,7 +1064,7 @@ const CALC_REGISTRY = [
     calculate: (v) => {
       const calcTax = (income, deduction) => {
         const taxable = Math.max(0, income - deduction);
-        const brackets = [[11600,0.10],[47150,0.12],[100525,0.22],[191950,0.24],[243725,0.32],[609350,0.35],[Infinity,0.37]];
+        const brackets = TAX_2026.ordinaryBrackets.single.map(b => [b.upTo, b.rate]);
         let tax = 0, prev = 0;
         for (const [limit, rate] of brackets) {
           if (taxable <= prev) break;
@@ -1072,16 +1073,16 @@ const CALC_REGISTRY = [
         }
         return tax;
       };
-      const mfjBrackets = [[23200,0.10],[94300,0.12],[201050,0.22],[383900,0.24],[487450,0.32],[731200,0.35],[Infinity,0.37]];
+      const mfjBrackets = TAX_2026.ordinaryBrackets.mfj.map(b => [b.upTo, b.rate]);
       const combined = v.income1 + v.income2;
-      const taxable  = Math.max(0, combined - 29200);
+      const taxable  = Math.max(0, combined - TAX_2026.standardDeduction.mfj);
       let mfjTax = 0, prev = 0;
       for (const [limit, rate] of mfjBrackets) {
         if (taxable <= prev) break;
         mfjTax += (Math.min(taxable, limit) - prev) * rate;
         prev = limit;
       }
-      const singleTax = calcTax(v.income1, 14600) + calcTax(v.income2, 14600);
+      const singleTax = calcTax(v.income1, TAX_2026.standardDeduction.single) + calcTax(v.income2, TAX_2026.standardDeduction.single);
       const diff = mfjTax - singleTax;
       return [
         { label: "MFJ Tax",         value: fC(mfjTax, 0), highlight: true },

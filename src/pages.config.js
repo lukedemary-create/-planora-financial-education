@@ -50,7 +50,6 @@
 import { lazy } from 'react';
 
 const AIAdvisor = lazy(() => import('./pages/AIAdvisor'));
-const AdvisorMarketplace = lazy(() => import('./pages/AdvisorMarketplace'));
 const BudgetPlanner = lazy(() => import('./pages/BudgetPlanner'));
 const Calculators = lazy(() => import('./pages/Calculators'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -67,7 +66,6 @@ import __Layout from './Layout.jsx';
 
 export const PAGES = {
     "AIAdvisor": AIAdvisor,
-    "AdvisorMarketplace": AdvisorMarketplace,
     "BudgetPlanner": BudgetPlanner,
     "Calculators": Calculators,
     "Dashboard": Dashboard,

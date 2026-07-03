@@ -7,7 +7,7 @@ import {
 import {
   TrendingUp, DollarSign, Target, Shield, Brain, ChevronRight, ChevronLeft,
   Check, Zap, Heart, Briefcase, Users,
-  Download, RefreshCw, Star, Award, Clock, BarChart2, Sun, Plane, Home,
+  Download, RefreshCw, Star, Award, Clock, BarChart2, Sun, Plane, Home, Link2,
 } from "lucide-react";
 import ReactConfetti from "react-confetti";
 
@@ -1438,6 +1438,36 @@ export default function RetirementPlanning() {
               <span style={{ fontSize: 10, fontWeight: 700, color: C.gold, letterSpacing: "0.1em" }}>AUTO-SAVED</span>
             </div>
           </div>
+
+          {/* Data Connection Banner */}
+          {(importedFlags.income || importedFlags.assets) && (
+            <div style={{
+              display: "flex", alignItems: "flex-start", gap: 12,
+              background: `${C.goldDim}`,
+              border: `1px solid ${C.gold}28`,
+              borderRadius: 12, padding: "11px 15px", marginBottom: 18,
+            }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: `${C.gold}18`, border: `1px solid ${C.gold}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                <Link2 size={12} color={C.gold} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: C.text, fontFamily: "'Inter', system-ui, sans-serif", marginBottom: 5 }}>
+                  Data auto-imported from connected sections
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                  {importedFlags.income  && <span style={{ padding: "2px 8px", background: `${C.gold}12`, border: `1px solid ${C.gold}28`, borderRadius: 5, fontSize: 10, color: C.gold, fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 600 }}>Budget Planner · Income</span>}
+                  {importedFlags.assets  && <span style={{ padding: "2px 8px", background: `${C.gold}12`, border: `1px solid ${C.gold}28`, borderRadius: 5, fontSize: 10, color: C.gold, fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 600 }}>Net Worth Tracker · Assets</span>}
+                  {importedFlags.age     && <span style={{ padding: "2px 8px", background: `${C.gold}12`, border: `1px solid ${C.gold}28`, borderRadius: 5, fontSize: 10, color: C.gold, fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 600 }}>Budget Planner · Age</span>}
+                  {importedFlags.insurance && <span style={{ padding: "2px 8px", background: `${C.gold}12`, border: `1px solid ${C.gold}28`, borderRadius: 5, fontSize: 10, color: C.gold, fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 600 }}>Life Insurance · Coverage</span>}
+                  {importedFlags.risk    && <span style={{ padding: "2px 8px", background: `${C.gold}12`, border: `1px solid ${C.gold}28`, borderRadius: 5, fontSize: 10, color: C.gold, fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 600 }}>Risk Analysis · Profile</span>}
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#4a7c59" }} />
+                <span style={{ fontSize: 10, fontWeight: 700, color: "#4a7c59", letterSpacing: "0.08em", textTransform: "uppercase", fontFamily: "'Inter', system-ui, sans-serif" }}>Synced</span>
+              </div>
+            </div>
+          )}
 
           {/* Progress timeline */}
           <ProgressTimeline current={step} completed={completed} onJump={handleJump} />

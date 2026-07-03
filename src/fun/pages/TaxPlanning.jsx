@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTip, ResponsiveContainer,
-  Cell, PieChart, Pie, Legend,
+  Cell, PieChart, Pie, Legend, LineChart, Line, CartesianGrid,
 } from 'recharts';
 import {
   Info, CheckCircle2, AlertCircle, ChevronDown, ChevronUp,
@@ -1221,10 +1221,296 @@ function TabAdvanced() {
   );
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   ROTH CONVERSION ANALYZER
+══════════════════════════════════════════════════════════════════ */
+const MONO = "'JetBrains Mono','Courier New',monospace";
+
+function RothConversionTab() {
+  const [balance,       setBalance]       = useState(250000);
+  const [currentAge,    setCurrentAge]    = useState(45);
+  const [retireAge,     setRetireAge]     = useState(65);
+  const [currentIncome, setCurrentIncome] = useState(95000);
+  const [convertAmount, setConvertAmount] = useState(20000);
+  const [retireIncome,  setRetireIncome]  = useState(60000);
+  const [filing,        setFiling]        = useState('single');
+
+  const stdDed = STD_DED[filing];
+  const conversionTaxCost =
+    calcTax(Math.max(0, currentIncome + convertAmount - stdDed), filing) -
+    calcTax(Math.max(0, currentIncome - stdDed), filing);
+  const yearsToRetire = Math.max(1, retireAge - currentAge);
+  const growthRate    = 0.07;
+  const rothGrowth    = convertAmount * Math.pow(1 + growthRate, yearsToRetire);
+  const retireTaxOnTrad =
+    calcTax(Math.max(0, retireIncome + convertAmount - stdDed), filing) -
+    calcTax(Math.max(0, retireIncome - stdDed), filing);
+  const netBenefit    = retireTaxOnTrad - conversionTaxCost;
+
+  const projData = Array.from({ length: Math.min(yearsToRetire + 1, 31) }, (_, i) => ({
+    year: currentAge + i,
+    trad: Math.round(convertAmount * Math.pow(1 + growthRate, i)),
+    roth: Math.round((convertAmount - conversionTaxCost) * Math.pow(1 + growthRate, i)),
+  }));
+
+  const fmtV = n => '$' + Math.round(n).toLocaleString();
+
+  const FilingBtn = ({ v, l }) => (
+    <button onClick={() => setFiling(v)} style={{
+      padding: '4px 14px', borderRadius: 20, fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', fontFamily: UI,
+      border: `1px solid ${filing === v ? TEAL : B2}`,
+      background: filing === v ? `${TEAL}18` : RAISE,
+      color: filing === v ? TEAL : T3,
+    }}>{l}</button>
+  );
+
+  const FSlider = ({ label, val, set, min = 0, max, step = 1000, fmtFn = fmtV }) => (
+    <div style={{ marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+        <span style={{ fontSize: '0.8125rem', color: T3, fontFamily: UI }}>{label}</span>
+        <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: GOLD, fontFamily: MONO }}>{fmtFn(val)}</span>
+      </div>
+      <input type="range" min={min} max={max} step={step} value={val}
+        onChange={e => set(Number(e.target.value))}
+        style={{ width: '100%', accentColor: TEAL, cursor: 'pointer' }} />
+    </div>
+  );
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <p style={{ fontFamily: UI, fontSize: '0.875rem', color: T3, margin: 0, lineHeight: 1.65 }}>
+        Should you convert traditional IRA/401(k) funds to Roth now? This tool calculates whether paying taxes today saves more than deferring to retirement — based on your actual 2026 tax brackets.
+      </p>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '1.25rem', alignItems: 'start' }}>
+        {/* Controls */}
+        <SCard title="">
+          <div style={{ fontFamily: UI, fontSize: '0.75rem', fontWeight: 700, color: T3, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.875rem' }}>Inputs</div>
+          <div style={{ display: 'flex', gap: '0.375rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+            {[['single','Single'],['mfj','MFJ'],['hoh','HOH'],['mfs','MFS']].map(([v,l]) => <FilingBtn key={v} v={v} l={l} />)}
+          </div>
+          <FSlider label="Traditional IRA / 401(k) Balance" val={balance} set={setBalance} max={2000000} step={5000} />
+          <FSlider label="Conversion Amount This Year" val={convertAmount} set={setConvertAmount} max={200000} />
+          <FSlider label="Current Annual Income" val={currentIncome} set={setCurrentIncome} max={400000} step={2000} />
+          <FSlider label="Expected Retirement Income" val={retireIncome} set={setRetireIncome} max={300000} step={2000} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <FSlider label={`Current Age: ${currentAge}`} val={currentAge} set={setCurrentAge} min={22} max={72} step={1} fmtFn={v => v+' yrs'} />
+            <FSlider label={`Retire Age: ${retireAge}`} val={retireAge} set={setRetireAge} min={50} max={80} step={1} fmtFn={v => v+' yrs'} />
+          </div>
+        </SCard>
+
+        {/* Results */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+          {/* KPI row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div style={{ padding: '1rem 1.125rem', background: `${RED}0c`, border: `1px solid ${RED}28`, borderRadius: 12, textAlign: 'center' }}>
+              <div style={{ fontFamily: MONO, fontSize: '1.375rem', fontWeight: 800, color: RED, lineHeight: 1 }}>{fmtV(conversionTaxCost)}</div>
+              <div style={{ fontFamily: UI, fontSize: '0.75rem', color: T3, marginTop: 5 }}>Tax Cost Now</div>
+            </div>
+            <div style={{ padding: '1rem 1.125rem', background: `${GREEN}0c`, border: `1px solid ${GREEN}28`, borderRadius: 12, textAlign: 'center' }}>
+              <div style={{ fontFamily: MONO, fontSize: '1.375rem', fontWeight: 800, color: GREEN, lineHeight: 1 }}>{fmtV(retireTaxOnTrad)}</div>
+              <div style={{ fontFamily: UI, fontSize: '0.75rem', color: T3, marginTop: 5 }}>Tax Saved in Retirement</div>
+            </div>
+          </div>
+
+          {/* Verdict */}
+          <div style={{
+            padding: '1rem 1.125rem',
+            background: netBenefit > 0 ? `${GREEN}0c` : `${RED}0c`,
+            border: `1px solid ${netBenefit > 0 ? GREEN : RED}28`,
+            borderRadius: 12,
+          }}>
+            <div style={{ fontFamily: UI, fontSize: '0.875rem', fontWeight: 700, color: netBenefit > 0 ? GREEN : RED, marginBottom: 6 }}>
+              {netBenefit > 0 ? '✓ Conversion Recommended' : '✗ Conversion May Not Be Optimal'}
+            </div>
+            <div style={{ fontFamily: UI, fontSize: '0.8125rem', color: T2, lineHeight: 1.6 }}>
+              {netBenefit > 0
+                ? `Converting saves ${fmtV(netBenefit)} in lifetime taxes. Your current tax rate is lower than it will be in retirement.`
+                : `You're in a higher bracket now than in retirement. Delaying conversion keeps more money working tax-deferred.`}
+            </div>
+          </div>
+
+          {/* Growth projection chart */}
+          <SCard title="Converted Amount — Growth Projection" subtitle="After-Tax Roth vs. paying taxes later in retirement">
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={projData}>
+                <CartesianGrid strokeDasharray="3 3" stroke={B2} />
+                <XAxis dataKey="year" tick={{ fontSize: 10, fill: T3, fontFamily: MONO }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: T3 }} axisLine={false} tickLine={false} tickFormatter={v => '$'+(v/1000).toFixed(0)+'k'} />
+                <RechartsTip
+                  contentStyle={{ background: RAISE, border: `1px solid ${B2}`, borderRadius: 8, fontSize: 11, fontFamily: UI }}
+                  formatter={v => [fmtV(v)]}
+                />
+                <Legend wrapperStyle={{ fontSize: '0.75rem', fontFamily: UI }} />
+                <Line type="monotone" dataKey="trad" name="If Taxed Later" stroke={RED} strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="roth" name="After-Tax Roth Growth" stroke={GREEN} strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </SCard>
+
+          <InfoBox color={TEAL}>
+            <strong style={{ color: T1 }}>Rule of thumb:</strong> Convert when your current marginal rate is lower than your expected retirement rate. Common candidates: low-income years, early retirement before RMDs, years with large deductions. Never convert into a higher bracket than you expect in retirement.
+          </InfoBox>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   RMD CALCULATOR
+══════════════════════════════════════════════════════════════════ */
+const RMD_TABLE = {72:27.4,73:26.5,74:25.5,75:24.6,76:23.7,77:22.9,78:22.0,79:21.1,80:20.2,81:19.4,82:18.5,83:17.7,84:16.8,85:16.0,86:15.2,87:14.4,88:13.7,89:12.9,90:12.2,91:11.5,92:10.8,93:10.1,94:9.5,95:8.9,96:8.4,97:7.8,98:7.3,99:6.8,100:6.4};
+
+function RMDCalculatorTab() {
+  const [balance,     setBalance]     = useState(850000);
+  const [age,         setAge]         = useState(74);
+  const [otherIncome, setOtherIncome] = useState(45000);
+  const [filing,      setFiling]      = useState('single');
+
+  const divisor   = RMD_TABLE[Math.min(Math.max(age, 72), 100)] || 6.4;
+  const rmdAmount = balance / divisor;
+  const taxOnRMD  =
+    calcTax(Math.max(0, otherIncome + rmdAmount - STD_DED[filing]), filing) -
+    calcTax(Math.max(0, otherIncome - STD_DED[filing]), filing);
+  const penalty = rmdAmount * 0.25;
+
+  const futureRMDs = Array.from({ length: 10 }, (_, i) => {
+    const a       = age + i;
+    const div     = RMD_TABLE[Math.min(a, 100)] || 6.4;
+    const projBal = Math.max(0, balance * Math.pow(1.05, i) - (balance / divisor) * i);
+    const rmd     = projBal / div;
+    return { age: a, balance: Math.round(projBal), rmd: Math.round(rmd), divisor: div };
+  });
+
+  const fmtV = n => '$' + Math.round(n).toLocaleString();
+
+  const RSlider = ({ label, val, set, min = 0, max, step = 10000 }) => (
+    <div style={{ marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+        <span style={{ fontSize: '0.8125rem', color: T3, fontFamily: UI }}>{label}</span>
+        <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: GOLD, fontFamily: MONO }}>{fmtV(val)}</span>
+      </div>
+      <input type="range" min={min} max={max} step={step} value={val}
+        onChange={e => set(Number(e.target.value))}
+        style={{ width: '100%', accentColor: TEAL, cursor: 'pointer' }} />
+    </div>
+  );
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <p style={{ fontFamily: UI, fontSize: '0.875rem', color: T3, margin: 0, lineHeight: 1.65 }}>
+        Required Minimum Distributions begin at age 73 under the SECURE 2.0 Act. Missing your RMD triggers a <strong style={{ color: RED }}>25% penalty</strong> on the amount not withdrawn. Use this calculator to plan your distributions and minimize tax impact.
+      </p>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '1.25rem', alignItems: 'start' }}>
+        {/* Controls */}
+        <SCard title="">
+          <div style={{ fontFamily: UI, fontSize: '0.75rem', fontWeight: 700, color: T3, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.875rem' }}>Inputs</div>
+
+          <div style={{ display: 'flex', gap: '0.375rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+            {[['single','Single'],['mfj','MFJ'],['hoh','HOH'],['mfs','MFS']].map(([v,l]) => (
+              <button key={v} onClick={() => setFiling(v)} style={{
+                padding: '4px 14px', borderRadius: 20, fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', fontFamily: UI,
+                border: `1px solid ${filing === v ? TEAL : B2}`,
+                background: filing === v ? `${TEAL}18` : RAISE,
+                color: filing === v ? TEAL : T3,
+              }}>{l}</button>
+            ))}
+          </div>
+
+          <RSlider label="IRA / 401(k) Balance (Dec 31 prior year)" val={balance} set={setBalance} max={5000000} step={10000} />
+          <RSlider label="Other Annual Income (SS, pension, etc.)" val={otherIncome} set={setOtherIncome} max={200000} step={1000} />
+
+          <div style={{ marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+              <span style={{ fontSize: '0.8125rem', color: T3, fontFamily: UI }}>Your Age</span>
+              <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: GOLD, fontFamily: MONO }}>{age}</span>
+            </div>
+            <input type="range" min={72} max={100} step={1} value={age}
+              onChange={e => setAge(Number(e.target.value))}
+              style={{ width: '100%', accentColor: TEAL, cursor: 'pointer' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.625rem', color: T3, fontFamily: MONO, marginTop: 2 }}>
+              <span>72</span><span>80</span><span>90</span><span>100</span>
+            </div>
+          </div>
+
+          {/* KPIs */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+            {[
+              { label: 'RMD This Year',     value: fmtV(rmdAmount), color: GOLD  },
+              { label: 'IRS Life Divisor',  value: divisor,          color: TEAL  },
+              { label: 'Est. Tax on RMD',   value: fmtV(taxOnRMD),  color: RED   },
+              { label: 'Miss RMD Penalty',  value: fmtV(penalty),   color: RED   },
+            ].map(({ label, value, color }) => (
+              <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.625rem 0.875rem', background: RAISE, border: `1px solid ${B2}`, borderRadius: 9 }}>
+                <span style={{ fontFamily: UI, fontSize: '0.8125rem', color: T3 }}>{label}</span>
+                <span style={{ fontFamily: MONO, fontSize: '0.9375rem', fontWeight: 800, color }}>{value}</span>
+              </div>
+            ))}
+          </div>
+        </SCard>
+
+        {/* 10-Year Projection Table */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+          <SCard title="10-Year RMD Projection" subtitle="Estimated required distributions assuming 5% annual account growth.">
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', minWidth: 380, borderCollapse: 'collapse', fontFamily: UI }}>
+                <thead>
+                  <tr style={{ background: RAISE, borderBottom: `2px solid ${B2}` }}>
+                    {['Age', 'Account Balance', 'RMD Required', 'IRS Divisor'].map((h, i) => (
+                      <th key={h} style={{ padding: '0.5rem 0.75rem', textAlign: i === 0 ? 'left' : 'right', fontSize: '0.6875rem', fontWeight: 700, color: T3, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {futureRMDs.map((row, i) => (
+                    <tr key={row.age} style={{ background: i % 2 === 0 ? RAISE : SURF, borderBottom: `1px solid ${B1}` }}>
+                      <td style={{ padding: '0.625rem 0.75rem', fontWeight: i === 0 ? 700 : 400, color: i === 0 ? GOLD : T2, fontSize: '0.875rem' }}>{row.age}{i === 0 ? ' ← now' : ''}</td>
+                      <td style={{ padding: '0.625rem 0.75rem', textAlign: 'right', fontFamily: MONO, fontSize: '0.875rem', color: T2 }}>{fmtV(row.balance)}</td>
+                      <td style={{ padding: '0.625rem 0.75rem', textAlign: 'right', fontFamily: MONO, fontSize: '0.875rem', fontWeight: 700, color: i === 0 ? RED : T2 }}>{fmtV(row.rmd)}</td>
+                      <td style={{ padding: '0.625rem 0.75rem', textAlign: 'right', fontSize: '0.8125rem', color: T3 }}>{row.divisor}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </SCard>
+
+          <SCard title="RMD Reduction Strategies">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+              {[
+                { strategy: 'Roth Conversions Before 73', desc: 'Converting traditional IRA funds to Roth before RMDs begin reduces your future taxable RMD balance permanently.', color: GREEN },
+                { strategy: 'Qualified Charitable Distribution (QCD)', desc: 'If 70½ or older, donate up to $105,000/yr directly from your IRA to charity. Counts toward RMD but excluded from taxable income.', color: TEAL },
+                { strategy: 'Still Working Exception', desc: "If you're still employed at 73+, your current employer's 401(k) may be exempt from RMDs (not IRAs — those still require distributions).", color: GOLD },
+                { strategy: 'Aggregate Multiple IRAs', desc: 'If you have multiple IRAs, you can take the total RMD from any one or combination of IRAs — you don\'t need to pull separately from each.', color: AMBER },
+              ].map(({ strategy, desc, color }) => (
+                <div key={strategy} style={{ display: 'flex', gap: '0.875rem', padding: '0.75rem 0.875rem', background: `${color}0a`, border: `1px solid ${color}28`, borderRadius: 10 }}>
+                  <div style={{ width: 4, borderRadius: 2, background: color, flexShrink: 0 }} />
+                  <div>
+                    <div style={{ fontFamily: UI, fontSize: '0.875rem', fontWeight: 700, color: T1, marginBottom: 3 }}>{strategy}</div>
+                    <div style={{ fontFamily: UI, fontSize: '0.8125rem', color: T3, lineHeight: 1.55 }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SCard>
+
+          <InfoBox color={GOLD}>
+            <strong style={{ color: T1 }}>Pro tip:</strong> Converting IRA funds to Roth before age 73 is one of the most powerful RMD reduction strategies available. Use the Roth Conversion tab to model the tax cost vs. lifetime RMD reduction.
+          </InfoBox>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Main component ───────────────────────────────────────────── */
 const TABS = [
   { key: 'numbers',   label: 'Key Numbers',          icon: BarChart2   },
   { key: 'calc',      label: 'Bracket Calculator',   icon: Calculator  },
+  { key: 'roth',      label: 'Roth Conversion',      icon: RefreshCw   },
+  { key: 'rmd',       label: 'RMD Calculator',       icon: Clock       },
   { key: 'accounts',  label: 'Accounts & Location',  icon: Layers      },
   { key: 'equity',    label: 'Equity Compensation',  icon: TrendingUp  },
   { key: 'advanced',  label: 'Advanced Strategies',  icon: Zap         },
@@ -1293,6 +1579,8 @@ export default function TaxPlanning() {
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '1.5rem 2rem 0' }}>
         {activeTab === 'numbers'  && <TabKeyNumbers />}
         {activeTab === 'calc'     && <TabCalculator />}
+        {activeTab === 'roth'     && <RothConversionTab />}
+        {activeTab === 'rmd'      && <RMDCalculatorTab />}
         {activeTab === 'accounts' && <TabAccounts />}
         {activeTab === 'equity'   && <TabEquity />}
         {activeTab === 'advanced' && <TabAdvanced />}

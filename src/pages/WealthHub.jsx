@@ -4,7 +4,7 @@ import { motion, useInView } from 'framer-motion'
 import {
   TrendingUp, BarChart2, Wallet, Search, BookOpen, Eye,
   Calculator, PieChart, ArrowUpRight, ChevronRight, Target, Shield, Clock,
-  CheckCircle2, XCircle,
+  CheckCircle2, XCircle, Sparkles,
 } from 'lucide-react'
 
 const DISPLAY = "'Playfair Display', Georgia, serif"
@@ -101,20 +101,6 @@ const SECTIONS = [
     concept: 'Expense Ratio',
   },
   {
-    icon: Search,
-    label: 'Stock & Ticker Lookup',
-    desc: 'Deep-dive fundamentals, price history, earnings, analyst ratings, and insider ownership for any ticker.',
-    href: '/TickerLookup',
-    concept: 'Price-to-Earnings Ratio',
-  },
-  {
-    icon: Eye,
-    label: 'Watchlist',
-    desc: 'Track securities you\'re monitoring — price alerts, momentum signals, and portfolio fit analysis.',
-    href: '/watchlist',
-    concept: 'Position Sizing',
-  },
-  {
     icon: BarChart2,
     label: 'Market Breadth',
     desc: 'Advance/decline ratios, new highs/lows, and market internals that reveal the true health beneath the surface.',
@@ -122,11 +108,11 @@ const SECTIONS = [
     concept: 'Breadth Divergence',
   },
   {
-    icon: Eye,
-    label: 'Insider Trading',
-    desc: 'SEC Form 4 filings — track when executives and insiders buy or sell their own company\'s stock.',
-    href: '/insider-trading',
-    concept: 'Form 4 Filing',
+    icon: Sparkles,
+    label: 'Financial Reports',
+    desc: 'Personalized financial planning reports — wealth diagnostics, tax efficiency, retirement readiness, and more.',
+    href: '/financial-reports',
+    concept: 'Financial Health Score',
   },
 ]
 
@@ -302,7 +288,7 @@ export default function WealthHub() {
           <div>
             <div style={{ fontFamily: UI, fontSize: '0.625rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: C.t3, marginBottom: 8 }}>Explore wealth</div>
             <h2 style={{ fontFamily: DISPLAY, fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: C.t1, margin: 0, letterSpacing: '-0.02em' }}>
-              Eight tools for<em style={{ fontStyle: 'italic', color: C.gold }}> building and protecting</em>
+              Five tools for<em style={{ fontStyle: 'italic', color: C.gold }}> building and protecting</em>
             </h2>
           </div>
           <p style={{ fontFamily: UI, fontSize: '0.8125rem', color: C.t3, maxWidth: 340, lineHeight: 1.65, margin: 0 }}>From projection to analysis to lookup — everything needed to manage wealth like an institution.</p>

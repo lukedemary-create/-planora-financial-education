@@ -434,7 +434,7 @@ export default function GoalsTab({ plan, onChange }) {
                   {/* Breakdown Report Link */}
                   {suggestedReport && (
                     <Link 
-                      to={createPageUrl("AIAdvisor")}
+                      to="/financial-reports"
                       className="flex items-center gap-2 px-3 py-2 bg-[#a855f7]/10 border border-[#a855f7]/20 rounded-lg hover:bg-[#a855f7]/15 transition-all mt-3 touch-manipulation active:scale-95"
                     >
                       <Sparkles className="w-4 h-4 text-[#a855f7]" />

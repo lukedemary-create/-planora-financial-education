@@ -4,7 +4,7 @@ import { motion, useInView } from 'framer-motion'
 import {
   TrendingUp, Clock, Shield, Home, Users, FileText,
   Wallet, Baby, ChevronRight, ArrowUpRight, BarChart2,
-  CheckCircle2, XCircle, Target,
+  CheckCircle2, XCircle, Target, Scale, Receipt, ScrollText,
 } from 'lucide-react'
 
 const DISPLAY = "'Playfair Display', Georgia, serif"
@@ -87,75 +87,67 @@ const PILLARS = [
 /* ── Sub-sections ───────────────────────────────────────────────────── */
 const SECTIONS = [
   {
-    icon: TrendingUp,
-    label: 'Investment Planning',
-    desc: 'Asset allocation, portfolio construction, risk profiling, and long-term growth strategy.',
-    href: '/FuturePlanning',
-    concept: 'Asset Allocation',
-    available: true,
-  },
-  {
-    icon: Clock,
-    label: 'Retirement Planning',
-    desc: 'Income needs, withdrawal strategies, Social Security timing, and longevity planning.',
-    href: '/retirement-planning',
-    concept: 'Safe Withdrawal Rate',
-    available: true,
-  },
-  {
-    icon: FileText,
-    label: 'Tax Planning',
-    desc: 'Tax-loss harvesting, asset location, Roth conversions, and bracket management.',
-    href: '/tax-planning',
-    concept: 'Tax Alpha',
+    icon: Target,
+    label: 'Financial Calculators',
+    desc: 'Time value of money, compound growth, loan amortization, and more quantitative planning tools.',
+    href: '/Calculators',
+    concept: 'Time Value of Money',
     available: true,
   },
   {
     icon: Shield,
     label: 'Insurance Planning',
-    desc: 'Life, disability, liability, and long-term care — matching coverage to real exposure.',
-    href: '/life-insurance',
+    desc: 'Life, health, disability, and auto insurance — calculate the right coverage and stop paying for the wrong kind.',
+    href: '/fun/insurance',
     concept: 'Human Life Value',
     available: true,
   },
   {
-    icon: Home,
-    label: 'Real Estate Planning',
-    desc: 'Rent vs. buy analysis, mortgage affordability, true cost of ownership, and loan type comparison.',
-    href: '/real-estate-planning',
-    concept: 'Debt-to-Income Ratio',
+    icon: Clock,
+    label: 'Retirement Planning',
+    desc: '401(k), IRA, Roth, pension — understand the accounts, the rules, and the strategy before you need them.',
+    href: '/fun/retirement',
+    concept: 'Safe Withdrawal Rate',
     available: true,
   },
   {
-    icon: Users,
-    label: 'Social Security Planning',
-    desc: 'Claiming strategy, spousal benefits, delayed credits, and integration with retirement income.',
-    href: '/social-security',
-    concept: 'Break-Even Age',
+    icon: Receipt,
+    label: 'Tax Planning',
+    desc: 'Tax brackets, deductions, Roth vs. traditional accounts, capital gains, and strategies every investor should know.',
+    href: '/fun/tax-planning',
+    concept: 'Tax Alpha',
     available: true,
   },
   {
-    icon: Wallet,
-    label: 'Budget Planning',
-    desc: 'Cash flow, savings rates, debt management, and the financial foundation everything else rests on.',
-    href: '/BudgetPlanner',
-    concept: '50/30/20 Rule',
-    available: true,
-  },
-  {
-    icon: FileText,
-    label: 'Estate Planning',
-    desc: 'Wills, trusts, beneficiary designations, power of attorney, and legacy transfer strategy.',
-    href: '/FuturePlanning',
+    icon: ScrollText,
+    label: 'Estate & Wills Planning',
+    desc: 'Wills, trusts, beneficiary designations, power of attorney — the documents everyone needs but few people have.',
+    href: '/fun/estate',
     concept: 'Probate',
     available: true,
   },
   {
+    icon: Home,
+    label: 'Major Purchases',
+    desc: 'Buying a home, a car, or any major asset — how to evaluate the true cost and make the decision strategically.',
+    href: '/fun/major-purchases',
+    concept: 'Opportunity Cost',
+    available: true,
+  },
+  {
+    icon: Scale,
+    label: 'Buy, Rent, or Lease',
+    desc: 'The full financial comparison — when buying beats renting, when leasing makes sense, and how to model the decision.',
+    href: '/fun/buy-rent-lease',
+    concept: 'Total Cost of Ownership',
+    available: true,
+  },
+  {
     icon: Baby,
-    label: 'Children & Family Planning',
-    desc: 'Cost of raising a child, 529 college savings, budget impact by age stage, and planning by phase.',
-    href: '/family-planning',
-    concept: '529 Plan',
+    label: 'Family Planning',
+    desc: 'The financial impact of having children, education savings, life insurance needs, and planning for a growing family.',
+    href: '/fun/family-planning',
+    concept: 'Human Capital',
     available: true,
   },
 ]
@@ -431,7 +423,7 @@ export default function PlanningHub() {
           <div>
             <div style={{ fontFamily: UI, fontSize: '0.625rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: C.t3, marginBottom: 8 }}>Explore planning</div>
             <h2 style={{ fontFamily: DISPLAY, fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: C.t1, margin: 0, letterSpacing: '-0.02em' }}>
-              Nine planning disciplines,<em style={{ fontStyle: 'italic', color: C.gold }}> one ecosystem</em>
+              Eight planning disciplines,<em style={{ fontStyle: 'italic', color: C.gold }}> one ecosystem</em>
             </h2>
           </div>
           <p style={{ fontFamily: UI, fontSize: '0.8125rem', color: C.t3, maxWidth: 340, lineHeight: 1.65, margin: 0 }}>

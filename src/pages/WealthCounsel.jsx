@@ -199,6 +199,247 @@ const ADVISORS = [
   },
 ];
 
+/* ── Match Me Quiz data ───────────────────────────────────────────── */
+const MATCH_QUIZ = [
+  {
+    id: "challenge",
+    question: "What's your primary financial challenge right now?",
+    subtitle: "Select the situation that best describes where you need the most guidance.",
+    options: [
+      { value:"equity",           label:"Equity Compensation & RSUs/ISOs",         sub:"Managing vesting, taxes, and diversification from employer stock" },
+      { value:"exit",             label:"Business Exit / Succession Planning",      sub:"Preparing to sell a business or transition ownership" },
+      { value:"concentrated",     label:"Concentrated Stock Position",              sub:"Large single-stock position creating risk and tax complexity" },
+      { value:"retirement_income",label:"Retirement Income Planning",               sub:"Sequencing withdrawals, Social Security timing, and RMDs" },
+      { value:"estate",           label:"Estate Planning & Wealth Transfer",        sub:"Trusts, gifting strategies, reducing estate taxes, legacy goals" },
+      { value:"tax",              label:"Tax Reduction & Optimization",             sub:"Minimizing taxes across all income sources and account types" },
+      { value:"transition",       label:"Major Life Transition",                    sub:"Divorce, inheritance, death of spouse, or career change" },
+      { value:"wealth_building",  label:"Building Wealth from Scratch",             sub:"First-generation wealth, debt management, investment foundation" },
+    ],
+  },
+  {
+    id: "tax_complexity",
+    question: "What best describes your tax situation?",
+    subtitle: "Your tax profile determines which advisor's expertise matters most.",
+    options: [
+      { value:"w2",          label:"Standard W-2 Income",                      sub:"Salary and bonus — relatively straightforward filing" },
+      { value:"equity_amt",  label:"Equity Comp with AMT Exposure",            sub:"ISOs, RSUs, NQSOs — complex equity taxation" },
+      { value:"selfemployed",label:"Self-Employed / S-Corp Owner",             sub:"Business income, pass-through entity, estimated taxes" },
+      { value:"complex",     label:"Complex: K-1s, Crypto, or Real Estate",   sub:"Passive income, digital assets, depreciation strategies" },
+      { value:"rmds",        label:"Managing RMDs & Retirement Distributions", sub:"Age 73+, required minimum distributions, IRMAA planning" },
+    ],
+  },
+  {
+    id: "philosophy",
+    question: "What investment approach resonates most with you?",
+    subtitle: "Matching your philosophy to your advisor's avoids constant friction over strategy.",
+    options: [
+      { value:"passive",       label:"Evidence-Based / Passive Investing",  sub:"Low-cost index funds, factor tilts, tax-efficient, minimal trading" },
+      { value:"active",        label:"Active / Fundamental Research",        sub:"Individual security selection, manager-driven alpha" },
+      { value:"alternatives",  label:"Alternatives & Private Markets",       sub:"Private equity, real assets, hedge funds, direct investments" },
+      { value:"esg",           label:"ESG / Values-Aligned Investing",       sub:"Environmental, social, and governance criteria matter to me" },
+      { value:"no_preference", label:"No Strong Preference",                 sub:"Open to my advisor's evidence-based recommendation" },
+    ],
+  },
+  {
+    id: "non_invest_concern",
+    question: "Beyond investments, which planning area is most urgent?",
+    subtitle: "Great advisors plan far beyond portfolio management.",
+    options: [
+      { value:"estate_trust",       label:"Estate & Trust Structure",         sub:"Wills, trusts, beneficiary designations, transfer planning" },
+      { value:"business_succession",label:"Business Succession",              sub:"Buy-sell agreements, exit planning, key-person risk" },
+      { value:"insurance",          label:"Insurance & Risk Management",      sub:"Life, disability, long-term care, umbrella coverage gaps" },
+      { value:"ss_medicare",        label:"Social Security & Medicare Timing",sub:"Optimizing benefits and avoiding IRMAA surcharges" },
+      { value:"charitable",         label:"Charitable Giving & Legacy",       sub:"Donor-advised funds, CRTs, foundation, and impact planning" },
+      { value:"education",          label:"Education Funding",                sub:"529 plans, UGMA/UTMA, financial aid optimization" },
+    ],
+  },
+  {
+    id: "asset_level",
+    question: "What is your approximate investable asset level?",
+    subtitle: "This helps match you to advisors whose minimums and expertise fit your stage.",
+    options: [
+      { value:250000,   label:"Under $250K",      sub:"Building wealth — early accumulation phase" },
+      { value:750000,   label:"$250K – $750K",    sub:"Mid-accumulation, growing complexity" },
+      { value:2000000,  label:"$750K – $2M",      sub:"Significant wealth, tax planning becomes critical" },
+      { value:5000000,  label:"$2M – $5M",        sub:"High net worth, multi-faceted planning required" },
+      { value:10000000, label:"$5M+",             sub:"Ultra-high net worth — family office territory" },
+    ],
+  },
+  {
+    id: "credential",
+    question: "Which professional credential matters most to you?",
+    subtitle: "Each designation signals a distinct depth of expertise.",
+    options: [
+      { value:"CFP®", label:"CFP® — Certified Financial Planner", sub:"Comprehensive financial planning across all disciplines" },
+      { value:"CFA",  label:"CFA — Chartered Financial Analyst",  sub:"Investment management and portfolio theory depth" },
+      { value:"CPA",  label:"CPA / PFS — Tax Planning Focus",     sub:"Integrated tax strategy and financial planning" },
+      { value:"JD",   label:"JD — Legal / Estate Planning Focus", sub:"Attorney credentials for estate or business law" },
+      { value:"none", label:"No Strong Preference",               sub:"Trust the match algorithm to find the right fit" },
+    ],
+  },
+];
+
+/* ── Advisor specialty tags for quiz scoring ─────────────────────── */
+const ADVISOR_TAGS = {
+  1:  { challenges:["equity","tax"],              taxProfiles:["equity_amt","w2"],            philosophy:["passive","no_preference"],        concerns:["estate_trust","business_succession"] },
+  2:  { challenges:["retirement_income","concentrated"], taxProfiles:["w2","equity_amt"],     philosophy:["passive","alternatives"],          concerns:["estate_trust","ss_medicare"] },
+  3:  { challenges:["estate","transition"],       taxProfiles:["complex","w2"],               philosophy:["no_preference","passive"],         concerns:["estate_trust","business_succession","charitable"] },
+  4:  { challenges:["estate","tax","concentrated"],taxProfiles:["complex","w2"],             philosophy:["alternatives","passive"],           concerns:["estate_trust","charitable","business_succession"] },
+  5:  { challenges:["exit","tax"],                taxProfiles:["selfemployed","complex"],     philosophy:["passive","no_preference"],         concerns:["business_succession","insurance","estate_trust"] },
+  6:  { challenges:["wealth_building","concentrated"],taxProfiles:["w2","complex"],          philosophy:["esg","passive","alternatives"],     concerns:["charitable","estate_trust"] },
+  7:  { challenges:["retirement_income","transition"],taxProfiles:["rmds","w2"],             philosophy:["passive","no_preference"],         concerns:["ss_medicare","insurance","estate_trust"] },
+  8:  { challenges:["wealth_building","transition"],taxProfiles:["w2","selfemployed"],       philosophy:["passive","no_preference"],         concerns:["insurance","education","estate_trust"] },
+  9:  { challenges:["concentrated","equity"],     taxProfiles:["equity_amt","complex"],       philosophy:["passive","no_preference"],         concerns:["charitable","estate_trust"] },
+  10: { challenges:["tax","wealth_building"],     taxProfiles:["complex","selfemployed","rmds"],philosophy:["passive","no_preference"],      concerns:["estate_trust","charitable"] },
+  11: { challenges:["transition","wealth_building"],taxProfiles:["w2","complex"],            philosophy:["passive","no_preference"],         concerns:["insurance","education","estate_trust"] },
+  12: { challenges:["equity","tax"],              taxProfiles:["equity_amt","w2"],            philosophy:["passive","no_preference"],         concerns:["estate_trust","business_succession"] },
+};
+
+/* ── Per-advisor deep questions ──────────────────────────────────── */
+const ADVISOR_QUESTIONS = {
+  1: [
+    "Given my ISO grants, how do you model the AMT crossover point to determine the optimal exercise quantity in a given tax year?",
+    "What is the difference between a sell-to-cover RSU strategy versus a 10b5-1 plan for systematic diversification — and which applies to my situation?",
+    "How do you structure a tax-efficient glide path from a heavily concentrated employer stock position into a diversified portfolio over 3–5 years?",
+    "My company offers a Mega Backdoor Roth. How does that interact with my equity compensation and overall tax plan?",
+    "If I leave my employer pre-IPO with vested ISOs, what is the 90-day exercise deadline risk and how do we quantify the after-tax cost of early exercise?",
+  ],
+  2: [
+    "How do you construct a factor-tilted portfolio to capture the size and value premiums without introducing unnecessary tax drag for a taxable account?",
+    "What is the sequence-of-returns risk specific to our asset level and time horizon — and how do you model it across Monte Carlo simulations?",
+    "At what point do alternatives (private equity, infrastructure, real assets) justify the illiquidity premium for a private client versus an endowment?",
+    "How does direct indexing compare to traditional index investing for tax-loss harvesting efficiency at our asset level?",
+    "How do you stress-test a retirement portfolio against the worst historical drawdown sequences — for example, a 2000–2010 lost-decade scenario?",
+  ],
+  3: [
+    "With the estate tax exemption scheduled to sunset to approximately $7M per person in 2026, what specific steps should we take before year-end to lock in the current exclusion?",
+    "How does an intentionally defective grantor trust (IDGT) allow me to transfer appreciating assets to my heirs while removing them from my taxable estate?",
+    "What is a Grantor Retained Annuity Trust (GRAT) and under what interest rate environment does it most effectively transfer appreciation to the next generation?",
+    "In a business succession where some children are active in the business and others are not, how do you structure a transfer that is both equitable and tax-efficient?",
+    "What is the qualified small business stock (QSBS) exclusion under Section 1202, and how does it affect my exit strategy if I hold C-Corp shares?",
+  ],
+  4: [
+    "For a portfolio above $10M, how do you structure the family governance framework and investment policy statement to survive a generational transfer intact?",
+    "How do you access institutional co-investment opportunities in private equity, and what due diligence process do you apply to direct deal flow?",
+    "What dynasty trust structure works best for removing assets from the estate tax system across multiple generations without triggering generation-skipping transfer tax?",
+    "How do you coordinate a multi-entity tax return — trust, LLC, holding company, and personal return — to optimize the consolidated picture?",
+    "If we receive a $20M+ liquidity event from a business sale, what is the week-by-week playbook from closing day through the first 12 months of portfolio construction?",
+  ],
+  5: [
+    "What is the after-tax difference between an asset sale and a stock sale in my business exit — and which structure does my buyer prefer and why?",
+    "At my current EBITDA, would a Cash Balance Plan allow me to shelter significantly more income than a Solo 401(k) alone, and how do you model the break-even?",
+    "How do I structure an installment sale to spread capital gains recognition from the business exit across multiple tax years without triggering OID issues?",
+    "What role does a Qualified Opportunity Zone fund play as a capital gains deferral vehicle when reinvesting proceeds from my business sale?",
+    "How should a buy-sell agreement be funded — life insurance, cross-purchase, or entity-redemption — given my partner structure, estate size, and age difference?",
+  ],
+  6: [
+    "How do you integrate ESG screens into a factor-based portfolio without significantly degrading value or profitability factor exposure?",
+    "What peer-reviewed evidence supports your specific factor tilts, and how do you distinguish genuine risk factors from data-mined anomalies that don't hold out-of-sample?",
+    "At what asset level do the fees, complexity, and manager-selection risk of alternatives begin to be justified by improved risk-adjusted returns for a private client?",
+    "How do you measure impact in an ESG portfolio, and what reporting standards do you use — SASB, GRI, or proprietary metrics?",
+    "How does your approach compare to the Yale Endowment model, and which elements of an endowment allocation are transferable to a private client portfolio?",
+  ],
+  7: [
+    "What is the break-even age for delaying Social Security to 70 versus claiming at 62, adjusted for my health history, existing assets, and survivor benefit picture?",
+    "How do you build a 'retirement income floor' using Social Security, a possible annuity, and fixed income to cover essential expenses without stock market dependency?",
+    "What is the optimal Roth conversion ladder in the window between my retirement date and age 73 to reduce the lifetime tax burden of my RMDs?",
+    "How does Medicare IRMAA work, and how do we manage income in the 2-year look-back window to avoid the surcharges throughout retirement?",
+    "If I am widowed, how does my Social Security benefit change — and what survivor benefit elections should my spouse and I make now to maximize our combined lifetime benefit?",
+  ],
+  8: [
+    "What is the optimal student loan repayment strategy for my loan type and income level — income-driven repayment, PSLF, refinancing, or aggressive payoff?",
+    "At what monthly savings rate and investment allocation does a 20-year wealth-building plan realistically reach $1M+, net of inflation?",
+    "How do I execute a Backdoor Roth IRA contribution correctly and avoid the pro-rata rule given my existing traditional IRA balance?",
+    "At what income level does investing in a taxable brokerage account make more sense than making additional after-tax 401(k) contributions?",
+    "How do I structure my insurance coverage — term life, own-occupation disability, and umbrella liability — to protect my earning power as my net worth grows?",
+  ],
+  9: [
+    "What is the actual after-tax cost of liquidating my entire concentrated position all at once versus a systematic 5-year diversification plan — including state taxes?",
+    "How does a 10b5-1 trading plan work for a corporate insider, and what are the new SEC Rule 10b5-1 plan requirements after the 2023 amendments?",
+    "If I have pre-IPO ISOs with a $0.001 strike and a $50 409A valuation, when is the right time to exercise — and what is the precise AMT cost calculation?",
+    "How do exchange funds work as a tax-deferred alternative to an outright sale for diversifying a concentrated single-stock position?",
+    "What is the most tax-efficient structure for donating highly appreciated shares — direct charitable gift, donor-advised fund, or charitable remainder trust — given my income and giving goals?",
+  ],
+  10: [
+    "What is the precise Roth conversion amount that minimizes my lifetime tax burden, given my current bracket, projected RMDs at 73, and state tax situation?",
+    "How do I structure real estate holdings across an LLC, a self-directed Solo 401(k), and my personal return to maximize depreciation while maintaining liability protection?",
+    "What specific crypto tax optimization strategies — HIFO lot identification, tax-loss harvesting, wash sale avoidance — apply to my portfolio size?",
+    "How do I qualify as a Real Estate Professional under IRC Section 469, and what level of documentation and time-tracking is required to withstand an audit?",
+    "What are the mechanics of a cost segregation study, and at what property value does the cost of the study justify the accelerated depreciation benefit?",
+  ],
+  11: [
+    "How do I correctly report foreign bank accounts under FBAR and FATCA, and what are the penalty structures for prior-year non-compliance?",
+    "As a Green Card holder, what happens to my US assets if I die before becoming a citizen — does the estate tax unlimited marital deduction apply?",
+    "How do I structure international wire transfers and remittances to family abroad in a way that is both tax-compliant and cost-efficient?",
+    "If I hold investment accounts in my home country in addition to the US, how does the foreign tax credit prevent double taxation — and are there treaty provisions that help?",
+    "If I eventually split residency between countries or return home, what are the US expatriation tax implications and how do we plan for that scenario now?",
+  ],
+  12: [
+    "How do I optimize my NQDC plan elections — deferral percentage, contribution timing, investment options, and distribution schedule — given my projected retirement income and tax bracket?",
+    "What is the counterparty risk of my non-qualified deferred compensation plan and how do I protect my deferred balance from the risk of employer insolvency?",
+    "How do the IRC Section 409A regulations govern my distribution election timing, and what happens to my deferrals in a change-of-control or merger event?",
+    "As a regulated financial professional, how do FINRA holding period requirements and pre-clearance rules affect my ability to actively manage my personal brokerage account?",
+    "How do I manage total employer concentration risk across my 401(k), NQDC plan, RSU grants, and deferred bonus — and at what threshold does the concentration become dangerous?",
+  ],
+};
+
+/* ── Quiz scoring function ───────────────────────────────────────── */
+function scoreAdvisors(answers) {
+  return ADVISORS.map(a => {
+    const tags = ADVISOR_TAGS[a.id] || {};
+    let score = 0;
+    const reasons = [];
+
+    // Q1: Primary challenge (3 pts)
+    if (answers.challenge && tags.challenges?.includes(answers.challenge)) {
+      score += 3;
+      reasons.push("Strong specialty alignment with your primary financial challenge");
+    }
+
+    // Q2: Tax complexity (2 pts)
+    if (answers.tax_complexity && tags.taxProfiles?.includes(answers.tax_complexity)) {
+      score += 2;
+      reasons.push("Experienced with your specific tax complexity");
+    }
+
+    // Q3: Investment philosophy (1 pt)
+    if (answers.philosophy && tags.philosophy?.includes(answers.philosophy)) {
+      score += 1;
+      reasons.push("Investment philosophy closely aligns with your preferences");
+    }
+
+    // Q4: Non-investment planning concern (2 pts)
+    if (answers.non_invest_concern && tags.concerns?.includes(answers.non_invest_concern)) {
+      score += 2;
+      reasons.push("Specializes in your most urgent non-investment planning area");
+    }
+
+    // Q5: Asset level — advisor minimum must be at or under selected threshold (2 pts)
+    if (answers.asset_level != null && a.aumMin <= answers.asset_level) {
+      score += 2;
+      reasons.push("Works with clients at your asset level");
+    }
+
+    // Q6: Credential preference (2 pts)
+    if (answers.credential) {
+      if (answers.credential === "none") {
+        score += 1;
+        reasons.push("Holds recognized professional designations");
+      } else if (answers.credential === "CPA" && a.credentials.some(c => c === "CPA" || c.includes("PFS"))) {
+        score += 2;
+        reasons.push("Holds the CPA/PFS designation you prioritized");
+      } else if (a.credentials.some(c => c.startsWith(answers.credential.replace("®","")))) {
+        score += 2;
+        reasons.push(`Holds the ${answers.credential} designation you prioritized`);
+      }
+    }
+
+    const maxScore = 12;
+    const pct = Math.round((score / maxScore) * 100);
+    return { ...a, matchScore: score, matchPct: pct, matchReasons: reasons };
+  }).sort((a, b) => b.matchScore - a.matchScore);
+}
+
 /* ── Preparation checklist ────────────────────────────────────────── */
 const PREP_SECTIONS = [
   {
@@ -238,15 +479,22 @@ const PREP_SECTIONS = [
     ],
   },
   {
-    id:"questions", label:"Questions to Ask", icon:BookOpen, color:"#a855f7",
+    id:"questions", label:"Professional Questions to Ask", icon:BookOpen, color:"#a855f7",
     items:[
-      "Are you a fiduciary? (Required by law to act in my interest)",
-      "How are you compensated? (Fee-only, commission, or hybrid)",
-      "What is your investment philosophy?",
-      "How often will we meet and communicate?",
-      "What happens to my accounts if something happens to you?",
-      "Who else at your firm might work on my account?",
-      "Can you provide references from clients in my situation?",
+      "Are you a fiduciary 100% of the time — not just sometimes?",
+      "Exactly how are you compensated — fee-only, fee-based, or commission?",
+      "What is your specific investment philosophy and how has it performed in bear markets?",
+      "How do you handle equity compensation (RSUs, ISOs, NQSOs) from a tax and planning perspective?",
+      "What is your experience with business exit planning and post-liquidity wealth strategies?",
+      "How do you coordinate with my CPA and estate attorney — and do you have preferred partners?",
+      "What would you do differently for my specific tax situation compared to a standard client?",
+      "What's your approach to Roth conversions given my projected retirement income and RMDs?",
+      "How do you stress-test a retirement plan against sequence-of-returns risk?",
+      "Do you have experience with concentrated stock positions and tax-efficient diversification?",
+      "With the estate tax exemption potentially sunsetting in 2026, what planning steps should I take now?",
+      "How do you model Social Security optimization — specifically the break-even between claiming early vs. delaying to 70?",
+      "How often will you proactively contact me when markets shift or tax law changes — not just when I call you?",
+      "Can you show me a sample financial plan for a client whose situation is similar to mine?",
     ],
   },
   {
@@ -548,6 +796,41 @@ function AdvisorProfile({ advisor, onClose }) {
         </div>
       </div>
 
+      {/* What to Ask This Advisor */}
+      {ADVISOR_QUESTIONS[advisor.id] && (
+        <div style={{ ...card, padding:"1.25rem" }}>
+          <div style={{ display:"flex",alignItems:"center",gap:"0.75rem",marginBottom:"1rem" }}>
+            <div style={{ width:32,height:32,borderRadius:8,background:"rgba(201,169,110,0.12)",
+              border:"1px solid rgba(201,169,110,0.22)",
+              display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+              <BookOpen size={15} color={GOLD} />
+            </div>
+            <div>
+              <div style={{ fontSize:"0.75rem",fontWeight:800,color:"var(--text-1)" }}>
+                What to Ask {advisor.name.split(" ")[0]}
+              </div>
+              <div style={{ fontSize:"0.5625rem",color:"var(--text-3)",marginTop:2 }}>
+                Specialty-mapped questions at CFP/CFA professional depth — for your first meeting
+              </div>
+            </div>
+          </div>
+          <div style={{ display:"flex",flexDirection:"column",gap:"0.5rem" }}>
+            {ADVISOR_QUESTIONS[advisor.id].map((q, i) => (
+              <div key={i} style={{ display:"flex",alignItems:"flex-start",gap:"0.75rem",
+                padding:"0.75rem",borderRadius:8,background:"var(--elevated)",
+                border:"1px solid var(--border-c)" }}>
+                <div style={{ width:22,height:22,borderRadius:6,background:"rgba(201,169,110,0.12)",
+                  border:"1px solid rgba(201,169,110,0.22)",
+                  display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1 }}>
+                  <span style={{ fontSize:"0.5rem",fontWeight:900,color:GOLD,fontFamily:"'JetBrains Mono',monospace" }}>{i + 1}</span>
+                </div>
+                <span style={{ fontSize:"0.6875rem",color:"var(--text-2)",lineHeight:1.7 }}>{q}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Prep reminder */}
       <div style={{ background:"rgba(201,169,110,0.06)",border:"1px solid rgba(201,169,110,0.2)",
         borderRadius:8,padding:"1rem",display:"flex",gap:"0.75rem",alignItems:"center" }}>
@@ -642,6 +925,280 @@ function TabDirectory() {
         <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:"0.875rem" }}>
           {filtered.map(a => <AdvisorCard key={a.id} advisor={a} onSelect={setSelected} />)}
         </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Tab: Match Me Quiz ───────────────────────────────────────────── */
+function TabMatchMe() {
+  const [step, setStep]                   = useState(0);
+  const [answers, setAnswers]             = useState({});
+  const [results, setResults]             = useState(null);
+  const [selectedAdvisor, setSelectedAdvisor] = useState(null);
+
+  const totalSteps = MATCH_QUIZ.length;
+
+  const handleAnswer = (qid, value) => {
+    const next = { ...answers, [qid]: value };
+    setAnswers(next);
+    if (step < totalSteps) {
+      setStep(step + 1);
+    } else {
+      setResults(scoreAdvisors(next));
+      setStep(totalSteps + 1);
+    }
+  };
+
+  const reset = () => { setStep(0); setAnswers({}); setResults(null); setSelectedAdvisor(null); };
+
+  if (selectedAdvisor) {
+    return <AdvisorProfile advisor={selectedAdvisor} onClose={() => setSelectedAdvisor(null)} />;
+  }
+
+  /* ── Intro ── */
+  if (step === 0) {
+    return (
+      <div style={{ display:"flex",flexDirection:"column",gap:"1.25rem" }}>
+        <div style={{ ...card, padding:"2rem", textAlign:"center", position:"relative", overflow:"hidden" }}>
+          <div style={{ position:"absolute",top:-80,right:-60,width:300,height:300,
+            background:"radial-gradient(circle, rgba(201,169,110,0.07) 0%, transparent 70%)",
+            pointerEvents:"none" }} />
+          <div style={{ width:56,height:56,borderRadius:14,background:"rgba(201,169,110,0.12)",
+            border:"1px solid rgba(201,169,110,0.25)",
+            display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 1.25rem",position:"relative" }}>
+            <Sliders size={24} color={GOLD} />
+          </div>
+          <div style={{ fontSize:"1.3125rem",fontWeight:800,color:"var(--text-1)",marginBottom:"0.5rem",
+            fontFamily:"'Playfair Display', Georgia, serif" }}>
+            Find Your Advisor Match
+          </div>
+          <p style={{ fontSize:"0.8125rem",color:"var(--text-2)",lineHeight:1.75,maxWidth:520,margin:"0 auto 1.25rem" }}>
+            Answer 6 questions about your financial situation. We'll analyze your responses against each
+            advisor's specialty profile and rank your top matches — with specific reasons why they fit your needs.
+          </p>
+          <div style={{ display:"flex",justifyContent:"center",gap:"0.5rem",flexWrap:"wrap",marginBottom:"1.5rem" }}>
+            {["6 Questions","~3 Minutes","Ranked Results","Explained Matches"].map(b => (
+              <span key={b} style={{ fontSize:"0.625rem",fontWeight:700,color:GOLD,
+                background:"rgba(201,169,110,0.1)",border:"1px solid rgba(201,169,110,0.2)",
+                borderRadius:99,padding:"3px 10px" }}>{b}</span>
+            ))}
+          </div>
+          <button onClick={() => setStep(1)}
+            style={{ background:GOLD,color:"#07080a",border:"none",borderRadius:8,
+              padding:"12px 28px",fontWeight:800,fontSize:"0.875rem",cursor:"pointer" }}>
+            Start the Match Quiz →
+          </button>
+        </div>
+
+        <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:"0.75rem" }}>
+          {[
+            { title:"CFP/CFA-Level Precision",
+              body:"Questions built around real scenarios that distinguish great advisors — equity comp, business exits, concentrated stock, estate planning, and tax complexity." },
+            { title:"Ranked & Explained",
+              body:"Your top 3 matches are presented with specific reasons for each recommendation, not just a score. Understand why a match is right for you." },
+            { title:"Specialty-Mapped Scoring",
+              body:"Every advisor profile is tagged across specialty dimensions. Your answers score directly against each dimension for precise ranking." },
+          ].map(({ title, body }) => (
+            <div key={title} style={{ ...card, padding:"1rem" }}>
+              <div style={{ width:"100%",height:2,background:GOLD,borderRadius:99,marginBottom:"0.75rem" }} />
+              <div style={{ fontSize:"0.6875rem",fontWeight:700,color:"var(--text-1)",marginBottom:"0.375rem" }}>{title}</div>
+              <p style={{ fontSize:"0.625rem",color:"var(--text-3)",lineHeight:1.7,margin:0 }}>{body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Results ── */
+  if (step === totalSteps + 1 && results) {
+    const top3 = results.slice(0, 3);
+    const rest = results.slice(3);
+    return (
+      <div style={{ display:"flex",flexDirection:"column",gap:"1.25rem" }}>
+        <div style={{ ...card, padding:"1rem" }}>
+          <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between" }}>
+            <div>
+              <div style={{ fontSize:"0.875rem",fontWeight:800,color:"var(--text-1)" }}>Your Advisor Matches</div>
+              <div style={{ fontSize:"0.5625rem",color:"var(--text-3)",marginTop:2 }}>
+                Ranked by specialty fit, credential match, and asset level alignment
+              </div>
+            </div>
+            <button onClick={reset}
+              style={{ background:"transparent",border:"1px solid var(--border-c)",borderRadius:6,
+                padding:"6px 12px",color:"var(--text-3)",fontSize:"0.625rem",cursor:"pointer" }}>
+              Retake Quiz
+            </button>
+          </div>
+        </div>
+
+        <div style={{ fontSize:"0.5rem",color:"var(--text-3)",textTransform:"uppercase",letterSpacing:"0.14em",fontWeight:700 }}>
+          Top Matches
+        </div>
+
+        {top3.map((a, idx) => (
+          <div key={a.id} style={{ ...card, padding:"1.25rem", position:"relative", overflow:"hidden",
+            border: idx === 0 ? "1px solid rgba(201,169,110,0.42)" : "1px solid var(--border-c)" }}>
+            {idx === 0 && (
+              <div style={{ position:"absolute",top:12,right:12,fontSize:"0.4375rem",fontWeight:800,
+                color:"#07080a",background:GOLD,borderRadius:4,padding:"3px 8px",letterSpacing:"0.1em" }}>
+                BEST MATCH
+              </div>
+            )}
+            <div style={{ display:"flex",gap:"0.875rem",alignItems:"flex-start",marginBottom:"0.875rem" }}>
+              <img src={a.photo} alt={a.name}
+                style={{ width:52,height:52,borderRadius:"50%",objectFit:"cover",flexShrink:0,
+                  border:`2px solid ${idx === 0 ? GOLD : "var(--border-c)"}` }}
+                onError={e => { e.target.style.display="none"; }} />
+              <div style={{ flex:1,minWidth:0 }}>
+                <div style={{ fontSize:"0.8125rem",fontWeight:800,color:"var(--text-1)" }}>{a.name}</div>
+                <div style={{ fontSize:"0.625rem",color:GOLD,marginTop:1 }}>{a.title}</div>
+                <div style={{ fontSize:"0.5625rem",color:"var(--text-3)" }}>{a.firm}</div>
+              </div>
+              <div style={{ textAlign:"right",flexShrink:0 }}>
+                <div style={{ fontSize:"1.625rem",fontWeight:900,lineHeight:1,
+                  fontFamily:"'JetBrains Mono','Courier New',monospace",
+                  color: idx === 0 ? GOLD : "var(--text-2)" }}>{a.matchPct}%</div>
+                <div style={{ fontSize:"0.4375rem",color:"var(--text-3)",marginTop:2 }}>match score</div>
+              </div>
+            </div>
+
+            {/* Score bar */}
+            <div style={{ background:"var(--elevated)",borderRadius:99,height:4,overflow:"hidden",marginBottom:"0.75rem" }}>
+              <div style={{ height:"100%",borderRadius:99,
+                background: idx === 0 ? GOLD : "rgba(201,169,110,0.45)",
+                width:`${a.matchPct}%` }} />
+            </div>
+
+            {/* Reasons */}
+            {a.matchReasons.length > 0 && (
+              <div style={{ display:"flex",flexDirection:"column",gap:5,marginBottom:"0.875rem" }}>
+                {a.matchReasons.map((r, i) => (
+                  <div key={i} style={{ display:"flex",alignItems:"flex-start",gap:6 }}>
+                    <CheckCircle size={11} color={idx === 0 ? GOLD : GREEN} style={{ marginTop:1,flexShrink:0 }} />
+                    <span style={{ fontSize:"0.625rem",color:"var(--text-2)",lineHeight:1.55 }}>{r}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",
+              paddingTop:"0.75rem",borderTop:"1px solid var(--border-c)" }}>
+              <div style={{ display:"flex",gap:4,flexWrap:"wrap" }}>
+                {a.credentials.map(c => (
+                  <span key={c} style={{ fontSize:"0.5rem",fontWeight:700,color:GOLD,
+                    background:"rgba(201,169,110,0.1)",border:"1px solid rgba(201,169,110,0.2)",
+                    borderRadius:4,padding:"2px 6px" }}>{c}</span>
+                ))}
+                <span style={{ fontSize:"0.5rem",color:"var(--text-3)",background:"var(--elevated)",
+                  border:"1px solid var(--border-c)",borderRadius:4,padding:"2px 6px" }}>{a.aumDisplay}</span>
+              </div>
+              <button onClick={() => setSelectedAdvisor(a)}
+                style={{ background: idx === 0 ? GOLD : "transparent",
+                  color: idx === 0 ? "#07080a" : GOLD,
+                  border: idx === 0 ? "none" : `1px solid ${GOLD}`,
+                  borderRadius:6,padding:"7px 14px",fontWeight:700,cursor:"pointer",fontSize:"0.625rem" }}>
+                View Full Profile →
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {rest.length > 0 && (
+          <>
+            <div style={{ fontSize:"0.5rem",color:"var(--text-3)",textTransform:"uppercase",letterSpacing:"0.14em",fontWeight:700,marginTop:4 }}>
+              All Other Advisors
+            </div>
+            <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:"0.625rem" }}>
+              {rest.map(a => (
+                <div key={a.id}
+                  style={{ ...card, padding:"0.875rem",display:"flex",alignItems:"center",gap:"0.75rem",
+                    cursor:"pointer",transition:"border-color 0.15s" }}
+                  onClick={() => setSelectedAdvisor(a)}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = GOLD}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border-c)"}>
+                  <img src={a.photo} alt={a.name}
+                    style={{ width:36,height:36,borderRadius:"50%",objectFit:"cover",
+                      border:"1px solid var(--border-c)",flexShrink:0 }}
+                    onError={e => { e.target.style.display="none"; }} />
+                  <div style={{ flex:1,minWidth:0 }}>
+                    <div style={{ fontSize:"0.6875rem",fontWeight:700,color:"var(--text-1)" }}>{a.name}</div>
+                    <div style={{ fontSize:"0.5rem",color:"var(--text-3)" }}>{a.firm}</div>
+                  </div>
+                  <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:"0.875rem",
+                    fontWeight:800,color:"var(--text-3)" }}>{a.matchPct}%</div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  /* ── Question steps ── */
+  const q = MATCH_QUIZ[step - 1];
+  const progress = (step / totalSteps) * 100;
+
+  return (
+    <div style={{ display:"flex",flexDirection:"column",gap:"1rem" }}>
+      {/* Progress bar */}
+      <div style={{ ...card, padding:"1rem" }}>
+        <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"0.5rem" }}>
+          <div style={{ fontSize:"0.5rem",color:"var(--text-3)",textTransform:"uppercase",letterSpacing:"0.12em",fontWeight:600 }}>
+            Question {step} of {totalSteps}
+          </div>
+          <button onClick={reset}
+            style={{ background:"none",border:"none",cursor:"pointer",color:"var(--text-3)",fontSize:"0.5625rem" }}>
+            Start Over
+          </button>
+        </div>
+        <div style={{ background:"var(--elevated)",borderRadius:99,height:4,overflow:"hidden" }}>
+          <div style={{ height:"100%",borderRadius:99,background:GOLD,width:`${progress}%`,transition:"width 0.3s" }} />
+        </div>
+      </div>
+
+      {/* Question card */}
+      <div style={{ ...card, padding:"1.5rem" }}>
+        <div style={{ fontSize:"1rem",fontWeight:800,color:"var(--text-1)",marginBottom:"0.375rem",lineHeight:1.4 }}>
+          {q.question}
+        </div>
+        <div style={{ fontSize:"0.6875rem",color:"var(--text-3)",marginBottom:"1.25rem",lineHeight:1.65 }}>
+          {q.subtitle}
+        </div>
+        <div style={{ display:"flex",flexDirection:"column",gap:"0.5rem" }}>
+          {q.options.map(opt => (
+            <button key={opt.value} onClick={() => handleAnswer(q.id, opt.value)}
+              style={{ display:"flex",alignItems:"center",gap:"0.875rem",
+                background:"var(--elevated)",border:"1px solid var(--border-c)",borderRadius:8,
+                padding:"0.875rem 1rem",cursor:"pointer",transition:"all 0.15s",
+                textAlign:"left",width:"100%" }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = GOLD;
+                e.currentTarget.style.background = "rgba(201,169,110,0.06)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = "var(--border-c)";
+                e.currentTarget.style.background = "var(--elevated)";
+              }}>
+              <div style={{ width:10,height:10,borderRadius:"50%",border:`2px solid ${GOLD}`,flexShrink:0 }} />
+              <div>
+                <div style={{ fontSize:"0.75rem",fontWeight:700,color:"var(--text-1)" }}>{opt.label}</div>
+                {opt.sub && <div style={{ fontSize:"0.5625rem",color:"var(--text-3)",marginTop:2,lineHeight:1.5 }}>{opt.sub}</div>}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {step > 1 && (
+        <button onClick={() => setStep(step - 1)}
+          style={{ background:"none",border:"none",cursor:"pointer",color:"var(--text-3)",
+            fontSize:"0.625rem",display:"flex",alignItems:"center",gap:4,padding:0,width:"fit-content" }}>
+          <ChevronRight size={12} style={{ transform:"rotate(180deg)" }} />
+          Back to previous question
+        </button>
       )}
     </div>
   );
@@ -1052,6 +1609,7 @@ function TabFolder() {
 /* ── Main page ────────────────────────────────────────────────────── */
 const TABS = [
   { key:"directory", label:"Advisor Directory",   icon:Users },
+  { key:"match",     label:"Match Me",            icon:Sliders },
   { key:"prep",      label:"Preparation Hub",     icon:BookOpen },
   { key:"folder",    label:"My Advisory Folder",  icon:FolderOpen },
 ];
@@ -1178,6 +1736,7 @@ export default function WealthCounsel() {
 
       {/* Tab content */}
       {activeTab === "directory" && <TabDirectory />}
+      {activeTab === "match"     && <TabMatchMe />}
       {activeTab === "prep"      && <TabPrepHub />}
       {activeTab === "folder"    && <TabFolder />}
     </div>

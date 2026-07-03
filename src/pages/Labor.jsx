@@ -130,21 +130,21 @@ function genClaims(count) {
 
 /* ─── Industry Breakdown data ─────────────────────────────────────── */
 const INDUSTRY_DATA = [
-  { sector: "Professional Services", employment: 23.1, color: "var(--blue)" },
-  { sector: "Government", employment: 22.5, color: "var(--text-2)" },
-  { sector: "Leisure & Hospitality", employment: 17.2, color: "var(--gold)" },
-  { sector: "Healthcare", employment: 16.8, color: "var(--teal)" },
-  { sector: "Retail Trade", employment: 15.7, color: "var(--purple, #7c5cbf)" },
-  { sector: "Manufacturing", employment: 12.9, color: "var(--up)" },
-  { sector: "Finance", employment: 9.1, color: "var(--cyan, #06d6f0)" },
-  { sector: "Construction", employment: 8.2, color: "var(--gold-lt)" },
+  { sector: "Professional Services", employment: 23.1, color: "#3b82f6" },
+  { sector: "Government",            employment: 22.5, color: "#a89070" },
+  { sector: "Leisure & Hospitality", employment: 17.2, color: "#c9a96e" },
+  { sector: "Healthcare",            employment: 16.8, color: "#00B4C6" },
+  { sector: "Retail Trade",          employment: 15.7, color: "#818cf8" },
+  { sector: "Manufacturing",         employment: 12.9, color: "#4a7c59" },
+  { sector: "Finance",               employment: 9.1,  color: "#06d6f0" },
+  { sector: "Construction",          employment: 8.2,  color: "#e07b39" },
 ].sort((a, b) => b.employment - a.employment);
 
 /* ─── Custom tooltip ─────────────────────────────────────────────── */
 const TT = ({ active, payload, label, unit = "" }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: "var(--elevated)", border: "1px solid var(--border-alt)", borderRadius: 5, padding: "8px 12px", fontSize: 11 }}>
+    <div style={{ background: "var(--elevated)", border: "1px solid #3d3028", borderRadius: 5, padding: "8px 12px", fontSize: 11 }}>
       <div style={{ color: "var(--text-2)", marginBottom: 4 }}>{label}</div>
       {payload.map((p, i) => (
         <div key={i} style={{ color: p.color || "var(--text-1)", fontWeight: 600 }}>
@@ -200,7 +200,7 @@ export default function Labor() {
   }));
   const [loading, setLoading] = useState(true);
 
-  const FRED_SERIES = ["UNRATE", "PAYEMS", "CIVPART", "CES0500000003", "U6RATE", "JTSJOL", "JTSQULL", "ICSA"];
+  const FRED_SERIES = ["UNRATE", "PAYEMS", "CIVPART", "CES0500000003", "U6RATE", "JTSJOL", "ICSA"];
 
   useEffect(() => {
     let cancelled = false;
@@ -243,13 +243,13 @@ export default function Labor() {
   const unratePrev = prevVal("UNRATE", "UNRATE") || 4.1;
   const unrateUp = unrate > unratePrev; // higher = worse
 
-  // payrolls MoM change
+  // payrolls MoM change — PAYEMS is in thousands from FRED, so diff is already in thousands (=K jobs)
   const payemsData = fredData.PAYEMS?.length > 2
     ? fredData.PAYEMS
     : simData.PAYEMS;
   const payemsMoM = payemsData?.length > 1
     ? (fredData.PAYEMS?.length > 2
-        ? Math.round((payemsData[payemsData.length - 1].value - payemsData[payemsData.length - 2].value) * 1000)
+        ? Math.round(payemsData[payemsData.length - 1].value - payemsData[payemsData.length - 2].value)
         : payemsData[payemsData.length - 1].change)
     : 228;
 
@@ -266,37 +266,64 @@ export default function Labor() {
     return d;
   })();
 
-  /* Chart data: NFP MoM bars (2yr = 24mo) */
+  /* Chart data: NFP MoM bars (2yr = 24mo)
+     PAYEMS is in thousands from FRED, so diff of consecutive months = K jobs added */
   const nfpChart = (() => {
     if (fredData.PAYEMS?.length > 25) {
       const d = fredData.PAYEMS.slice(-25);
       return d.slice(1).map((v, i) => ({
         date: v.date?.slice(0, 7),
-        change: Math.round((v.value - d[i].value) * 1000)
+        change: Math.round(v.value - d[i].value)
       }));
     }
     return simData.PAYEMS.slice(-24).map(d => ({ date: d.date, change: d.change }));
   })();
 
-  /* Chart data: JOLTS + Quits */
+  /* Chart data: JOLTS openings (real FRED) + quits (simulation)
+     JTSJOL is in thousands → divide by 1000 to display in millions */
   const joltsChart = (() => {
-    if (fredData.JTSJOL?.length > 10 && fredData.JTSQULL?.length > 10) {
+    if (fredData.JTSJOL?.length > 10) {
       const opens = fredData.JTSJOL.slice(-24);
-      const quits = fredData.JTSQULL.slice(-24);
+      const simQuits = simData.JOLTS.slice(-24);
       return opens.map((v, i) => ({
         date: v.date?.slice(0, 7),
-        openings: v.value,
-        quits: quits[i]?.value || 0
+        openings: parseFloat((v.value / 1000).toFixed(2)),
+        quits: simQuits[i]?.quits ?? simQuits[simQuits.length - 1]?.quits ?? 3.5,
       }));
     }
     return simData.JOLTS.slice(-24);
   })();
 
-  /* Chart data: wages YoY */
-  const wagesChart = simData.WAGES.slice(-36);
+  /* Chart data: wages YoY — use real FRED CES0500000003 when available */
+  const wagesChart = (() => {
+    const d = fredData.CES0500000003;
+    if (d?.length > 13) {
+      return d.slice(-36).map((v, i, arr) => {
+        if (i < 12) return null;
+        const yoyPct = ((v.value - arr[i - 12].value) / arr[i - 12].value) * 100;
+        return { date: v.date?.slice(0, 7), wage: v.value, yoyPct: parseFloat(yoyPct.toFixed(2)) };
+      }).filter(Boolean);
+    }
+    return simData.WAGES.slice(-36);
+  })();
 
-  /* Claims chart */
-  const claimsChart = simData.ICSA;
+  /* Claims chart — use real FRED ICSA data when available.
+     ICSA is the raw number of claims (e.g. 226000); divide by 1000 for K display */
+  const claimsChart = (() => {
+    const d = fredData.ICSA;
+    if (d?.length > 8) {
+      const vals = d.slice(-52).map(v => ({
+        date: v.date?.slice(5, 10),
+        claims: Math.round(v.value / 1000),
+      }));
+      return vals.map((v, i) => {
+        const window = vals.slice(Math.max(0, i - 3), i + 1);
+        const ma = Math.round(window.reduce((s, w) => s + w.claims, 0) / window.length);
+        return { ...v, ma4wk: ma };
+      });
+    }
+    return simData.ICSA;
+  })();
 
   /* Wage color logic */
   const wageColor = (pct) => {
@@ -359,7 +386,7 @@ export default function Labor() {
             {[
               { icon: Activity, label: "Unemployment Rate", sub: "U-3 & U-6 measures", color: "#3b82f6" },
               { icon: Users, label: "Jobs Added", sub: "Nonfarm payroll data", color: "var(--gold)" },
-              { icon: DollarSign, label: "Wage Growth", sub: "Average hourly earnings", color: "var(--teal)" },
+              { icon: DollarSign, label: "Wage Growth", sub: "Average hourly earnings", color: "#00B4C6" },
               { icon: BarChart2, label: "Labor Force Participation", sub: "LFPR & JOLTS openings", color: "#f59e0b" },
             ].map(({ icon: Icon, label, sub, color }) => (
               <div key={label} style={{
@@ -414,9 +441,9 @@ export default function Labor() {
         />
         <KpiCard
           label="Avg Hourly Earnings YoY"
-          value="+4.1%"
-          badge="0.2%"
-          up={false}
+          value={wagesChart.length ? `+${wagesChart[wagesChart.length - 1].yoyPct.toFixed(1)}%` : "+4.1%"}
+          badge={wagesChart.length > 1 ? `${Math.abs(wagesChart[wagesChart.length - 1].yoyPct - wagesChart[wagesChart.length - 2].yoyPct).toFixed(1)}%` : "0.1%"}
+          up={wagesChart.length ? wagesChart[wagesChart.length - 1].yoyPct < 4 : false}
           sub="YoY change"
           loading={loading}
         />
@@ -513,7 +540,7 @@ export default function Labor() {
                   <XAxis dataKey="date" tick={{ fontSize: 9, fill: "var(--text-3)" }} tickLine={false} interval={5} />
                   <YAxis tick={{ fontSize: 9, fill: "var(--text-3)" }} tickLine={false} />
                   <Tooltip content={<TT unit="K" />} />
-                  <ReferenceLine y={0} stroke="var(--border-alt)" />
+                  <ReferenceLine y={0} stroke="#3d3028" />
                   <Bar dataKey="change" name="Payrolls Chg" radius={[2, 2, 0, 0]}>
                     {nfpChart.map((entry, i) => (
                       <Cell key={i} fill={entry.change >= 0 ? "var(--up)" : "var(--down)"} fillOpacity={0.8} />
@@ -531,7 +558,7 @@ export default function Labor() {
             <div className="t-section-title">JOLTS: Job Openings vs Quits Rate (M)</div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <span style={{ width: 14, height: 2, background: "var(--blue)", display: "inline-block" }} />
+                <span style={{ width: 14, height: 2, background: "#3b82f6", display: "inline-block" }} />
                 <span style={{ fontSize: "0.7rem", color: "var(--text-3)" }}>Openings</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
@@ -550,7 +577,7 @@ export default function Labor() {
                   <XAxis dataKey="date" tick={{ fontSize: 9, fill: "var(--text-3)" }} tickLine={false} interval={5} />
                   <YAxis tick={{ fontSize: 9, fill: "var(--text-3)" }} tickLine={false} tickFormatter={v => `${v}M`} />
                   <Tooltip content={<TT unit="M" />} />
-                  <Line type="monotone" dataKey="openings" name="Openings" stroke="#60a5fa" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="openings" name="Openings" stroke="#3b82f6" strokeWidth={2.5} dot={false} />
                   <Line type="monotone" dataKey="quits" name="Quits" stroke="var(--gold)" strokeWidth={2} dot={false} strokeDasharray="4 2" />
                 </LineChart>
               </ResponsiveContainer>
@@ -599,7 +626,7 @@ export default function Labor() {
           <div style={{ padding: "0 1rem 0.75rem", display: "flex", gap: 8 }}>
             {[
               { label: "> 4%", desc: "Inflationary", color: "var(--down)", bg: "var(--down-dim)" },
-              { label: "2–4%", desc: "Normal range", color: "var(--gold)", bg: "var(--gold-dim)" },
+              { label: "2–4%", desc: "Normal range", color: "var(--gold)", bg: "rgba(201,169,110,0.08)" },
               { label: "< 2%", desc: "Weak growth", color: "var(--up)", bg: "var(--up-dim)" },
             ].map((z, i) => (
               <span key={i} style={{
@@ -672,7 +699,7 @@ export default function Labor() {
             <div className="t-section-title">Initial Jobless Claims — Weekly (1 Year)</div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <span style={{ width: 14, height: 2, background: "var(--blue)", display: "inline-block" }} />
+                <span style={{ width: 14, height: 2, background: "#3b82f6", display: "inline-block" }} />
                 <span style={{ fontSize: "0.7rem", color: "var(--text-3)" }}>Weekly Claims</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 5 }}>

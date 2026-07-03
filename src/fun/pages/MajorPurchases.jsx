@@ -652,6 +652,7 @@ export default function MajorPurchases() {
   const navigate   = useNavigate();
   const [tab,      setTab]     = useState('learn');
   const [learnTab, setLearnTab]= useState('home');
+  const [calcTab,  setCalcTab] = useState('mortgage');
 
   const learnContent = {
     home:     <HomeBuyingLearn/>,
@@ -729,8 +730,29 @@ export default function MajorPurchases() {
 
         {tab === 'calculators' && (
           <>
-            <MortgageCalc/>
-            <GoalCalc/>
+            <div style={{ display:'flex', gap:'0.5rem', flexWrap:'wrap', marginBottom:'1.5rem' }}>
+              {[
+                { id:'mortgage', label:'Mortgage Affordability', icon:Home   },
+                { id:'goal',     label:'Goal Savings Planner',   icon:Target },
+              ].map(t => {
+                const Icon = t.icon;
+                const active = calcTab === t.id;
+                return (
+                  <button key={t.id} onClick={() => setCalcTab(t.id)} style={{
+                    display:'flex', alignItems:'center', gap:6, padding:'7px 14px',
+                    borderRadius:99, border:`1.5px solid ${active ? TEAL : B2}`,
+                    background: active ? TEAL : RAISE, cursor:'pointer',
+                    fontFamily:UI, fontSize:'0.8125rem',
+                    fontWeight: active ? 700 : 500, color: active ? '#fff' : T2,
+                    transition:'all 0.15s', whiteSpace:'nowrap',
+                  }}>
+                    <Icon size={13}/>{t.label}
+                  </button>
+                );
+              })}
+            </div>
+            {calcTab === 'mortgage' && <MortgageCalc/>}
+            {calcTab === 'goal'     && <GoalCalc/>}
           </>
         )}
 

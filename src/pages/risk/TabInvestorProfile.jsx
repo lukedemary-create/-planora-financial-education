@@ -314,7 +314,7 @@ function ProfileResults({ score, answers, onRetake, portfolio }) {
     <div style={{ display:"flex",flexDirection:"column",gap:"1rem" }}>
       {/* Header card */}
       <div style={{
-        background:"var(--surface)",border:`2px solid ${prof.color}30`,
+        border:`2px solid ${prof.color}30`,
         borderRadius:10,padding:"1.5rem",
         background:`linear-gradient(135deg, var(--surface) 0%, ${prof.color}06 100%)`,
       }}>

@@ -1,7 +1,7 @@
 import React, { useState, lazy, Suspense } from "react";
 import {
   ShieldAlert, LayoutDashboard, Briefcase, User, BookOpen,
-  GitCompare, BarChart2, Zap, TrendingUp, Settings2, GraduationCap, FlaskConical,
+  GitCompare, BarChart2, Zap, TrendingUp, Settings2, FlaskConical,
 } from "lucide-react";
 
 const TabCommandCenter    = lazy(() => import("./risk/TabCommandCenter"));
@@ -13,7 +13,6 @@ const TabHistorical       = lazy(() => import("./risk/TabHistorical"));
 const TabStressTest       = lazy(() => import("./risk/TabStressTest"));
 const TabMonteCarlo       = lazy(() => import("./risk/TabMonteCarlo"));
 const TabOptimization     = lazy(() => import("./risk/TabOptimization"));
-const TabEducation        = lazy(() => import("./risk/TabEducation"));
 const TabPortfolioAnalyzer= lazy(() => import("./risk/TabPortfolioAnalyzer"));
 
 const TABS = [
@@ -27,7 +26,6 @@ const TABS = [
   { key: "stress",    label: "Stress Tests",         icon: Zap },
   { key: "monte",     label: "Monte Carlo",          icon: TrendingUp },
   { key: "optimize",  label: "Optimization",         icon: Settings2 },
-  { key: "education", label: "Education",            icon: GraduationCap },
 ];
 
 const Loader = () => (
@@ -173,7 +171,6 @@ export default function RiskAnalysis() {
           {activeTab === "stress"    && <TabStressTest />}
           {activeTab === "monte"     && <TabMonteCarlo />}
           {activeTab === "optimize"  && <TabOptimization />}
-          {activeTab === "education" && <TabEducation />}
         </Suspense>
       </div>
     </RiskContext.Provider>

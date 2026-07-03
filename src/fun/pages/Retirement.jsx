@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AreaChart, Area, CartesianGrid, Tooltip, ResponsiveContainer, Legend, XAxis, YAxis } from 'recharts';
 import {
   Clock, ChevronRight, Info, CheckCircle2, XCircle,
   AlertCircle, BookOpen, Calculator, ExternalLink, ArrowRight,
-  TrendingUp, DollarSign, Calendar, Shield,
+  TrendingUp, DollarSign, Calendar, Shield, Users,
 } from 'lucide-react';
 
 const TEAL  = '#00B4C6';
@@ -74,6 +75,13 @@ function Pill({ text, color = '#6b5540' }) {
 }
 
 function fmt(n) { return '$' + Math.round(Math.abs(n)).toLocaleString(); }
+function fmtK(n) {
+  const abs = Math.abs(n || 0);
+  if (abs >= 1_000_000) return '$' + (n / 1_000_000).toFixed(2) + 'M';
+  if (abs >= 1_000)     return '$' + (n / 1_000).toFixed(1) + 'K';
+  return '$' + Math.round(n || 0).toLocaleString();
+}
+const MONO = "'JetBrains Mono', 'Courier New', monospace";
 
 /* ══════════════════════════════════════════════════════════════════
    LEARN — ACCOUNT TYPES
@@ -487,94 +495,309 @@ function RetirementCalc() {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   CALCULATOR — Social Security Break-Even
+   CHART TOOLTIP — Social Security
 ══════════════════════════════════════════════════════════════════ */
-function SSBreakEvenCalc() {
-  const [fraMonthly, setFraMonthly] = useState(2000);
-  const [claimAge,   setClaimAge]   = useState(62);
+function SSTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{ background: SURF, border: `1px solid ${B2}`, borderRadius: 8, padding: '0.75rem 1rem', fontSize: '0.78rem' }}>
+      <div style={{ fontWeight: 700, color: NAVY, marginBottom: '0.4rem', fontFamily: UI }}>Age {label}</div>
+      {payload.map(p => (
+        <div key={p.name} style={{ color: p.color, marginBottom: '0.2rem', fontFamily: MONO }}>{p.name}: {fmtK(p.value)}</div>
+      ))}
+    </div>
+  );
+}
 
-  // Simplified: FRA = 67
-  const FRA = 67;
-  const yearsEarly = Math.max(0, FRA - claimAge);
-  const yearsLate  = Math.max(0, claimAge - FRA);
+/* ══════════════════════════════════════════════════════════════════
+   CALCULATOR — Social Security Optimizer (Full)
+══════════════════════════════════════════════════════════════════ */
+function SSOptimizer() {
+  const RED    = '#ef4444';
+  const GREEN  = '#22c55e';
+  const PURPLE = '#818cf8';
 
-  let multiplier;
-  if (claimAge <= FRA) {
-    // Each year early reduces by ~6.67% (up to 36 months) then 5% after
-    const months = yearsEarly * 12;
-    const first36 = Math.min(36, months) * (5/9/100);
-    const after36 = Math.max(0, months - 36) * (5/12/100);
-    multiplier = 1 - first36 - after36;
-  } else {
-    multiplier = 1 + yearsLate * 0.08;
-  }
+  const HEALTH_MAP = {
+    excellent:     { label: 'Excellent (90+)',          age: 92 },
+    good:          { label: 'Good (82–90)',              age: 86 },
+    average:       { label: 'Average (78–82)',           age: 80 },
+    below_average: { label: 'Below Average (under 78)', age: 76 },
+  };
 
-  const adjustedMonthly = Math.round(fraMonthly * multiplier);
-  const fraMonthlyVal   = fraMonthly;
+  const [fraMonthly,    setFraMonthly]    = useState(2400);
+  const [health,        setHealth]        = useState('good');
+  const [maritalStatus, setMaritalStatus] = useState('single');
+  const [spouseFra,     setSpouseFra]     = useState(1800);
+  const [otherIncome,   setOtherIncome]   = useState(20000);
 
-  // Break-even vs FRA
-  let breakEvenAge = null;
-  if (claimAge !== FRA) {
-    // cumulative diff: months claiming early * adjusted vs months at FRA
-    // solve for age where cumulative = 0
-    // If claiming early: adjustedMonthly * t = fraMonthly * (t - yearsEarly*12)
-    // adjusted * t = fra * t - fra * yearsEarly*12
-    // t(adjusted - fra) = -fra * yearsEarly * 12
-    // t = fra * yearsEarly * 12 / (fra - adjusted)  months from claim start
-    if (claimAge < FRA) {
-      const monthsDiff = fraMonthly - adjustedMonthly;
-      if (monthsDiff > 0) {
-        const monthsToCatch = (adjustedMonthly * yearsEarly * 12) / monthsDiff;
-        breakEvenAge = claimAge + monthsToCatch / 12;
-      }
-    } else {
-      // claiming late: adjustedMonthly * t = fraMonthly * (t + yearsLate*12)
-      // t(adjusted - fra) = fra * yearsLate * 12
-      // t = fra * yearsLate * 12 / (adjusted - fra)
-      const monthsDiff = adjustedMonthly - fraMonthly;
-      if (monthsDiff > 0) {
-        const monthsToCatch = (fraMonthly * yearsLate * 12) / monthsDiff;
-        breakEvenAge = claimAge + monthsToCatch / 12;
-      }
+  const calc = useMemo(() => {
+    const fra     = Math.max(0, fraMonthly);
+    const m62     = fra * 0.70;
+    const m67     = fra;
+    const m70     = fra * 1.24;
+    const lifeAge = HEALTH_MAP[health].age;
+
+    const lt = (monthly, claimAge) => monthly * Math.max(0, (lifeAge - claimAge) * 12);
+    const lt62 = lt(m62, 62);
+    const lt67 = lt(m67, 67);
+    const lt70 = lt(m70, 70);
+
+    const maxLT = Math.max(lt62, lt67, lt70);
+    let winner = '67';
+    if (lt62 === maxLT) winner = '62';
+    else if (lt70 === maxLT) winner = '70';
+
+    let be6267 = null, be6770 = null, be6270 = null;
+    for (let age = 62; age <= 100; age += 0.01) {
+      const t62 = m62 * Math.max(0, (age - 62) * 12);
+      const t67 = m67 * Math.max(0, (age - 67) * 12);
+      const t70 = m70 * Math.max(0, (age - 70) * 12);
+      if (!be6267 && t67 >= t62) be6267 = +age.toFixed(1);
+      if (!be6770 && t70 >= t67) be6770 = +age.toFixed(1);
+      if (!be6270 && t70 >= t62) be6270 = +age.toFixed(1);
+      if (be6267 && be6770 && be6270) break;
     }
-  }
 
-  const lifetime62to90 = claimAge <= 62 ? adjustedMonthly * 12 * (90 - 62) : (claimAge < 90 ? adjustedMonthly * 12 * (90 - claimAge) : 0);
-  const lifetimeFRA90  = fraMonthlyVal * 12 * (90 - FRA);
+    const chartData = [];
+    for (let age = 62; age <= 95; age++) {
+      chartData.push({
+        age,
+        'Claim at 62': Math.round(m62 * Math.max(0, (age - 62) * 12)),
+        'Claim at 67': Math.round(m67 * Math.max(0, (age - 67) * 12)),
+        'Claim at 70': Math.round(m70 * Math.max(0, (age - 70) * 12)),
+      });
+    }
+
+    const selfFra        = fra;
+    const spFra          = Math.max(0, spouseFra);
+    const higherFra      = Math.max(selfFra, spFra);
+    const lowerFra       = Math.min(selfFra, spFra);
+    const spousalBenefit  = Math.max(lowerFra, higherFra * 0.5);
+    const spousalExtra    = Math.max(0, spousalBenefit - lowerFra);
+    const survivorBenefit = higherFra * 1.24;
+
+    const annualSS       = m67 * 12;
+    const combinedIncome = otherIncome + annualSS * 0.5;
+    let taxablePct = 0;
+    if (combinedIncome > 34000) taxablePct = 0.85;
+    else if (combinedIncome > 25000) taxablePct = 0.50;
+    const taxableAmount = annualSS * taxablePct;
+
+    return {
+      m62, m67, m70, lt62, lt67, lt70, winner, lifeAge,
+      be6267, be6770, be6270, chartData,
+      spousalBenefit, spousalExtra, survivorBenefit,
+      annualSS, taxablePct, taxableAmount, combinedIncome,
+    };
+  }, [fraMonthly, health, spouseFra, otherIncome]);
 
   return (
-    <SectionCard title="Social Security Claiming Age Comparison" subtitle="See how your monthly benefit changes based on when you claim, and when the break-even point occurs.">
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 1.25rem' }}>
-        <NumInput label="Your FRA Monthly Benefit ($)" value={fraMonthly} onChange={setFraMonthly} step={100} hint="Find this at ssa.gov/myaccount"/>
+    <SectionCard title="Social Security Optimizer" subtitle="Find the optimal claiming age to maximize your lifetime Social Security benefits.">
+
+      {/* Key Stats */}
+      <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:'1.5rem' }}>
+        {[
+          { label:'Full Retirement Age',    value:'Age 67', color:TEAL       },
+          { label:'Early Claiming Penalty', value:'−30%',   color:RED        },
+          { label:'Delayed Bonus / Year',   value:'+8%',    color:GREEN      },
+          { label:'Max Monthly 2026',       value:'$4,873', color:'#f59e0b'  },
+        ].map(({ label, value, color }) => (
+          <div key={label} style={{ background:`${color}10`, border:`1px solid ${color}30`, borderRadius:8, padding:'0.5rem 0.875rem', flex:'1 1 120px' }}>
+            <div style={{ fontSize:'1.2rem', fontWeight:800, color, lineHeight:1, fontFamily:MONO }}>{value}</div>
+            <div style={{ fontSize:'0.7rem', color:T3, fontWeight:600, letterSpacing:'0.06em', textTransform:'uppercase', marginTop:4, fontFamily:UI }}>{label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Inputs */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 1.25rem', marginBottom:'1.25rem' }}>
+        <NumInput label="Monthly Benefit at FRA (Age 67)" value={fraMonthly} onChange={setFraMonthly} step={100} hint="Find your estimate at ssa.gov/myaccount"/>
         <div style={{ marginBottom:'1rem' }}>
-          <label style={{ display:'block', fontSize:'0.8125rem', fontWeight:600, color:NAVY, marginBottom:'0.375rem', fontFamily:UI }}>Claim at Age</label>
-          <input type="range" min={62} max={70} step={1} value={claimAge} onChange={e => setClaimAge(Number(e.target.value))}
-            style={{ width:'100%', accentColor:TEAL }}/>
-          <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.75rem', color:T3, fontFamily:UI, marginTop:4 }}>
-            <span>62</span><span style={{ fontWeight:700, color:TEAL }}>Age {claimAge}</span><span>70</span>
+          <label style={{ display:'block', fontSize:'0.8125rem', fontWeight:600, color:NAVY, marginBottom:'0.375rem', fontFamily:UI }}>Health / Life Expectancy</label>
+          <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+            {Object.entries(HEALTH_MAP).map(([key, { label }]) => (
+              <button key={key} onClick={() => setHealth(key)} style={{
+                background: health===key ? `${TEAL}18` : RAISE, border:`1.5px solid ${health===key ? TEAL : B2}`,
+                borderRadius:7, padding:'0.4rem 0.75rem', color:health===key ? TEAL : T3,
+                fontSize:'0.8rem', fontWeight:health===key ? 700 : 400, cursor:'pointer', textAlign:'left', fontFamily:UI,
+              }}>{label}</button>
+            ))}
           </div>
         </div>
-      </div>
-
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'0.75rem', margin:'0.5rem 0 1.25rem' }}>
-        <ResultBox label="Adjusted Monthly Benefit" value={fmt(adjustedMonthly)} color={claimAge < FRA ? '#ef4444' : claimAge > FRA ? '#22c55e' : TEAL} size="lg"/>
-        <ResultBox label="vs. FRA Benefit" value={`${claimAge === FRA ? '—' : claimAge < FRA ? '-' : '+'}${Math.abs(Math.round((multiplier-1)*100))}%`} color={claimAge < FRA ? '#ef4444' : '#22c55e'}/>
-        <ResultBox label="Annual Benefit" value={fmt(adjustedMonthly * 12)} color={NAVY}/>
-      </div>
-
-      {breakEvenAge && (
-        <div style={{ background:`${TEAL}0d`, border:`1px solid ${TEAL}25`, borderRadius:12, padding:'1rem', fontFamily:UI, marginBottom:'1rem' }}>
-          <div style={{ fontSize:'0.875rem', fontWeight:700, color:NAVY, marginBottom:4 }}>Break-Even Age: ~{Math.round(breakEvenAge)}</div>
-          <div style={{ fontSize:'0.8125rem', color:T2, lineHeight:1.65 }}>
-            {claimAge < FRA
-              ? `If you live past age ${Math.round(breakEvenAge)}, you would have received more lifetime income by waiting until FRA.`
-              : `If you live past age ${Math.round(breakEvenAge)}, your larger benefit from waiting pays off more than claiming at FRA.`
-            }
+        <div style={{ marginBottom:'1rem' }}>
+          <label style={{ display:'block', fontSize:'0.8125rem', fontWeight:600, color:NAVY, marginBottom:'0.375rem', fontFamily:UI }}>Marital Status</label>
+          <div style={{ display:'flex', gap:8 }}>
+            {['single','married'].map(s => (
+              <button key={s} onClick={() => setMaritalStatus(s)} style={{
+                flex:1, background:maritalStatus===s ? `${TEAL}18` : RAISE,
+                border:`1.5px solid ${maritalStatus===s ? TEAL : B2}`, borderRadius:7, padding:'0.45rem',
+                color:maritalStatus===s ? TEAL : T3, fontSize:'0.8rem', fontWeight:maritalStatus===s ? 700 : 400,
+                cursor:'pointer', textTransform:'capitalize', fontFamily:UI,
+              }}>{s}</button>
+            ))}
           </div>
+        </div>
+        {maritalStatus === 'married' && (
+          <NumInput label="Spouse's Monthly Benefit at FRA" value={spouseFra} onChange={setSpouseFra} step={100}/>
+        )}
+      </div>
+
+      {/* Scenario Cards */}
+      <div style={{ fontSize:'0.75rem', fontFamily:UI, fontWeight:700, color:T3, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'0.5rem' }}>
+        Claiming Age Comparison · Life expectancy: Age {calc.lifeAge} ({HEALTH_MAP[health].label})
+      </div>
+      <div style={{ display:'flex', gap:12, marginBottom:'1.5rem', flexWrap:'wrap' }}>
+        {[
+          { age:'62', sub:'30% permanent reduction', color:RED,   monthly:calc.m62, lt:calc.lt62, w:calc.winner==='62' },
+          { age:'67', sub:'Full Retirement Age',     color:TEAL,  monthly:calc.m67, lt:calc.lt67, w:calc.winner==='67' },
+          { age:'70', sub:'+24% permanent increase', color:GREEN, monthly:calc.m70, lt:calc.lt70, w:calc.winner==='70' },
+        ].map(sc => (
+          <div key={sc.age} style={{
+            flex:'1 1 160px', background:RAISE,
+            border:`${sc.w ? 2 : 1}px solid ${sc.w ? sc.color : B2}`,
+            borderRadius:14, padding:'1rem 1.125rem', position:'relative',
+          }}>
+            {sc.w && (
+              <div style={{
+                position:'absolute', top:-11, left:'50%', transform:'translateX(-50%)',
+                background:sc.color, color:'#000', fontSize:'0.6rem', fontWeight:800,
+                padding:'0.2rem 0.75rem', borderRadius:99, letterSpacing:'0.08em',
+                textTransform:'uppercase', whiteSpace:'nowrap', fontFamily:UI,
+              }}>Best for You</div>
+            )}
+            <div style={{ textAlign:'center', marginBottom:'0.75rem' }}>
+              <div style={{ fontSize:'1rem', fontWeight:800, color:sc.color, fontFamily:DISP }}>Claim at {sc.age}</div>
+              <div style={{ fontSize:'0.72rem', color:T3, fontFamily:UI }}>{sc.sub}</div>
+            </div>
+            {[
+              { label:'Monthly',       value:fmt(sc.monthly)       },
+              { label:'Annual',        value:fmt(sc.monthly * 12)  },
+              { label:'Lifetime Total',value:fmtK(sc.lt), large:true },
+            ].map(r => (
+              <div key={r.label} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.3rem 0', borderBottom:`1px solid ${B1}` }}>
+                <span style={{ fontSize:'0.73rem', color:T3, fontFamily:UI }}>{r.label}</span>
+                <span style={{ fontSize:r.large ? '1rem' : '0.85rem', fontWeight:r.large ? 800 : 600, color:sc.color, fontFamily:MONO }}>{r.value}</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Breakeven Analysis */}
+      <div style={{ fontSize:'0.75rem', fontFamily:UI, fontWeight:700, color:T3, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'0.5rem' }}>Breakeven Analysis</div>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:12, marginBottom:'1.5rem' }}>
+        {[
+          { label:'62 vs 67', age:calc.be6267, color:TEAL,      desc:`Live past age ${calc.be6267 ?? '—'} → claiming at 67 pays more total than at 62.` },
+          { label:'67 vs 70', age:calc.be6770, color:GREEN,     desc:`Live past age ${calc.be6770 ?? '—'} → claiming at 70 pays more total than at 67.` },
+          { label:'62 vs 70', age:calc.be6270, color:'#f59e0b', desc:`Live past age ${calc.be6270 ?? '—'} → claiming at 70 beats claiming at 62.` },
+        ].map(({ label, age, color, desc }) => (
+          <div key={label} style={{ background:RAISE, borderRadius:10, border:`1px solid ${B2}`, padding:'0.875rem' }}>
+            <div style={{ fontSize:'0.7rem', fontFamily:UI, fontWeight:700, color:T3, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:4 }}>{label} Breakeven</div>
+            <div style={{ fontSize:'1.5rem', fontWeight:900, color, lineHeight:1, marginBottom:6, fontFamily:MONO }}>Age {age ?? '—'}</div>
+            <div style={{ fontSize:'0.72rem', color:T3, lineHeight:1.5, fontFamily:UI }}>{desc}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Cumulative Chart */}
+      <div style={{ fontSize:'0.75rem', fontFamily:UI, fontWeight:700, color:T3, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'0.25rem' }}>Cumulative Lifetime Benefits</div>
+      <div style={{ fontSize:'0.75rem', color:T3, marginBottom:'0.75rem', fontFamily:UI }}>Lines cross at breakeven ages — where a later strategy overtakes an earlier one</div>
+      <div style={{ marginBottom:'1.5rem' }}>
+        <ResponsiveContainer width="100%" height={280}>
+          <AreaChart data={calc.chartData} margin={{ top:10, right:10, left:10, bottom:0 }}>
+            <defs>
+              <linearGradient id="ssG62" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%"  stopColor={RED}   stopOpacity={0.25}/>
+                <stop offset="95%" stopColor={RED}   stopOpacity={0.03}/>
+              </linearGradient>
+              <linearGradient id="ssG67" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%"  stopColor={TEAL}  stopOpacity={0.25}/>
+                <stop offset="95%" stopColor={TEAL}  stopOpacity={0.03}/>
+              </linearGradient>
+              <linearGradient id="ssG70" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%"  stopColor={GREEN} stopOpacity={0.25}/>
+                <stop offset="95%" stopColor={GREEN} stopOpacity={0.03}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid stroke={B1} strokeOpacity={0.4}/>
+            <XAxis dataKey="age" tick={{ fontSize:11, fill:T3, fontFamily:MONO }} label={{ value:'Age', position:'insideBottom', offset:-2, fill:T3, fontSize:11 }}/>
+            <YAxis tickFormatter={v => fmtK(v)} tick={{ fontSize:11, fill:T3, fontFamily:MONO }} width={65}/>
+            <Tooltip content={<SSTooltip/>}/>
+            <Legend wrapperStyle={{ fontSize:'0.75rem', paddingTop:'0.5rem', fontFamily:UI }}/>
+            <Area type="monotone" dataKey="Claim at 62" stroke={RED}   fill="url(#ssG62)" strokeWidth={2} dot={false}/>
+            <Area type="monotone" dataKey="Claim at 67" stroke={TEAL}  fill="url(#ssG67)" strokeWidth={2} dot={false}/>
+            <Area type="monotone" dataKey="Claim at 70" stroke={GREEN} fill="url(#ssG70)" strokeWidth={2} dot={false}/>
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Spousal & Survivor */}
+      {maritalStatus === 'married' && (
+        <div style={{ marginBottom:'1.5rem' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:'0.75rem' }}>
+            <Users size={15} color={PURPLE}/>
+            <span style={{ fontFamily:UI, fontSize:'0.8125rem', fontWeight:700, color:T3, textTransform:'uppercase', letterSpacing:'0.08em' }}>Spousal & Survivor Benefits</span>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:'0.75rem' }}>
+            <div style={{ background:RAISE, borderRadius:10, border:`1px solid ${B2}`, padding:'0.875rem' }}>
+              <div style={{ fontSize:'0.7rem', fontFamily:UI, fontWeight:700, color:T3, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:4 }}>Spousal Benefit</div>
+              <div style={{ fontSize:'1.3rem', fontWeight:900, color:PURPLE, fontFamily:MONO, marginBottom:4 }}>{fmt(calc.spousalBenefit)}/mo</div>
+              <div style={{ fontSize:'0.72rem', color:T3, lineHeight:1.5, fontFamily:UI }}>
+                Lower-earning spouse can claim up to 50% of the higher earner's FRA benefit.
+                {calc.spousalExtra > 0 && ` That's ${fmt(calc.spousalExtra)}/mo more than their own.`}
+              </div>
+            </div>
+            <div style={{ background:RAISE, borderRadius:10, border:`1px solid ${B2}`, padding:'0.875rem' }}>
+              <div style={{ fontSize:'0.7rem', fontFamily:UI, fontWeight:700, color:T3, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:4 }}>Survivor Benefit (if higher earner claims at 70)</div>
+              <div style={{ fontSize:'1.3rem', fontWeight:900, color:TEAL, fontFamily:MONO, marginBottom:4 }}>{fmt(calc.survivorBenefit)}/mo</div>
+              <div style={{ fontSize:'0.72rem', color:T3, lineHeight:1.5, fontFamily:UI }}>Surviving spouse receives the deceased's benefit. Delaying to 70 maximizes this permanently.</div>
+            </div>
+          </div>
+          <InfoBox color={PURPLE}>Recommended married strategy: Have the lower-earning spouse claim early (62–65) to bring income in while the higher-earning spouse delays to 70. This maximizes the survivor benefit the remaining spouse receives for life.</InfoBox>
         </div>
       )}
 
-      <InfoBox>This is a simplified estimate. Actual benefits depend on your full earnings history. Always verify at ssa.gov/myaccount and consider a fee-only financial advisor for claiming strategy.</InfoBox>
+      {/* Tax on SS */}
+      <div>
+        <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:'0.75rem' }}>
+          <DollarSign size={15} color={TEAL}/>
+          <span style={{ fontFamily:UI, fontSize:'0.8125rem', fontWeight:700, color:T3, textTransform:'uppercase', letterSpacing:'0.08em' }}>Tax on Social Security Benefits</span>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+          <div style={{ background:RAISE, borderRadius:10, border:`1px solid ${B2}`, padding:'0.875rem' }}>
+            <div style={{ fontSize:'0.75rem', fontFamily:UI, fontWeight:700, color:T3, textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'0.625rem' }}>Income Thresholds (Single Filers)</div>
+            {[
+              { range:'Under $25,000',   pct:'0% taxable',        color:GREEN      },
+              { range:'$25,000–$34,000', pct:'Up to 50% taxable', color:'#f59e0b'  },
+              { range:'Over $34,000',    pct:'Up to 85% taxable', color:RED        },
+            ].map(({ range, pct, color }) => (
+              <div key={range} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.45rem 0', borderBottom:`1px solid ${B1}`, fontFamily:UI }}>
+                <span style={{ fontSize:'0.75rem', color:T2 }}>{range}</span>
+                <span style={{ fontSize:'0.7rem', fontWeight:700, color, background:`${color}15`, border:`1px solid ${color}30`, borderRadius:99, padding:'2px 8px' }}>{pct}</span>
+              </div>
+            ))}
+            <div style={{ fontSize:'0.68rem', color:T3, marginTop:'0.5rem', fontFamily:UI }}>Combined income = other income + 50% of SS benefits</div>
+          </div>
+          <div>
+            <NumInput label="Other Annual Income (wages, pension, etc.)" value={otherIncome} onChange={setOtherIncome} step={1000}/>
+            <div style={{ background:RAISE, borderRadius:8, border:`1px solid ${B2}`, padding:'0.75rem', fontFamily:UI }}>
+              {[
+                { label:'Annual SS at FRA',  value:fmt(calc.annualSS),       color:NAVY,  bold:false },
+                { label:'Combined Income',   value:fmt(calc.combinedIncome), color:NAVY,  bold:false },
+                { label:'Taxable Portion',   value:`${Math.round(calc.taxablePct * 100)}%`,   color:calc.taxablePct > 0 ? RED : GREEN, bold:true },
+                { label:'Taxable SS Amount', value:`${fmt(calc.taxableAmount)}/yr`,            color:calc.taxablePct > 0 ? RED : GREEN, bold:true },
+              ].map(r => (
+                <div key={r.label} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.35rem 0', borderBottom:`1px solid ${B1}` }}>
+                  <span style={{ fontSize:'0.73rem', color:T3 }}>{r.label}</span>
+                  <span style={{ fontSize:r.bold ? '0.88rem' : '0.82rem', fontWeight:r.bold ? 700 : 600, color:r.color, fontFamily:MONO }}>{r.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <InfoBox>For accurate benefit estimates, create a free account at ssa.gov/myaccount. Consider a fee-only CFP for a personalized claiming strategy — especially for married couples.</InfoBox>
     </SectionCard>
   );
 }
@@ -671,6 +894,7 @@ export default function Retirement() {
   const navigate  = useNavigate();
   const [tab,      setTab]     = useState('learn');
   const [learnTab, setLearnTab]= useState('accounts');
+  const [calcTab,  setCalcTab] = useState('retirement');
 
   const learnContent = {
     accounts:   <AccountTypesLearn/>,
@@ -749,8 +973,29 @@ export default function Retirement() {
 
         {tab === 'calculators' && (
           <>
-            <RetirementCalc/>
-            <SSBreakEvenCalc/>
+            <div style={{ display:'flex', gap:'0.5rem', marginBottom:'1.5rem' }}>
+              {[
+                { id:'retirement', label:'Retirement Goal',      icon:TrendingUp },
+                { id:'ss',         label:'SS Optimizer',         icon:Shield     },
+              ].map(t => {
+                const Icon = t.icon;
+                const active = calcTab === t.id;
+                return (
+                  <button key={t.id} onClick={() => setCalcTab(t.id)} style={{
+                    display:'flex', alignItems:'center', gap:6, padding:'7px 16px',
+                    borderRadius:99, border:`1px solid ${active ? TEAL : B2}`,
+                    background: active ? TEAL : RAISE, cursor:'pointer',
+                    fontFamily:UI, fontSize:'0.8125rem',
+                    fontWeight: active ? 700 : 500, color: active ? '#1a1410' : T3,
+                    whiteSpace:'nowrap',
+                  }}>
+                    <Icon size={13}/>{t.label}
+                  </button>
+                );
+              })}
+            </div>
+            {calcTab === 'retirement' && <RetirementCalc/>}
+            {calcTab === 'ss'         && <SSOptimizer/>}
           </>
         )}
 

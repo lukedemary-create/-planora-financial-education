@@ -4,10 +4,10 @@ import { Home, BookOpen, TrendingUp, Sparkles, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { label: "Home", icon: Home, path: "/Dashboard" },
+  { label: "Home", icon: Home, path: "/dashboard" },
   { label: "Learn", icon: BookOpen, path: "/education-hub" },
-  { label: "Markets", icon: TrendingUp, path: "/TickerLookup" },
-  { label: "Reports", icon: Sparkles, path: "/AIAdvisor" },
+  { label: "Markets", icon: TrendingUp, path: "/terminal" },
+  { label: "Reports", icon: Sparkles, path: "/financial-reports" },
   { label: "More", icon: Menu, path: "/more" }
 ];
 
@@ -28,7 +28,7 @@ export default function MobileBottomNav({ onMoreClick }) {
     >
       <div className="flex items-center justify-around px-2 py-2">
         {navItems.map((item) => {
-          const isActive = item.path === "/more" ? false : location.pathname === item.path || location.pathname === item.path.replace("/Dashboard", "/");
+          const isActive = item.path === "/more" ? false : location.pathname === item.path || location.pathname.startsWith(item.path + "/");
           const Icon = item.icon;
 
           if (item.path === "/more") {

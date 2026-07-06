@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Planning Letter — No. 03 — The 44 vs 64 Problem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f7f2e9;--paper-2:#efe7d8;--ink:#1a1410;--ink-soft:#4a4038;
+    --tan:#c9a96e;--tan-deep:#a8854a;--brown:#6b5440;--blue:#2d6a9f;--blue-soft:#5b8db8;
+    --rule:#d8cab0;--ghost:#cdbf9f;--maxw:720px;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;
+    line-height:1.68;font-size:18px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px 90px;}
+  .masthead{padding:40px 0 0;text-align:center;}
+  .mast-kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.42em;
+    text-transform:uppercase;color:var(--tan-deep);margin-bottom:14px;}
+  .mast-title{font-family:'Playfair Display',serif;font-weight:800;font-size:40px;line-height:1;margin:0;}
+  .mast-title .amp{color:var(--tan-deep);font-style:italic;font-weight:600;}
+  .mast-rule{display:flex;align-items:center;gap:14px;margin:22px auto 0;max-width:560px;}
+  .mast-rule .line{flex:1;height:1px;background:var(--rule);}
+  .mast-rule .dot{width:6px;height:6px;border:1px solid var(--tan-deep);transform:rotate(45deg);}
+  .mast-meta{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ink-soft);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .section-tag{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--blue);margin:64px 0 18px;display:flex;align-items:center;gap:12px;}
+  .section-tag .num{background:var(--ink);color:var(--paper);font-weight:600;padding:3px 9px;
+    border-radius:2px;letter-spacing:.1em;}
+  h1.title{font-family:'Playfair Display',serif;font-weight:800;font-size:52px;line-height:1.02;
+    margin:0 0 20px;letter-spacing:-.01em;}
+  .deck{font-family:'Playfair Display',serif;font-style:italic;font-weight:400;font-size:23px;
+    line-height:1.45;color:var(--brown);margin:0 0 30px;max-width:92%;}
+  .byline{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink-soft);border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);padding:12px 0;margin-bottom:40px;display:flex;
+    justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  p{margin:0 0 22px;}
+  .lead::first-letter{font-family:'Playfair Display',serif;font-weight:700;float:left;font-size:78px;
+    line-height:.74;padding:8px 14px 0 0;color:var(--tan-deep);}
+  h2{font-family:'Playfair Display',serif;font-weight:700;font-size:30px;line-height:1.12;margin:50px 0 6px;}
+  .h2-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--tan-deep);margin:50px 0 4px;}
+  .h2-eyebrow + h2{margin-top:0;}
+  strong{font-weight:700;}
+  em.term{font-style:italic;color:var(--brown);font-weight:500;}
+  .pull{font-family:'Playfair Display',serif;font-weight:600;font-size:28px;line-height:1.3;
+    color:var(--ink);border-left:3px solid var(--tan);padding:6px 0 6px 26px;margin:40px 0;}
+  figure{margin:38px 0;background:#fffdf8;border:1px solid var(--rule);border-radius:5px;
+    padding:24px 24px 18px;box-shadow:0 1px 0 rgba(168,133,74,.08);}
+  .fig-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--blue);margin-bottom:3px;}
+  .fig-title{font-family:'Playfair Display',serif;font-weight:700;font-size:21px;margin:0 0 4px;}
+  .fig-sub{font-size:14.5px;color:var(--ink-soft);margin:0 0 16px;line-height:1.5;}
+  figcaption{font-size:13px;color:var(--ink-soft);margin-top:12px;line-height:1.5;
+    border-top:1px dotted var(--rule);padding-top:10px;}
+  svg{display:block;width:100%;height:auto;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  table{width:100%;border-collapse:collapse;font-size:15px;margin-top:4px;}
+  th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--rule);}
+  th{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-soft);font-weight:600;}
+  td.num,th.num{text-align:right;font-family:'JetBrains Mono',monospace;}
+  tr:last-child td{border-bottom:none;}
+  .row-hi td{background:var(--paper-2);font-weight:600;}
+  .neg{color:#a8543a;}
+  .move{margin:46px 0;border:1.5px solid var(--tan);border-radius:6px;overflow:hidden;
+    background:linear-gradient(180deg,#fbf6ec,#f5ecda);}
+  .move-head{background:var(--tan);color:var(--ink);font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;font-weight:600;padding:9px 22px;
+    display:flex;align-items:center;gap:10px;}
+  .move-head .glyph{width:7px;height:7px;background:var(--ink);transform:rotate(45deg);}
+  .move-body{padding:20px 24px 22px;}
+  .move-body h3{font-family:'Playfair Display',serif;font-weight:700;font-size:22px;margin:0 0 8px;}
+  .move-body p{margin:0 0 12px;font-size:16.5px;}
+  .move-steps{counter-reset:step;list-style:none;padding:0;margin:6px 0 0;}
+  .move-steps li{position:relative;padding:0 0 11px 38px;font-size:16px;line-height:1.5;}
+  .move-steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:0;
+    width:25px;height:25px;background:var(--blue);color:#fff;border-radius:50%;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
+    display:flex;align-items:center;justify-content:center;}
+  .foot{margin-top:70px;border-top:2px solid var(--ink);padding-top:24px;font-size:13px;
+    color:var(--ink-soft);line-height:1.6;}
+  .foot .brand{font-family:'Playfair Display',serif;font-weight:700;font-size:17px;color:var(--ink);}
+  .foot .arche{font-family:'JetBrains Mono',monospace;letter-spacing:.3em;font-size:11px;color:var(--tan-deep);}
+  .disc{font-size:11.5px;color:#9b8e78;margin-top:14px;line-height:1.55;}
+  @media (max-width:560px){
+    body{font-size:16.5px;}.mast-title{font-size:30px;}h1.title{font-size:38px;}
+    .deck{font-size:20px;}.pull{font-size:23px;}.lead::first-letter{font-size:64px;}
+    figure{padding:18px 15px 14px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="mast-kicker">A Weekly Letter on Money &amp; Time</div>
+    <h1 class="mast-title">The Planning <span class="amp">&amp;</span> Letter</h1>
+    <div class="mast-rule"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+    <div class="mast-meta"><span>Issue No. 03</span><span>Accumulation Series</span><span>Est. 9 min read</span></div>
+  </header>
+
+  <div class="section-tag"><span class="num">03</span> Accumulation &amp; Wealth Building</div>
+  <h1 class="title">The 44 vs 64 Problem</h1>
+  <p class="deck">A target-date fund treats your risk as a function of one number — your birth year. Your real risk depends on at least three.</p>
+  <div class="byline"><span>The Planning Letter</span><span>Glide Paths &amp; Allocation</span></div>
+
+  <p class="lead">There is a quiet assumption baked into the most popular retirement product in America. A target-date fund — the default in millions of 401(k) plans — decides how much stock you should own based entirely on the year you intend to retire. Everyone aiming at 2045 gets the same glide path, the same descent from aggressive to cautious, regardless of how much they've saved, what else they own, or whether a 20% drop would make them sell at the worst possible moment.</p>
+
+  <p>For a default, that's reasonable engineering. A single dial that's roughly right for the average saver beats the paralysis of choosing nothing. But "roughly right for the average" is a low bar for the most important financial decision you'll make — the split between assets that grow and assets that protect. This letter is about reading your own glide path: what the automated version gets right, where it's blunt, and how to tell whether your portfolio is dressed for your actual life.</p>
+
+  <div class="h2-eyebrow">The Curve</div>
+  <h2>What a glide path actually is</h2>
+
+  <p>A <em class="term">glide path</em> is simply the planned decline in your stock allocation as retirement approaches — the slow shift from <em>growth</em> (equities, which build wealth but lurch) to <em>preservation</em> (bonds and cash, which steady the ship but barely outrun inflation). The logic is sound: a 30-year-old has decades to recover from a crash, so volatility is just noise. A 65-year-old about to draw an income has no such luxury — a bad year now is a permanent dent.</p>
+
+  <p>The classic rule of thumb compresses this into one line: hold roughly <span class="mono">(120 − your age)%</span> in stocks. A target-date fund does something similar but smoother, and crucially, it holds a high equity stake far longer than older "100 − age" rules did, because we now expect to live — and spend — for three decades after we stop working.</p>
+
+  <!-- CHART 1: glide paths -->
+  <figure>
+    <div class="fig-label">Figure 1 — Two ways down the mountain</div>
+    <div class="fig-title">Stock allocation as you age</div>
+    <div class="fig-sub">A typical target-date glide path (tan) versus the "120 − age" rule of thumb (blue). Note how far apart the recommended stock weight is at 44 versus 64.</div>
+    <svg viewBox="0 0 700 400" role="img" aria-label="Line chart of equity allocation versus age comparing a target-date glide path and the 120-minus-age rule, with markers at age 44 (76 percent) and 64 (56 percent)">
+      <!-- y gridlines at 20,40,60,80,100 -->
+      <g stroke="#e4d8c0" stroke-width="1">
+        <line x1="70" y1="40" x2="650" y2="40"/>
+        <line x1="70" y1="115" x2="650" y2="115"/>
+        <line x1="70" y1="190" x2="650" y2="190"/>
+        <line x1="70" y1="265" x2="650" y2="265"/>
+        <line x1="70" y1="340" x2="650" y2="340"/>
+      </g>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#7a6e58" text-anchor="end">
+        <text x="62" y="44">100%</text>
+        <text x="62" y="119">80%</text>
+        <text x="62" y="194">60%</text>
+        <text x="62" y="269">40%</text>
+        <text x="62" y="344">20%</text>
+      </g>
+      <!-- vertical guides at 44 and 64 -->
+      <line x1="239.6" y1="40" x2="239.6" y2="340" stroke="#cdbf9f" stroke-width="1" stroke-dasharray="3 4"/>
+      <line x1="418.1" y1="40" x2="418.1" y2="340" stroke="#cdbf9f" stroke-width="1" stroke-dasharray="3 4"/>
+      <!-- TDF glide path (tan dashed) -->
+      <polyline points="70,77.5 159.2,77.5 248.5,100 337.7,160 427,227.5 516.2,265 650,291.25"
+        fill="none" stroke="#a8854a" stroke-width="2.5" stroke-dasharray="6 4"/>
+      <!-- 120 - age line (blue) -->
+      <line x1="70" y1="58.75" x2="650" y2="302.5" stroke="#2d6a9f" stroke-width="3"/>
+      <!-- markers at 44 and 64 on the rule line -->
+      <circle cx="239.6" cy="130" r="5" fill="#2d6a9f"/>
+      <circle cx="418.1" cy="205" r="5" fill="#2d6a9f"/>
+      <!-- annotation boxes -->
+      <g font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600">
+        <rect x="186" y="96" width="108" height="24" rx="3" fill="#2d6a9f"/>
+        <text x="240" y="112" text-anchor="middle" fill="#fff">Age 44 · 76%</text>
+        <rect x="364" y="215" width="108" height="24" rx="3" fill="#2d6a9f"/>
+        <text x="418" y="231" text-anchor="middle" fill="#fff">Age 64 · 56%</text>
+      </g>
+      <!-- legend -->
+      <g font-family="'Inter',sans-serif" font-size="12.5">
+        <line x1="430" y1="62" x2="458" y2="62" stroke="#a8854a" stroke-width="2.5" stroke-dasharray="6 4"/>
+        <text x="464" y="66" fill="#4a4038">Target-date glide path</text>
+        <line x1="430" y1="82" x2="458" y2="82" stroke="#2d6a9f" stroke-width="3"/>
+        <text x="464" y="86" fill="#4a4038">"120 − age" rule</text>
+      </g>
+      <!-- x axis -->
+      <line x1="70" y1="340" x2="650" y2="340" stroke="#1a1410" stroke-width="1.5"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#7a6e58" text-anchor="middle">
+        <text x="70" y="360">25</text>
+        <text x="239.6" y="360">44</text>
+        <text x="418.1" y="360">64</text>
+        <text x="650" y="360">90</text>
+      </g>
+      <text x="360" y="382" text-anchor="middle" font-family="'Inter',sans-serif" font-size="12.5" fill="#7a6e58">Age</text>
+    </svg>
+    <figcaption>At 44, both approaches want you mostly in stocks (~76%). At 64, they want roughly 56%. That 20-point gap is the whole story: a portfolio that's <em>right</em> for the 44-year-old is dangerously aggressive for the 64-year-old, and a portfolio that's right for the 64-year-old leaves the 44-year-old's growth on the table for two decades.</figcaption>
+  </figure>
+
+  <p class="pull">The same portfolio cannot be correct for both — yet a single glide path quietly assumes a version of you that may not exist.</p>
+
+  <div class="h2-eyebrow">The Blunt Instrument</div>
+  <h2>Where the target-date fund goes blunt</h2>
+
+  <p>The flaw isn't the glide path's shape — it's that the shape responds to only one input: time until retirement. Two people retiring in 2045 receive identical allocations even when their realities couldn't be more different. One has a paid-off house, a pension, and three years of cash on hand. The other has none of these and a job that vanishes in every recession. The fund treats them as twins.</p>
+
+  <p>Sound allocation depends on two distinct things the birth-year dial can't see. The first is your <em class="term">risk capacity</em> — your objective <em>ability</em> to absorb losses, set by your time horizon, the stability of your income, and the cushion of your other assets. The second is your <em class="term">risk tolerance</em> — your <em>emotional</em> willingness to watch the number fall without flinching. They are not the same, and the gaps between them are where real damage happens.</p>
+
+  <!-- CHART 2: risk quadrant -->
+  <figure>
+    <div class="fig-label">Figure 2 — Capacity vs. tolerance</div>
+    <div class="fig-title">The two risk questions a fund can't ask you</div>
+    <div class="fig-sub">Your ability to take risk and your willingness to take it rarely match perfectly. The off-diagonal corners are where investors get hurt.</div>
+    <svg viewBox="0 0 700 360" role="img" aria-label="Two by two matrix of risk capacity versus risk tolerance with four quadrants">
+      <!-- axes frame -->
+      <rect x="120" y="30" width="500" height="270" fill="none" stroke="#d8cab0"/>
+      <line x1="370" y1="30" x2="370" y2="300" stroke="#d8cab0"/>
+      <line x1="120" y1="165" x2="620" y2="165" stroke="#d8cab0"/>
+      <!-- quadrant fills -->
+      <rect x="121" y="31" width="248" height="133" fill="#eef2ee"/>
+      <rect x="371" y="31" width="248" height="133" fill="#eaf1f7"/>
+      <rect x="121" y="166" width="248" height="133" fill="#f5ecda"/>
+      <rect x="371" y="166" width="248" height="133" fill="#f3ede1"/>
+      <!-- quadrant text -->
+      <g font-family="'Inter',sans-serif" text-anchor="middle">
+        <!-- top-left: low cap, high tol -->
+        <text x="245" y="80" font-size="13" font-weight="700" fill="#1a1410">OVERREACH</text>
+        <text x="245" y="100" font-size="11" fill="#4a4038">Wants risk it</text>
+        <text x="245" y="115" font-size="11" fill="#4a4038">can't afford</text>
+        <!-- top-right: high cap, high tol -->
+        <text x="495" y="80" font-size="13" font-weight="700" fill="#2d6a9f">ALIGNED · BOLD</text>
+        <text x="495" y="100" font-size="11" fill="#4a4038">Can take risk —</text>
+        <text x="495" y="115" font-size="11" fill="#4a4038">and will. Invest.</text>
+        <!-- bottom-left: low cap, low tol -->
+        <text x="245" y="218" font-size="13" font-weight="700" fill="#6b5440">ALIGNED · SAFE</text>
+        <text x="245" y="238" font-size="11" fill="#4a4038">Shouldn't and</text>
+        <text x="245" y="253" font-size="11" fill="#4a4038">won't. Stay steady.</text>
+        <!-- bottom-right: high cap, low tol -->
+        <text x="495" y="218" font-size="13" font-weight="700" fill="#1a1410">PANIC RISK</text>
+        <text x="495" y="238" font-size="11" fill="#4a4038">Can afford risk but</text>
+        <text x="495" y="253" font-size="11" fill="#4a4038">sells at the bottom</text>
+      </g>
+      <!-- axis labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#7a6e58">
+        <text x="370" y="320" text-anchor="middle">RISK CAPACITY  (ability) →</text>
+        <text x="118" y="60" text-anchor="end" transform="rotate(-90 118 60)" style="transform-box:fill-box;transform-origin:center"></text>
+      </g>
+      <text x="48" y="165" font-family="'JetBrains Mono',monospace" font-size="11" fill="#7a6e58" text-anchor="middle" transform="rotate(-90 48 165)">RISK TOLERANCE (will) →</text>
+      <g font-family="'Inter',sans-serif" font-size="10.5" fill="#9b8e78">
+        <text x="125" y="315">low</text>
+        <text x="615" y="315" text-anchor="end">high</text>
+      </g>
+    </svg>
+    <figcaption>The two "aligned" corners are easy — your nerves match your math. The trouble is the off-diagonal: <strong>Panic Risk</strong> (you can afford to stay invested but bail in every downturn, locking in losses) and <strong>Overreach</strong> (you crave returns your situation can't survive). A good allocation is set by the <em>lower</em> of your capacity and tolerance — there's no point owning a portfolio you'll abandon at the bottom.</figcaption>
+  </figure>
+
+  <div class="h2-eyebrow">Why It Matters</div>
+  <h2>The same crash, two very different mornings</h2>
+
+  <p>Abstractions about "20 points of equity" feel academic until a real bear market arrives. So put the 44-year-old's 76/24 portfolio and the 64-year-old's 56/44 portfolio through the worst year in living memory — 2008, when the S&amp;P 500 fell about 37% and high-quality bonds rose about 5%.</p>
+
+  <figure>
+    <div class="fig-label">Figure 3 — Stress test, 2008</div>
+    <div class="fig-title">What a −37% stock year does to each mix</div>
+    <table>
+      <thead><tr><th>Portfolio</th><th class="num">Stocks</th><th class="num">Bonds</th><th class="num">2008 result</th></tr></thead>
+      <tbody>
+        <tr><td>All-equity</td><td class="num">100%</td><td class="num">0%</td><td class="num neg">−37.0%</td></tr>
+        <tr class="row-hi"><td>The 44-year-old</td><td class="num">76%</td><td class="num">24%</td><td class="num neg">−26.9%</td></tr>
+        <tr class="row-hi"><td>The 64-year-old</td><td class="num">56%</td><td class="num">44%</td><td class="num neg">−18.5%</td></tr>
+        <tr><td>Conservative</td><td class="num">30%</td><td class="num">70%</td><td class="num neg">−7.6%</td></tr>
+      </tbody>
+    </table>
+    <figcaption>For the 44-year-old, a 27% drop is unpleasant but survivable — there's a long career left to recover, and no withdrawals are being made. For the 64-year-old drawing income, the 56/44 mix cut the damage to 18.5% — and just as importantly, the 44% in bonds is the very thing they sell from <em>instead</em> of dumping stocks at the bottom. That's the entire point of de-risking near retirement: not to maximize return, but to never be forced to sell low.</figcaption>
+  </figure>
+
+  <p>None of this means abandoning the target-date fund. For many savers it remains an excellent, low-cost, hands-off default — far better than an unmanaged pile of guesses. The point is to use it <em>knowingly</em>: to check whether its one-size assumption fits your three-size reality, and to nudge it if it doesn't (for instance, by holding a fund dated a few years earlier or later than your literal retirement to shift the glide path more conservative or more aggressive).</p>
+
+  <div class="move">
+    <div class="move-head"><span class="glyph"></span> Today's Move</div>
+    <div class="move-body">
+      <h3>Run a 10-minute allocation audit</h3>
+      <p>Find out what you actually own versus what your age and temperament call for.</p>
+      <ol class="move-steps">
+        <li>Add up every investment account and calculate your real stock-vs-everything-else split. Most people are more concentrated in equities than they think.</li>
+        <li>Compute your rule-of-thumb target: 120 minus your age in stocks. That's your starting reference, not gospel.</li>
+        <li>Adjust for capacity: stable income, pension, paid-off home, or years of cash let you hold <em>more</em> stock than the rule; the opposite pushes you lower.</li>
+        <li>Adjust for tolerance: if a 25% paper loss would genuinely make you sell, set your target to the more conservative of the two — own a portfolio you'll actually keep.</li>
+        <li>If your actual split is more than ~10 points off your adjusted target, you've found your over-exposure. Rebalance gradually, mindful of taxes in taxable accounts.</li>
+      </ol>
+    </div>
+  </div>
+
+  <p>The birth-year dial is a fine place to start and a poor place to stop. Your portfolio should reflect not just when you plan to retire, but how steady your income is, what else you own, and — the part no algorithm can measure — how you'll actually behave on the worst morning of the decade.</p>
+
+  <p>That closes our first section on building wealth. Next week we cross into the harder half of the journey — turning a pile of savings into a paycheck that lasts — beginning with the single most dangerous stretch of any retirement: the sequence-of-returns risk.</p>
+
+  <footer class="foot">
+    <div class="brand">The Planning Letter</div>
+    <div class="arche">ARCHĒ · PLANORA</div>
+    <p class="disc">The Planning Letter is published for educational purposes only and does not constitute personalized financial, tax, or investment advice. Allocation rules of thumb and historical stress figures are illustrative; 2008 returns are approximate and past performance does not predict future results. Consult a qualified professional before acting.</p>
+  </footer>
+
+</div>
+</body>
+</html>

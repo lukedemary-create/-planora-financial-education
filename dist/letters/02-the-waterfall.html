@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Planning Letter — No. 02 — The Waterfall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f7f2e9;--paper-2:#efe7d8;--ink:#1a1410;--ink-soft:#4a4038;
+    --tan:#c9a96e;--tan-deep:#a8854a;--brown:#6b5440;--blue:#2d6a9f;--blue-soft:#5b8db8;
+    --rule:#d8cab0;--ghost:#cdbf9f;--green:#5a7d52;--maxw:720px;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;
+    line-height:1.68;font-size:18px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px 90px;}
+  .masthead{padding:40px 0 0;text-align:center;}
+  .mast-kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.42em;
+    text-transform:uppercase;color:var(--tan-deep);margin-bottom:14px;}
+  .mast-title{font-family:'Playfair Display',serif;font-weight:800;font-size:40px;line-height:1;margin:0;}
+  .mast-title .amp{color:var(--tan-deep);font-style:italic;font-weight:600;}
+  .mast-rule{display:flex;align-items:center;gap:14px;margin:22px auto 0;max-width:560px;}
+  .mast-rule .line{flex:1;height:1px;background:var(--rule);}
+  .mast-rule .dot{width:6px;height:6px;border:1px solid var(--tan-deep);transform:rotate(45deg);}
+  .mast-meta{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ink-soft);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .section-tag{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--blue);margin:64px 0 18px;display:flex;align-items:center;gap:12px;}
+  .section-tag .num{background:var(--ink);color:var(--paper);font-weight:600;padding:3px 9px;
+    border-radius:2px;letter-spacing:.1em;}
+  h1.title{font-family:'Playfair Display',serif;font-weight:800;font-size:52px;line-height:1.02;
+    margin:0 0 20px;letter-spacing:-.01em;}
+  .deck{font-family:'Playfair Display',serif;font-style:italic;font-weight:400;font-size:23px;
+    line-height:1.45;color:var(--brown);margin:0 0 30px;max-width:92%;}
+  .byline{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink-soft);border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);padding:12px 0;margin-bottom:40px;display:flex;
+    justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  p{margin:0 0 22px;}
+  .lead::first-letter{font-family:'Playfair Display',serif;font-weight:700;float:left;font-size:78px;
+    line-height:.74;padding:8px 14px 0 0;color:var(--blue);}
+  h2{font-family:'Playfair Display',serif;font-weight:700;font-size:30px;line-height:1.12;margin:50px 0 6px;}
+  .h2-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--tan-deep);margin:50px 0 4px;}
+  .h2-eyebrow + h2{margin-top:0;}
+  strong{font-weight:700;}
+  em.term{font-style:italic;color:var(--brown);font-weight:500;}
+  .pull{font-family:'Playfair Display',serif;font-weight:600;font-size:28px;line-height:1.3;
+    color:var(--ink);border-left:3px solid var(--tan);padding:6px 0 6px 26px;margin:40px 0;}
+  figure{margin:38px 0;background:#fffdf8;border:1px solid var(--rule);border-radius:5px;
+    padding:24px 24px 18px;box-shadow:0 1px 0 rgba(168,133,74,.08);}
+  .fig-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--blue);margin-bottom:3px;}
+  .fig-title{font-family:'Playfair Display',serif;font-weight:700;font-size:21px;margin:0 0 4px;}
+  .fig-sub{font-size:14.5px;color:var(--ink-soft);margin:0 0 16px;line-height:1.5;}
+  figcaption{font-size:13px;color:var(--ink-soft);margin-top:12px;line-height:1.5;
+    border-top:1px dotted var(--rule);padding-top:10px;}
+  svg{display:block;width:100%;height:auto;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  table{width:100%;border-collapse:collapse;font-size:15px;margin-top:4px;}
+  th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--rule);}
+  th{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-soft);font-weight:600;}
+  td.num,th.num{text-align:right;font-family:'JetBrains Mono',monospace;}
+  tr:last-child td{border-bottom:none;}
+  .row-hi td{background:var(--paper-2);font-weight:600;}
+  .move{margin:46px 0;border:1.5px solid var(--tan);border-radius:6px;overflow:hidden;
+    background:linear-gradient(180deg,#fbf6ec,#f5ecda);}
+  .move-head{background:var(--tan);color:var(--ink);font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;font-weight:600;padding:9px 22px;
+    display:flex;align-items:center;gap:10px;}
+  .move-head .glyph{width:7px;height:7px;background:var(--ink);transform:rotate(45deg);}
+  .move-body{padding:20px 24px 22px;}
+  .move-body h3{font-family:'Playfair Display',serif;font-weight:700;font-size:22px;margin:0 0 8px;}
+  .move-body p{margin:0 0 12px;font-size:16.5px;}
+  .move-steps{counter-reset:step;list-style:none;padding:0;margin:6px 0 0;}
+  .move-steps li{position:relative;padding:0 0 11px 38px;font-size:16px;line-height:1.5;}
+  .move-steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:0;
+    width:25px;height:25px;background:var(--blue);color:#fff;border-radius:50%;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
+    display:flex;align-items:center;justify-content:center;}
+  .foot{margin-top:70px;border-top:2px solid var(--ink);padding-top:24px;font-size:13px;
+    color:var(--ink-soft);line-height:1.6;}
+  .foot .brand{font-family:'Playfair Display',serif;font-weight:700;font-size:17px;color:var(--ink);}
+  .foot .arche{font-family:'JetBrains Mono',monospace;letter-spacing:.3em;font-size:11px;color:var(--tan-deep);}
+  .disc{font-size:11.5px;color:#9b8e78;margin-top:14px;line-height:1.55;}
+  @media (max-width:560px){
+    body{font-size:16.5px;}.mast-title{font-size:30px;}h1.title{font-size:38px;}
+    .deck{font-size:20px;}.pull{font-size:23px;}.lead::first-letter{font-size:64px;}
+    figure{padding:18px 15px 14px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="mast-kicker">A Weekly Letter on Money &amp; Time</div>
+    <h1 class="mast-title">The Planning <span class="amp">&amp;</span> Letter</h1>
+    <div class="mast-rule"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+    <div class="mast-meta"><span>Issue No. 02</span><span>Accumulation Series</span><span>Est. 8 min read</span></div>
+  </header>
+
+  <div class="section-tag"><span class="num">02</span> Accumulation &amp; Wealth Building</div>
+  <h1 class="title">The Waterfall</h1>
+  <p class="deck">You've decided to save another dollar. Where it lands first can be worth tens of thousands by the time you retire.</p>
+  <div class="byline"><span>The Planning Letter</span><span>The Contribution Order</span></div>
+
+  <p class="lead">Most savers get the hard part right and the easy part wrong. They summon the discipline to set money aside — the genuinely difficult act — and then drop it into whatever account is most familiar, usually the one their employer set up for them. The amount they save is admirable. The <em>order</em> in which they save it quietly leaves money on the table every year.</p>
+
+  <p>Think of your savings as water and your accounts as a series of basins arranged on a hillside. Water should fill the highest, most valuable basin completely before it spills into the next. Skip a basin out of habit, and you've poured a guaranteed return down the drain. This letter lays out that hillside — the <em class="term">contribution waterfall</em> — in the order a dollar should actually flow.</p>
+
+  <!-- CHART 1: the waterfall -->
+  <figure>
+    <div class="fig-label">Figure 1 — The cascade</div>
+    <div class="fig-title">Where your next dollar should go, in order</div>
+    <div class="fig-sub">Each basin fills before the next. 2026 limits shown. Higher on the hill means a higher, more certain return on the same dollar.</div>
+    <svg viewBox="0 0 700 480" role="img" aria-label="A descending waterfall of five savings tiers: 401k match, HSA, Roth, remaining 401k, taxable brokerage">
+      <defs>
+        <marker id="drop" markerWidth="8" markerHeight="8" refX="4" refY="6" orient="auto">
+          <path d="M4,0 C6,3 8,5 4,8 C0,5 2,3 4,0 Z" fill="#2d6a9f"/>
+        </marker>
+      </defs>
+      <!-- streams between tiers -->
+      <g stroke="#2d6a9f" stroke-width="2.5" fill="none" opacity="0.55">
+        <path d="M58,90 q-6,12 6,24" marker-end="url(#drop)"/>
+        <path d="M113,176 q-6,12 6,24" marker-end="url(#drop)"/>
+        <path d="M168,262 q-6,12 6,24" marker-end="url(#drop)"/>
+        <path d="M223,348 q-6,12 6,24" marker-end="url(#drop)"/>
+      </g>
+      <!-- TIER 1 -->
+      <g>
+        <rect x="30" y="24" width="380" height="66" rx="7" fill="#1a1410"/>
+        <circle cx="60" cy="57" r="15" fill="#c9a96e"/>
+        <text x="60" y="62" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="600" fill="#1a1410">1</text>
+        <text x="86" y="50" font-family="'Inter',sans-serif" font-size="15.5" font-weight="600" fill="#f7f2e9">401(k) — up to the full match</text>
+        <text x="86" y="71" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#c9a96e">Cap: whatever your employer matches</text>
+        <text x="400" y="62" text-anchor="end" font-family="'Inter',sans-serif" font-size="12.5" font-style="italic" fill="#5b8db8">+50–100% instant</text>
+      </g>
+      <!-- TIER 2 -->
+      <g>
+        <rect x="85" y="110" width="380" height="66" rx="7" fill="#2d6a9f"/>
+        <circle cx="115" cy="143" r="15" fill="#f7f2e9"/>
+        <text x="115" y="148" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="600" fill="#2d6a9f">2</text>
+        <text x="141" y="136" font-family="'Inter',sans-serif" font-size="15.5" font-weight="600" fill="#fff">HSA (if you have an HDHP)</text>
+        <text x="141" y="157" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#dbe8f3">$4,400 single · $8,750 family</text>
+        <text x="455" y="148" text-anchor="end" font-family="'Inter',sans-serif" font-size="12.5" font-style="italic" fill="#dbe8f3">Triple tax-free</text>
+      </g>
+      <!-- TIER 3 -->
+      <g>
+        <rect x="140" y="196" width="380" height="66" rx="7" fill="#a8854a"/>
+        <circle cx="170" cy="229" r="15" fill="#f7f2e9"/>
+        <text x="170" y="234" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="600" fill="#a8854a">3</text>
+        <text x="196" y="222" font-family="'Inter',sans-serif" font-size="15.5" font-weight="600" fill="#fff">Max Roth (IRA / Roth 401k)</text>
+        <text x="196" y="243" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#f3e8d4">$7,500 IRA · tax-free forever</text>
+        <text x="510" y="234" text-anchor="end" font-family="'Inter',sans-serif" font-size="12.5" font-style="italic" fill="#f3e8d4">Tax-free growth</text>
+      </g>
+      <!-- TIER 4 -->
+      <g>
+        <rect x="195" y="282" width="380" height="66" rx="7" fill="#6b5440"/>
+        <circle cx="225" cy="315" r="15" fill="#f7f2e9"/>
+        <text x="225" y="320" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="600" fill="#6b5440">4</text>
+        <text x="251" y="308" font-family="'Inter',sans-serif" font-size="15.5" font-weight="600" fill="#fff">Finish the 401(k) to the cap</text>
+        <text x="251" y="329" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#e8ddcc">$24,500 total employee limit</text>
+        <text x="565" y="320" text-anchor="end" font-family="'Inter',sans-serif" font-size="12.5" font-style="italic" fill="#e8ddcc">Defers tax</text>
+      </g>
+      <!-- TIER 5 -->
+      <g>
+        <rect x="250" y="368" width="380" height="66" rx="7" fill="#cdbf9f"/>
+        <circle cx="280" cy="401" r="15" fill="#1a1410"/>
+        <text x="280" y="406" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="600" fill="#cdbf9f">5</text>
+        <text x="306" y="394" font-family="'Inter',sans-serif" font-size="15.5" font-weight="600" fill="#1a1410">Taxable brokerage</text>
+        <text x="306" y="415" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#6b5440">No limit · fully liquid</text>
+        <text x="620" y="406" text-anchor="end" font-family="'Inter',sans-serif" font-size="12.5" font-style="italic" fill="#6b5440">Full flexibility</text>
+      </g>
+    </svg>
+    <figcaption>The ordering isn't arbitrary — it ranks each dollar by certainty of return. The match is a guaranteed gain; the HSA carries a tax break no other account can match; Roth and 401(k) space trade tax now versus tax later; taxable comes last because it's the only basin with no tax shelter at all. <strong>Add $1,000+ in catch-up room to most tiers if you're 50+</strong> (55+ for the HSA).</figcaption>
+  </figure>
+
+  <div class="h2-eyebrow">Basin One</div>
+  <h2>The match is not a perk. It's a 100% return.</h2>
+
+  <p>If your employer matches contributions — say, 50 cents on the dollar up to 6% of pay — declining it is the single most expensive habit in personal finance. Put in a dollar, get fifty cents back the same day. That's an instant, <em>risk-free</em> 50% return before the market does anything at all. A dollar-for-dollar match is an instant 100%.</p>
+
+  <p>Compare that to the stock market's long-run average of roughly 7% real. The match isn't competing with the market — it's lapping it on day one. No legitimate investment offers a guaranteed 50% to 100% gain. This is why the match sits at the top of the hill, above even the celebrated HSA: leaving it unclaimed is the rare financial mistake with no upside whatsoever.</p>
+
+  <p class="pull">An unclaimed employer match is the only negative-return decision you can make while feeling responsible.</p>
+
+  <div class="h2-eyebrow">Basin Two</div>
+  <h2>The HSA: the only triple-tax-free account in the code</h2>
+
+  <p>If you're enrolled in a high-deductible health plan, the Health Savings Account is the most tax-advantaged vehicle in the entire tax code — and the most misunderstood. Most people treat it as a spending account for this year's copays. Treated instead as a stealth retirement account — invested, untouched, receipts saved — it does something no other account can: it dodges tax at all three gates.</p>
+
+  <!-- CHART 2: triple gate grid -->
+  <figure>
+    <div class="fig-label">Figure 2 — The three tax gates</div>
+    <div class="fig-title">Where each account dodges tax — and where it doesn't</div>
+    <div class="fig-sub">Every dollar passes three gates: going in, growing, and coming out. The HSA is the only account that clears all three.</div>
+    <svg viewBox="0 0 700 290" role="img" aria-label="Grid comparing HSA, Roth, Traditional, and Taxable across three tax gates; HSA clears all three">
+      <!-- column headers -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#4a4038" text-anchor="middle" font-weight="600">
+        <text x="300" y="34">GOING IN</text>
+        <text x="430" y="34">GROWTH</text>
+        <text x="560" y="34">COMING OUT</text>
+      </g>
+      <g font-family="'Inter',sans-serif" font-size="9.5" fill="#9b8e78" text-anchor="middle">
+        <text x="300" y="48">deductible?</text>
+        <text x="430" y="48">tax-free?</text>
+        <text x="560" y="48">tax-free?</text>
+      </g>
+      <!-- rows -->
+      <!-- helper: check = blue circle ✓, cross = ghost circle ✕ -->
+      <!-- Row HSA y=80 -->
+      <g>
+        <rect x="20" y="62" width="660" height="46" rx="5" fill="#eaf1f7"/>
+        <text x="36" y="82" font-family="'Playfair Display',serif" font-size="17" font-weight="700" fill="#1a1410">HSA</text>
+        <text x="36" y="99" font-family="'Inter',sans-serif" font-size="10.5" fill="#2d6a9f" font-weight="600">★ all three gates</text>
+        <g transform="translate(300,85)"><circle r="13" fill="#2d6a9f"/><path d="M-5,0 L-1.5,4 L6,-5" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+        <g transform="translate(430,85)"><circle r="13" fill="#2d6a9f"/><path d="M-5,0 L-1.5,4 L6,-5" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+        <g transform="translate(560,85)"><circle r="13" fill="#2d6a9f"/><path d="M-5,0 L-1.5,4 L6,-5" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+      </g>
+      <!-- Row Roth y=126 -->
+      <g>
+        <text x="36" y="143" font-family="'Playfair Display',serif" font-size="17" font-weight="700" fill="#1a1410">Roth</text>
+        <text x="36" y="160" font-family="'Inter',sans-serif" font-size="10.5" fill="#6b5440">tax now, free later</text>
+        <g transform="translate(300,146)"><circle r="13" fill="#cdbf9f"/><path d="M-4.5,-4.5 L4.5,4.5 M4.5,-4.5 L-4.5,4.5" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></g>
+        <g transform="translate(430,146)"><circle r="13" fill="#2d6a9f"/><path d="M-5,0 L-1.5,4 L6,-5" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+        <g transform="translate(560,146)"><circle r="13" fill="#2d6a9f"/><path d="M-5,0 L-1.5,4 L6,-5" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+      </g>
+      <line x1="20" y1="170" x2="680" y2="170" stroke="#e4d8c0"/>
+      <!-- Row Traditional y=190 -->
+      <g>
+        <text x="36" y="207" font-family="'Playfair Display',serif" font-size="17" font-weight="700" fill="#1a1410">Traditional</text>
+        <text x="36" y="224" font-family="'Inter',sans-serif" font-size="10.5" fill="#6b5440">deduct now, tax later</text>
+        <g transform="translate(300,210)"><circle r="13" fill="#2d6a9f"/><path d="M-5,0 L-1.5,4 L6,-5" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+        <g transform="translate(430,210)"><circle r="13" fill="#2d6a9f"/><path d="M-5,0 L-1.5,4 L6,-5" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+        <g transform="translate(560,210)"><circle r="13" fill="#cdbf9f"/><path d="M-4.5,-4.5 L4.5,4.5 M4.5,-4.5 L-4.5,4.5" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></g>
+      </g>
+      <line x1="20" y1="234" x2="680" y2="234" stroke="#e4d8c0"/>
+      <!-- Row Taxable y=254 -->
+      <g>
+        <text x="36" y="271" font-family="'Playfair Display',serif" font-size="17" font-weight="700" fill="#1a1410">Taxable</text>
+        <text x="36" y="288" font-family="'Inter',sans-serif" font-size="10.5" fill="#6b5440">taxed at every step</text>
+        <g transform="translate(300,274)"><circle r="13" fill="#cdbf9f"/><path d="M-4.5,-4.5 L4.5,4.5 M4.5,-4.5 L-4.5,4.5" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></g>
+        <g transform="translate(430,274)"><circle r="13" fill="#cdbf9f"/><path d="M-4.5,-4.5 L4.5,4.5 M4.5,-4.5 L-4.5,4.5" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></g>
+        <g transform="translate(560,274)"><circle r="13" fill="#cdbf9f"/><path d="M-4.5,-4.5 L4.5,4.5 M4.5,-4.5 L-4.5,4.5" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></g>
+      </g>
+    </svg>
+    <figcaption>Traditional accounts shelter two gates; Roth shelters two; taxable shelters none. Only the HSA clears all three — contributions deduct, growth compounds untaxed, and withdrawals for qualified medical costs come out tax-free. After 65, non-medical withdrawals are simply taxed like a Traditional IRA, so there's no penalty for over-saving. A note for California readers: the state taxes HSA growth even though the federal government doesn't.</figcaption>
+  </figure>
+
+  <div class="h2-eyebrow">2026 In Numbers</div>
+  <h2>This year's basin sizes</h2>
+
+  <p>The IRS raised nearly every limit for 2026. Here's how much each basin can hold — and the catch-up room if you're closing in on retirement.</p>
+
+  <figure>
+    <div class="fig-label">Figure 3 — 2026 contribution limits</div>
+    <div class="fig-title">How much each basin holds this year</div>
+    <table>
+      <thead><tr><th>Account</th><th class="num">Base limit</th><th class="num">Catch-up</th></tr></thead>
+      <tbody>
+        <tr><td>401(k) / 403(b) employee</td><td class="num">$24,500</td><td class="num">+$8,000 <span style="color:#9b8e78">(50+)</span></td></tr>
+        <tr class="row-hi"><td>&nbsp;&nbsp;↳ ages 60–63 "super catch-up"</td><td class="num">—</td><td class="num">+$11,250</td></tr>
+        <tr><td>HSA · self-only</td><td class="num">$4,400</td><td class="num">+$1,000 <span style="color:#9b8e78">(55+)</span></td></tr>
+        <tr><td>HSA · family</td><td class="num">$8,750</td><td class="num">+$1,000 <span style="color:#9b8e78">(55+)</span></td></tr>
+        <tr><td>IRA / Roth IRA</td><td class="num">$7,500</td><td class="num">+$1,100 <span style="color:#9b8e78">(50+)</span></td></tr>
+      </tbody>
+    </table>
+    <figcaption>One new wrinkle for 2026: if your prior-year wages topped roughly $145,000, your 401(k) catch-up must now go into a <em>Roth</em> (after-tax) bucket — you pay tax now and grow it tax-free. Roth IRA eligibility also phases out between $153,000–$168,000 (single) and $242,000–$252,000 (married filing jointly); above that, the "backdoor" route still works.</figcaption>
+  </figure>
+
+  <p>Two honest caveats keep the waterfall from becoming dogma. First, the HSA only belongs in basin two if a high-deductible plan actually fits your health and family situation — never choose a worse insurance plan to chase a tax break. Second, if you carry high-interest debt, paying it off is its own basin near the very top: erasing 22% credit-card interest is a guaranteed 22% return, beating almost everything below it.</p>
+
+  <div class="move">
+    <div class="move-head"><span class="glyph"></span> Today's Move</div>
+    <div class="move-body">
+      <h3>Map your savings against the hillside</h3>
+      <p>Take your current monthly savings and trace where each dollar actually lands today.</p>
+      <ol class="move-steps">
+        <li>Write down every dollar you save monthly and which account it flows into right now.</li>
+        <li>Confirm basin one is full: are you contributing at least enough to capture 100% of your employer match? If not, redirect there first.</li>
+        <li>If you're on an HDHP and not maxing the HSA, route the next dollars there — and invest the balance rather than letting it sit in cash.</li>
+        <li>Only after basins one and two are full should new money flow to Roth, then the rest of the 401(k), then taxable.</li>
+        <li>Re-check in January each year — the basin sizes change with inflation, and 2026 raised most of them.</li>
+      </ol>
+    </div>
+  </div>
+
+  <p>The discipline to save is the hard-won part, and if you've got it, you're already ahead of most. The waterfall simply makes sure that hard-won dollar lands where it earns the most — guaranteed returns before hoped-for ones, sheltered dollars before exposed ones. Same effort, materially more wealth.</p>
+
+  <p>Next week: once the money is in, how aggressively should it be invested — and why a 44-year-old and a 64-year-old should not own the same portfolio, even inside the same "target date" fund.</p>
+
+  <footer class="foot">
+    <div class="brand">The Planning Letter</div>
+    <div class="arche">ARCHĒ · PLANORA</div>
+    <p class="disc">The Planning Letter is published for educational purposes only and does not constitute personalized financial, tax, or investment advice. 2026 contribution limits reflect IRS Notice 2025-67 and Rev. Proc. 2025-19, current as of publication; high-earner Roth catch-up rules and state tax treatment vary. Consult a qualified professional before acting.</p>
+  </footer>
+
+</div>
+</body>
+</html>

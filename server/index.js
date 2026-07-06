@@ -1433,7 +1433,7 @@ async function handleEiaStateGas() {
   if (cached) return cached;
 
   // Fetch weekly retail regular gas prices for all areas — filter states on server side
-  const url = `https://api.eia.gov/v2/petroleum/pri/gnd/data/?api_key=${eiaKey}&data[]=value&facets[product][]=EPM0&frequency=weekly&sort[0][column]=period&sort[0][direction]=desc&length=200&offset=0`;
+  const url = `https://api.eia.gov/v2/petroleum/pri/gnd/data/?api_key=${eiaKey}&data[]=value&facets[product][]=EPM0&frequency=weekly&sort[0][column]=period&sort[0][direction]=desc&length=1000&offset=0`;
   const res = await fetchWithTimeout(url, {}, 15000);
   const json = await res.json();
   const rows = json.response?.data || [];
@@ -1969,6 +1969,412 @@ async function getCachedNews() {
 setTimeout(() => refreshNews(), 5000);
 setInterval(() => refreshNews(), NEWS_CACHE_TTL);
 
+// ─── YouTube Service ─────────────────────────────────────────────────────────
+// Pulls a fixed batch of videos per creator. Stored in filesystem cache.
+// Never exposes the API key to the frontend.
+
+const YT_CACHE_KEY = 'youtube_videos_v4';
+const YT_VIDEOS_PER_CREATOR = 20;
+const YT_MIN_DURATION_SEC = 180; // filter out Shorts (≤ 3 min)
+
+// Creator registry — each has a channel handle or known channel ID
+const YT_CREATORS = [
+  {
+    id: 'money-guy',
+    name: 'The Money Guy Show',
+    channelId: 'UC9vUu4vlIlMC0dHQCTvQPbg',
+    handle: '@moneyguyshow',
+    hosts: 'Brian Preston CPA CFP & Bo Hanson CFA CFP',
+    focus: 'Wealth building, order of operations, and asset protection',
+    strategy: 'Their structured 9-step Financial Order of Operations dictates exactly what to do with your next dollar. They cover when to upgrade your insurance — including life, umbrella, and disability — and how to protect a growing family\'s assets.',
+    primaryTopics: ['Wealth Building and Financial Planning', 'Insurance Planning'],
+    channelUrl: 'https://www.youtube.com/@TheMoneyGuyShow',
+  },
+  {
+    id: 'rob-berger',
+    name: 'Rob Berger',
+    channelId: 'UC6Dp3WgLrd27mvb6ehpbsLw',
+    handle: '@robberger',
+    hosts: 'Rob Berger',
+    focus: 'Wealth tracking, withdrawal math, and estate longevity',
+    strategy: 'A former lawyer who relies heavily on analytical charts and spreadsheets to map out long-term wealth, safe withdrawal rates, and how to structure accounts to transition seamlessly to heirs.',
+    primaryTopics: ['Retirement Planning', 'Wealth Building and Financial Planning', 'Estate Planning and Trusts'],
+    channelUrl: 'https://www.youtube.com/@rob_berger',
+  },
+  {
+    id: 'plain-bagel',
+    name: 'The Plain Bagel',
+    channelId: 'UCFCEuCsyWP0YkP3CZ3Mr01Q',
+    handle: '@ThePlainBagel',
+    hosts: 'Richard Coffin CFA CFP',
+    focus: 'Investment mechanics, economic education, and market truth',
+    strategy: 'An investment analyst providing calm, objective breakdowns of complex economic concepts. He explains how inflation, market shifts, and different types of investment vehicles truly impact a family\'s wealth.',
+    primaryTopics: ['Investing and Market Education', 'Behavioral Finance and Money Psychology'],
+    channelUrl: 'https://www.youtube.com/@ThePlainBagel',
+  },
+  {
+    id: 'clearvalue-tax',
+    name: 'ClearValue Tax',
+    channelId: 'UCigUBIf-zt_DA6xyOQtq2WA',
+    handle: '@ClearValueTax',
+    hosts: 'Brian Kim CPA',
+    focus: 'Fluff-free tax strategies, write-offs, and economic laws',
+    strategy: 'Direct, high-impact breakdowns of current tax codes, bracket changes, and deductions. He teaches viewers exactly how to optimize their annual filings to keep more of their earnings.',
+    primaryTopics: ['Tax Planning and Strategy'],
+    channelUrl: 'https://www.youtube.com/@ClearValueTax',
+  },
+  {
+    id: 'diamond-nestegg',
+    name: 'Diamond NestEgg',
+    channelId: 'UCnexoc6tvesvcCEzZhmI-Ag',
+    handle: '@diamondnestegg',
+    hosts: 'Jennifer & Markus Lammer',
+    focus: 'Trust setup, wills, probate avoidance, and fixed income',
+    strategy: 'This channel specifically masters late-stage wealth preservation. Jennifer details the exact legal documents — like revocable living trusts and powers of attorney — needed to pass assets down without legal friction.',
+    primaryTopics: ['Estate Planning and Trusts', 'Retirement Planning'],
+    channelUrl: 'https://www.youtube.com/@diamondnestegg',
+  },
+  {
+    id: 'military-money-manual',
+    name: 'Military Money Manual',
+    channelId: 'UC-X1wcxrZM-sh4-hl1a6yuQ',
+    handle: '@MilitaryMoneyManual',
+    hosts: 'Spencer Reese',
+    focus: 'TSP optimization, military family planning, and veteran wealth',
+    strategy: 'Run by service members, they give step-by-step guidance on maximizing the Blended Retirement System (BRS), the Thrift Savings Plan (TSP), and tax-free combat pay.',
+    primaryTopics: ['Military and Government Benefits', 'Retirement Planning'],
+    channelUrl: 'https://www.youtube.com/@MilitaryMoneyManual',
+  },
+  {
+    id: 'military-to-millionaire',
+    name: 'From Military to Millionaire',
+    channelId: 'UCQElNqStWjEBDFNVnXkh1ng',
+    handle: '@FromMilitarytoMillionaire',
+    hosts: 'David Pere',
+    focus: 'VA Loans, military real estate investing, and early retirement',
+    strategy: 'A Marine veteran who teaches military personnel how to leverage their unique housing benefits — like using VA loan house hacking — to build massive real estate portfolios while serving.',
+    primaryTopics: ['Military and Government Benefits', 'Real Estate Investing'],
+    channelUrl: 'https://www.youtube.com/@FromMilitarytoMillionaire',
+  },
+  {
+    id: 'ramsey-show',
+    name: 'The Ramsey Show',
+    channelId: 'UCQGUMLtkv5X-tGc3VDghu9Q',
+    handle: '@daveramsey',
+    hosts: 'Dave Ramsey & Co-Hosts',
+    focus: 'The 7 Baby Steps, debt elimination, and cash-only behavior',
+    strategy: 'A live call-in show famous for the Debt Snowball. Dave focuses heavily on the psychological discipline needed to clear consumer debt, build starter security, and pay off a home early.',
+    primaryTopics: ['Debt Elimination and Behavioral Change', 'Budgeting and Cash Flow'],
+    channelUrl: 'https://www.youtube.com/@TheRamseyShow',
+  },
+  {
+    id: 'caleb-hammer',
+    name: 'Caleb Hammer',
+    channelId: 'UCLe_q9axMaeTbjN0hy1Z9xA',
+    handle: '@CalebHammer',
+    hosts: 'Caleb Hammer',
+    focus: 'Modern debt extraction, behavioral audits, and lifestyle accountability',
+    strategy: 'Caleb conducts raw line-by-line financial audits of real bank statements. He explicitly targets modern financial traps like food delivery apps, high-interest car notes, and Buy Now Pay Later services to force a behavioral pivot.',
+    primaryTopics: ['Debt Elimination and Behavioral Change', 'Behavioral Finance and Money Psychology'],
+    channelUrl: 'https://www.youtube.com/@CalebHammer',
+  },
+  {
+    id: 'ramit-sethi',
+    name: 'Ramit Sethi',
+    channelId: 'UC7ZddA__ewP3AtDefjl_tWg',
+    handle: '@ramitsethi',
+    hosts: 'Ramit Sethi',
+    focus: 'Couples finance psychology, automated budgeting, and rich life design',
+    strategy: 'Ramit brings real couples onto his show to unpack their psychological money blocks. He replaces restrictive rules with a Conscious Spending Plan so families can spend guilt-free on what they love while automating savings.',
+    primaryTopics: ['Behavioral Finance and Money Psychology', 'Budgeting and Cash Flow'],
+    channelUrl: 'https://www.youtube.com/@ramitsethi',
+  },
+  {
+    id: 'whiteboard-finance',
+    name: 'WhiteBoard Finance',
+    channelId: 'UCL_v4tC26PvOFytV1_eEVSg',
+    handle: '@WhiteBoardFinance',
+    hosts: 'Marko Zlatic',
+    focus: 'Whiteboard math tutorials, real estate cash flow, and side hustles',
+    strategy: 'Marko physically draws out financial equations on a whiteboard, providing clear tutorials on how to calculate rental property cash flow, analyze car loans, and build foundational capital.',
+    primaryTopics: ['Real Estate Investing', 'Budgeting and Cash Flow', 'Investing and Market Education'],
+    channelUrl: 'https://www.youtube.com/@WhiteBoardFinance',
+  },
+  {
+    id: 'humphrey-yang',
+    name: 'Humphrey Yang',
+    channelId: 'UCsvIZLbGmbpCMuobt-eXNYg',
+    handle: '@humphreytalks',
+    hosts: 'Humphrey Yang',
+    focus: 'Simplified money concepts, daily habits, and financial tool comparisons',
+    strategy: 'Humphrey uses creative visual sketches to make abstract financial topics accessible, helping viewers handle everyday tasks like comparing term vs whole life insurance or picking high-yield savings accounts.',
+    primaryTopics: ['Budgeting and Cash Flow', 'Insurance Planning', 'Investing and Market Education'],
+    channelUrl: 'https://www.youtube.com/@humphreytalks',
+  },
+  {
+    id: 'financial-diet',
+    name: 'The Financial Diet',
+    channelId: 'UCSPYNpQ2fHv9HJ-q6MIMaPw',
+    handle: '@thefinancialdiet',
+    hosts: 'Chelsea Fagan',
+    focus: 'Societal money habits, family financial costs, and lifestyle boundaries',
+    strategy: 'Focuses heavily on the social and cultural side of personal finance, breaking down the true financial impact of major milestones like weddings, having children, and managing career changes.',
+    primaryTopics: ['Behavioral Finance and Money Psychology', 'Budgeting and Cash Flow'],
+    channelUrl: 'https://www.youtube.com/@thefinancialdiet',
+  },
+  {
+    id: 'budgetnista',
+    name: 'The Budgetnista',
+    channelId: 'UC2aUoo1-y4RjERy5wzsW2oQ',
+    handle: '@budgetnista',
+    hosts: 'Tiffany Aliche',
+    focus: 'Financial wholeness, automated family budgeting, and credit repair',
+    strategy: 'Tiffany provides highly empathetic, actionable toolkits for getting out of debt, building foundational credit scores, and implementing automated systems to ensure household financial security.',
+    primaryTopics: ['Budgeting and Cash Flow', 'Debt Elimination and Behavioral Change'],
+    channelUrl: 'https://www.youtube.com/@TheBudgetnista',
+  },
+  {
+    id: 'graham-stephan',
+    name: 'Graham Stephan',
+    channelId: 'UCV6KDgJskWaEckne5aPA0aQ',
+    handle: '@GrahamStephan',
+    hosts: 'Graham Stephan',
+    focus: 'Real estate mastery, credit optimization, and economic reactions',
+    strategy: 'Built his channel on the literal math of purchasing real estate, maximizing credit card reward points safely, and reacting immediately to shifting economic news that affects day-to-day investing.',
+    primaryTopics: ['Real Estate Investing', 'Investing and Market Education', 'Budgeting and Cash Flow'],
+    channelUrl: 'https://www.youtube.com/@GrahamStephan',
+  },
+];
+
+// Keyword maps for auto-topic classification
+const TOPIC_KEYWORDS = {
+  'Tax Planning and Strategy': [
+    'tax', 'taxes', 'deduction', 'write off', 'write-off', 'irs', '1099', 'w-2', 'bracket', 'roth conversion',
+    'backdoor roth', 'capital gains', 'audit', 'tax loss', 'tax alpha', 'tax efficient', 'estate tax',
+    'gift tax', 'qbi', 'self-employed tax', 's-corp', 'llc tax', 'depreciation', 'tax free',
+  ],
+  'Estate Planning and Trusts': [
+    'estate', 'trust', 'probate', 'will ', 'wills', 'beneficiary', 'inheritance', 'power of attorney',
+    'revocable', 'irrevocable', 'living trust', 'estate plan', 'heir', 'legacy', 'intestate',
+    'executor', 'guardianship', 'pour-over', 'dynasty trust',
+  ],
+  'Retirement Planning': [
+    'retirement', 'retire', ' ira', 'roth ira', '401k', '401(k)', '403b', 'pension', 'social security',
+    'rmd', 'required minimum', 'withdrawal rate', 'sequence of returns', 'safe withdrawal',
+    '4% rule', 'annuity', 'nest egg', 'early retirement', 'fire movement',
+  ],
+  'Military and Government Benefits': [
+    'military', 'veteran', 'va loan', ' tsp', 'blended retirement', 'brs', 'gi bill', 'tricare',
+    'active duty', 'service member', 'national guard', 'reserves', 'combat pay', 'bah', 'bas',
+    'military housing', 'military pay', 'vet', 'armed forces',
+  ],
+  'Debt Elimination and Behavioral Change': [
+    'debt', 'pay off', 'snowball', 'avalanche', 'student loan', 'credit card debt', 'bnpl',
+    'buy now pay later', 'loan', 'interest rate debt', 'debt free', 'payoff', 'minimum payment',
+    'collection', 'bankruptcy', 'financial audit', 'car loan', 'auto loan',
+  ],
+  'Budgeting and Cash Flow': [
+    'budget', 'budgeting', 'spending', 'cash flow', 'emergency fund', 'savings account', 'paycheck',
+    'expense', 'bills', 'frugal', 'cost of living', 'high yield savings', 'hysa', 'zero based',
+    'conscious spending', 'money management', 'subscription', 'food delivery',
+  ],
+  'Real Estate Investing': [
+    'real estate', 'rental', 'house hack', 'property', 'mortgage', 'airbnb', 'landlord',
+    'cap rate', 'cash on cash', 'duplex', 'multifamily', 'rei', 'flip', 'brrrr', 'reit',
+    'house hacking', 'rental income', 'investment property', 'real estate portfolio',
+  ],
+  'Insurance Planning': [
+    'insurance', 'life insurance', 'term life', 'whole life', 'disability insurance', 'umbrella policy',
+    'coverage', 'premium', 'deductible', 'health insurance', 'ltc', 'long term care',
+    'annuity', 'indexed universal life', 'iul',
+  ],
+  'Investing and Market Education': [
+    'invest', 'stock', 'index fund', 'etf', 'portfolio', 'market', 'dividend', 'compound interest',
+    'dollar cost', 'diversif', 'asset allocation', 'rebalance', 's&p 500', 'nasdaq', 'bond',
+    'mutual fund', 'brokerage', 'vanguard', 'fidelity', 'yield curve', 'recession', 'inflation',
+  ],
+  'Behavioral Finance and Money Psychology': [
+    'psychology', 'behavior', 'emotion', 'mindset', 'money relationship', 'fear', 'greed',
+    'loss aversion', 'bias', 'money trauma', 'spending habit', 'guilt', 'abundance',
+    'rich life', 'money blocks', 'financial therapy', 'lifestyle inflation',
+  ],
+  'Wealth Building and Financial Planning': [
+    'wealth', 'net worth', 'financial plan', 'financial independence', 'passive income',
+    'millionaire', 'financial order', 'first dollar', 'financial goal', 'wealth building',
+    'financial advisor', 'fiduciary', 'fee only', 'asset protection',
+  ],
+};
+
+function classifyVideoTopic(title, description, creatorPrimaryTopics) {
+  const text = (title + ' ' + (description || '')).toLowerCase();
+  const scores = {};
+
+  for (const [topic, keywords] of Object.entries(TOPIC_KEYWORDS)) {
+    scores[topic] = 0;
+    for (const kw of keywords) {
+      if (text.includes(kw.toLowerCase())) scores[topic]++;
+    }
+  }
+
+  const best = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  if (best[0][1] > 0) return best[0][0];
+
+  // Fallback: creator's primary topic
+  return creatorPrimaryTopics[0] || 'Wealth Building and Financial Planning';
+}
+
+// Resolve @handle → channelId via YouTube API
+async function ytResolveChannelId(handle, apiKey) {
+  // Try forHandle lookup first
+  const handleClean = handle.replace('@', '');
+  const url = `https://www.googleapis.com/youtube/v3/channels?part=id,snippet&forHandle=${encodeURIComponent(handleClean)}&key=${apiKey}`;
+  const res = await fetchWithTimeout(url, {}, 10000);
+  if (!res.ok) throw new Error(`YouTube channels API error: ${res.status}`);
+  const data = await res.json();
+  const item = data.items?.[0];
+  if (!item) throw new Error(`No channel found for handle: ${handle}`);
+  return { channelId: item.id, title: item.snippet?.title };
+}
+
+// Get uploads playlist ID + channel avatar from channelId (single API call)
+async function ytGetChannelInfo(channelId, apiKey) {
+  const url = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails,snippet&id=${channelId}&key=${apiKey}`;
+  const res = await fetchWithTimeout(url, {}, 10000);
+  if (!res.ok) throw new Error(`YouTube channels API error: ${res.status}`);
+  const data = await res.json();
+  const item = data.items?.[0];
+  const uploads = item?.contentDetails?.relatedPlaylists?.uploads;
+  if (!uploads) throw new Error(`No uploads playlist for channel: ${channelId}`);
+  const thumbs = item?.snippet?.thumbnails || {};
+  const avatar = thumbs.medium?.url || thumbs.default?.url || null;
+  return { playlistId: uploads, avatar };
+}
+
+// Parse ISO 8601 duration string → total seconds (e.g. "PT12M34S" → 754)
+function parseIsoDuration(iso = '') {
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!m) return 0;
+  return (parseInt(m[1] || 0) * 3600) + (parseInt(m[2] || 0) * 60) + parseInt(m[3] || 0);
+}
+
+// Fetch contentDetails for a batch of videoIds and return a map { videoId → durationSec }
+async function ytGetDurations(videoIds, apiKey) {
+  const durations = {};
+  for (let i = 0; i < videoIds.length; i += 50) {
+    const batch = videoIds.slice(i, i + 50).join(',');
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${batch}&key=${apiKey}`;
+    try {
+      const res = await fetchWithTimeout(url, {}, 10000);
+      if (!res.ok) continue;
+      const data = await res.json();
+      for (const item of (data.items || [])) {
+        durations[item.id] = parseIsoDuration(item.contentDetails?.duration);
+      }
+    } catch (e) {
+      log('[YouTube] duration fetch error:', e.message);
+    }
+  }
+  return durations;
+}
+
+// Pull videos from uploads playlist (1 quota unit per page)
+async function ytFetchPlaylistVideos(playlistId, maxResults, apiKey) {
+  const videos = [];
+  let pageToken = '';
+  const perPage = Math.min(maxResults, 50);
+
+  while (videos.length < maxResults) {
+    const tokenParam = pageToken ? `&pageToken=${pageToken}` : '';
+    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=${perPage}${tokenParam}&key=${apiKey}`;
+    const res = await fetchWithTimeout(url, {}, 10000);
+    if (!res.ok) break;
+    const data = await res.json();
+    for (const item of (data.items || [])) {
+      const sn = item.snippet;
+      if (!sn?.resourceId?.videoId) continue;
+      if (sn.title === 'Private video' || sn.title === 'Deleted video') continue;
+      videos.push({
+        videoId: sn.resourceId.videoId,
+        title: sn.title,
+        description: (sn.description || '').slice(0, 300),
+        thumbnail: sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || '',
+        publishedAt: sn.publishedAt,
+      });
+      if (videos.length >= maxResults) break;
+    }
+    pageToken = data.nextPageToken || '';
+    if (!pageToken || videos.length >= maxResults) break;
+  }
+  return videos;
+}
+
+// Main refresh — pulls all creators and stores to cache
+async function ytRefreshAllCreators() {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) throw new Error('YOUTUBE_API_KEY not set');
+
+  const results = {};
+  const errors = [];
+
+  for (const creator of YT_CREATORS) {
+    try {
+      log(`[YouTube] pulling ${creator.name}...`);
+      const channelId = creator.channelId || (await ytResolveChannelId(creator.handle, apiKey)).channelId;
+      const { playlistId, avatar } = await ytGetChannelInfo(channelId, apiKey);
+
+      // Fetch 2× target so we still get enough after filtering out Shorts
+      const rawVideos = await ytFetchPlaylistVideos(playlistId, YT_VIDEOS_PER_CREATOR * 2, apiKey);
+
+      // Filter out Shorts by duration
+      const durations = await ytGetDurations(rawVideos.map(v => v.videoId), apiKey);
+      const longVideos = rawVideos.filter(v => {
+        const dur = durations[v.videoId];
+        if (dur === undefined) return true; // keep if duration unknown
+        return dur >= YT_MIN_DURATION_SEC;
+      });
+
+      const videos = longVideos.slice(0, YT_VIDEOS_PER_CREATOR).map(v => ({
+        ...v,
+        creatorId: creator.id,
+        creatorName: creator.name,
+        topic: classifyVideoTopic(v.title, v.description, creator.primaryTopics),
+        durationSec: durations[v.videoId] ?? null,
+      }));
+
+      results[creator.id] = { creator: { ...creator, avatar }, videos, pulledAt: new Date().toISOString() };
+      log(`[YouTube] ${creator.name}: ${videos.length} long-form videos (${rawVideos.length - longVideos.length} Shorts filtered)`);
+    } catch (e) {
+      log(`[YouTube] ERROR for ${creator.name}:`, e.message);
+      errors.push({ creatorId: creator.id, error: e.message });
+    }
+    // Small delay to be kind to the API
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  const payload = { creators: results, errors, refreshedAt: new Date().toISOString() };
+  writeCache(YT_CACHE_KEY, payload);
+  return payload;
+}
+
+// Return stored videos (refresh only if never pulled)
+async function handleYouTubeVideos() {
+  // Use a very long TTL — 30 days — since this is pull-once-store
+  const cached = readCache(YT_CACHE_KEY, 30 * 24 * 60 * 60 * 1000);
+  if (cached) return cached;
+  // If no data yet, return empty so frontend can show empty state
+  return { creators: {}, errors: [], refreshedAt: null, notYetPulled: true };
+}
+
+// Manual refresh endpoint
+async function handleYouTubeRefresh() {
+  return ytRefreshAllCreators();
+}
+
+// Return creator metadata only (no API needed)
+function handleYouTubeCreators() {
+  return { creators: YT_CREATORS };
+}
+
 // ─── HTTP Server ─────────────────────────────────────────────────────────────
 
 const server = http.createServer(async (req, res) => {
@@ -2153,6 +2559,35 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // ── YouTube routes ──────────────────────────────────────────────────────────
+
+  if (req.method === 'GET' && path === '/api/youtube/videos') {
+    try {
+      return sendJSON(res, await handleYouTubeVideos());
+    } catch (err) {
+      return sendJSON(res, { error: err.message }, 500);
+    }
+  }
+
+  if (req.method === 'GET' && path === '/api/youtube/creators') {
+    try {
+      return sendJSON(res, handleYouTubeCreators());
+    } catch (err) {
+      return sendJSON(res, { error: err.message }, 500);
+    }
+  }
+
+  if (req.method === 'POST' && path === '/api/youtube/refresh') {
+    try {
+      log('[YouTube] Manual refresh triggered');
+      const result = await handleYouTubeRefresh();
+      const summary = { refreshedAt: result.refreshedAt, creatorCount: Object.keys(result.creators).length, errors: result.errors };
+      return sendJSON(res, summary);
+    } catch (err) {
+      return sendJSON(res, { error: err.message }, 500);
+    }
+  }
+
   if (req.method === 'GET' && path === '/api/news') {
     try {
       return sendJSON(res, await getCachedNews());
@@ -2165,9 +2600,9 @@ const server = http.createServer(async (req, res) => {
     try {
       const body = await readBody(req);
       const { messages } = body;
-      const apiKey = process.env.ANTHROPIC_API_KEY;
-      if (!apiKey || apiKey === 'your-anthropic-api-key-here') {
-        return sendJSON(res, { error: 'ANTHROPIC_API_KEY not configured.' }, 500);
+      const apiKey = process.env.GROQ_API_KEY;
+      if (!apiKey || apiKey === 'your-groq-api-key-here') {
+        return sendJSON(res, { error: 'GROQ_API_KEY not configured. Get a free key at console.groq.com' }, 500);
       }
 
       // ── Build live market context ──────────────────────────────────────────
@@ -2373,7 +2808,7 @@ ${liveContext}
 
 Use the live data above to ground your analysis in current market reality. When discussing rates, inflation, or market levels, reference the actual numbers above.`;
 
-      // Stream response from Anthropic
+      // Stream response from Groq (free tier — llama-3.3-70b-versatile)
       res.writeHead(200, {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
@@ -2382,34 +2817,51 @@ Use the live data above to ground your analysis in current market reality. When 
         'Access-Control-Allow-Headers': 'Content-Type',
       });
 
-      const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+      const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 8000,
+          model: 'llama-3.3-70b-versatile',
+          max_tokens: 4096,
           stream: true,
-          system: systemPrompt,
-          messages: messages.map(m => ({ role: m.role, content: m.content })),
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages.map(m => ({ role: m.role, content: m.content })),
+          ],
         }),
       });
 
-      if (!anthropicRes.ok) {
-        const err = await anthropicRes.text();
+      if (!groqRes.ok) {
+        const err = await groqRes.text();
         res.write(`data: ${JSON.stringify({ error: err })}\n\n`);
         return res.end();
       }
 
-      const reader = anthropicRes.body.getReader();
+      const reader = groqRes.body.getReader();
       const decoder = new TextDecoder();
+      let lineBuffer = '';
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        res.write(decoder.decode(value, { stream: true }));
+        lineBuffer += decoder.decode(value, { stream: true });
+        const lines = lineBuffer.split('\n');
+        lineBuffer = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const data = line.slice(6).trim();
+          if (data === '[DONE]') continue;
+          try {
+            const json = JSON.parse(data);
+            const text = json.choices?.[0]?.delta?.content;
+            if (text) {
+              // Re-emit in Anthropic SSE format so the frontend needs no changes
+              res.write(`data: ${JSON.stringify({ type: 'content_block_delta', delta: { type: 'text_delta', text } })}\n\n`);
+            }
+          } catch {}
+        }
       }
       return res.end();
     } catch (err) {
